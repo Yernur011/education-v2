@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+#  app:
+#    build:
+#      context: .
+#      dockerfile: Dockerfile
+#    container_name: java-service
+#    restart: always
+#    depends_on:
+#      - db
+#    environment:
+#      DATASOURCE_URL: jdbc:postgresql://db:5432/cyber-booking
+#      USERNAME: postgres
+#      PASSWORD: 0zT7[C37x
+#    ports:
+#      - "8080:8080"
+
+
+  db:
+    image: postgres:15-alpine
+    container_name: postgres
+    restart: always
+    environment:
+      POSTGRES_DB: cyber-booking
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 0zT7[C37x
+    volumes:
+      - ./docker/postgres/data:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"
+
+volumes:
+  postgres_data:
+    driver: local

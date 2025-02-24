@@ -1,0 +1,33 @@
+spring:
+  application:
+    name: education
+  datasource:
+    url: ${DATASOURCE_URL}
+    username: ${USERNAME}
+    password: ${PASSWORD}
+    driver-class-name: org.postgresql.Driver
+
+  flyway:
+    enabled: true
+    url: ${DATASOURCE_URL}
+    user: ${USERNAME}
+    password: ${PASSWORD}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: none
+
+jwt:
+  password:
+    encoder:
+      secret: ${PASSWORD_ENCODER_SECRET}
+      iteration: ${PASSWORD_ITERATION}
+      keyLength: ${PASSWORD_KEY_LENGTH}
+  secret:  ${JWT_ENCODER_SECRET}
+  token:
+    refresh:
+      expiration: ${REFRESH_TOKEN_EXPIRATION}
+    access:
+      expiration: ${ACCESS_TOKEN_EXPIRATION}
+    issuer: ${TOKEN_ISSUER}
+
