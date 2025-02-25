@@ -1,7 +1,9 @@
 package com.rdlab.education.domain.dto.lesson;
 
-import lombok.AllArgsConstructor;
+import lombok.Data;
 
+
+@Data
 public class LessonDto {
     public LessonDto(Long id, Long lessonNumber, String title, String videoUrl, String bodyText, String status, Boolean isCompleted) {
         this.id = id;
