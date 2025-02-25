@@ -4,6 +4,7 @@ import com.rdlab.education.domain.entity.core.BusinessEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.hibernate.annotations.Type;
 
 @Entity
 @AllArgsConstructor
@@ -19,7 +20,6 @@ public class Lesson extends BusinessEntity<Long> {
     String title;
     @Column(name = "video_url")
     String videoUrl;
-    @Lob
     @Column(columnDefinition = "TEXT", name = "body_text")
     String bodyText;
     String status;
