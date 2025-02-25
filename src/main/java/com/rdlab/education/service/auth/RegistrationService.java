@@ -68,6 +68,7 @@ public class RegistrationService {
                 .orElseGet(() -> {
                     registerUser.setUsername(registrationDto.username());
                     registerUser.setPassword(passwordEncoder.encode(registrationDto.password()));
+                    registerUser.setName(registrationDto.name());
                     registerUser.setOtpCode(otpCode);
                     return registerUser;
                 });
@@ -109,6 +110,7 @@ public class RegistrationService {
         Users users = new Users();
         users.setUsername(registerUser.getUsername());
         users.setPassword(registerUser.getPassword());
+        users.setName(registerUser.getName());
         users.setEnabled(true);
         users.setRole(UserRole.USER.getRole());
         userRepository.save(users);
