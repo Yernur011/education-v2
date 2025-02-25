@@ -13,7 +13,6 @@ public class AnswerCrudServiceImpl implements AnswerCrudService {
         this.answerRepository = answerRepository;
     }
 
-
     @Override
     public Answer findAnswerById(Long answerId) {
         return answerRepository.findById(answerId).orElse(null);

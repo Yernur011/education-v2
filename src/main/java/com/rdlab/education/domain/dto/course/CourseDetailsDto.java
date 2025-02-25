@@ -1,5 +1,6 @@
 package com.rdlab.education.domain.dto.course;
 
+import com.rdlab.education.domain.dto.lesson.LessonDto;
 import com.rdlab.education.domain.entity.edu.Lesson;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -14,12 +15,12 @@ public class CourseDetailsDto {
     String description;
     String image;
     List<String> tags = new ArrayList<>();
-    List<Lesson> lessons = new ArrayList<>();
+    List<LessonDto> lessons = new ArrayList<>();
 
     public CourseDetailsDto() {
     }
 
-    public CourseDetailsDto(Long id, String title, String description, String image, List<String> tags, List<Lesson> lessons) {
+    public CourseDetailsDto(Long id, String title, String description, String image, List<String> tags, List<LessonDto> lessons) {
         this.id = id;
         this.title = title;
         this.description = description;
@@ -68,11 +69,11 @@ public class CourseDetailsDto {
         this.tags = tags;
     }
 
-    public List<Lesson> getLessons() {
+    public List<LessonDto> getLessons() {
         return lessons;
     }
 
-    public void setLessons(List<Lesson> lessons) {
+    public void setLessons(List<LessonDto> lessons) {
         this.lessons = lessons;
     }
 }

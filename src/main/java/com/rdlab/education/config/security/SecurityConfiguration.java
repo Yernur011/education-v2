@@ -20,12 +20,21 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 @EnableMethodSecurity
 public class SecurityConfiguration {
-    private final String[] publicRouts = {"/api/v1/cities","/api/v1/auth/register", "/api/v1/auth/verify", "/api/v1/auth/login", "/api/v1/auth/refresh"};
+    private final String[] publicRouts = {
+            "/api/v1/auth/register",
+            "/api/v1/auth/verify",
+            "/api/v1/auth/login",
+            "/api/v1/auth/refresh",
+            "/v3/api-docs",
+            "/swagger-ui/**",
+            "/v3/api-docs/swagger-config",
+    };
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final RefreshTokenFilter refreshTokenFilter;
     private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
     private final CustomAccessDeniedHandler customAccessDeniedHandler;
+
     public SecurityConfiguration(JwtAuthenticationFilter jwtAuthenticationFilter,
                                  RefreshTokenFilter refreshTokenFilter,
                                  CustomAuthenticationEntryPoint customAuthenticationEntryPoint,

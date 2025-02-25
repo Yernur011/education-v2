@@ -1,5 +1,6 @@
 package com.rdlab.education.domain.entity.auth;
 
+import com.rdlab.education.domain.entity.edu.Course;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;

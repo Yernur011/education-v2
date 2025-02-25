@@ -36,7 +36,7 @@ public class AuthController {
     public ResponseEntity<RegistrationResponse> verifyRegistration(@Valid @RequestBody VerifyOtpRequest verifyOtpRequest) {
         return ResponseEntity.ok(registrationService.verifyOtpCode(verifyOtpRequest));
     }
-    @PostMapping("/test")
+    @PostMapping("/profile")
     public ResponseEntity<Object> test() {
         return ResponseEntity.ok(SecurityContextHolder.getContext().getAuthentication().getPrincipal());
     }
