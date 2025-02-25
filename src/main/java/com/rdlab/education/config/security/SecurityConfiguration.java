@@ -16,6 +16,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import static com.rdlab.education.utils.codes.ProductCode.MAIN_INFO_URI;
+import static com.rdlab.education.utils.codes.ProductCode.V1_URI;
+
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
@@ -28,6 +31,7 @@ public class SecurityConfiguration {
             "/v3/api-docs",
             "/swagger-ui/**",
             "/v3/api-docs/swagger-config",
+            "/api/v1/main-info/**"
     };
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
