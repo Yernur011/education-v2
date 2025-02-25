@@ -5,6 +5,8 @@ import com.rdlab.education.domain.repository.edu.AnswerRepository;
 import com.rdlab.education.service.crud.AnswerCrudService;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class AnswerCrudServiceImpl implements AnswerCrudService {
     private final AnswerRepository answerRepository;
@@ -16,6 +18,11 @@ public class AnswerCrudServiceImpl implements AnswerCrudService {
     @Override
     public Answer findAnswerById(Long answerId) {
         return answerRepository.findById(answerId).orElse(null);
+    }
+
+    @Override
+    public List<Answer> findAnswerByQuestionId(Long questionId) {
+        return answerRepository.findAnswerByQuestionId(questionId);
     }
 
 }

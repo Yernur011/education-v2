@@ -69,7 +69,7 @@ public class TestServiceImpl implements TestService {
                         .stream()
                         .map(question -> {
                             List<AnswerDto> ansDto =
-                                    question.getAnswers()
+                                    answerCrudService.findAnswerByQuestionId(question.getId())
                                             .stream()
                                             .map(answer ->
                                                     new AnswerDto(answer.getId(), answer.getText()))
