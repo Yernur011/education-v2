@@ -2,11 +2,19 @@ package com.rdlab.education.domain.entity.edu;
 
 import com.rdlab.education.domain.entity.core.BusinessEntity;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
 public class Test extends BusinessEntity<Long> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -17,56 +25,7 @@ public class Test extends BusinessEntity<Long> {
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     List<Question> questions = new ArrayList<>();
 
-    public Test() {
-    }
+    @OneToOne(mappedBy = "test")
+    private Course course;
 
-    public Test(String title, Long id, String state, String type, List<Question> questions) {
-        this.title = title;
-        this.id = id;
-        this.state = state;
-        this.type = type;
-        this.questions = questions;
-    }
-
-    @Override
-    public Long getId() {
-        return id;
-    }
-
-    @Override
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getState() {
-        return state;
-    }
-
-    public void setState(String state) {
-        this.state = state;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public List<Question> getQuestions() {
-        return questions;
-    }
-
-    public void setQuestions(List<Question> questions) {
-        this.questions = questions;
-    }
 }

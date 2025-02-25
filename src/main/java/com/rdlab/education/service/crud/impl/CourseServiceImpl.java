@@ -2,12 +2,13 @@ package com.rdlab.education.service.crud.impl;
 
 import com.rdlab.education.domain.dto.course.CourseDetailsDto;
 import com.rdlab.education.domain.dto.course.CoursesResponseDto;
-import com.rdlab.education.domain.dto.lesson.LessonDto;
+import com.rdlab.education.domain.dto.test.TestDto;
 import com.rdlab.education.domain.entity.edu.Course;
 import com.rdlab.education.domain.entity.edu.Tags;
 import com.rdlab.education.domain.exceptions.InvalidValueException;
 import com.rdlab.education.domain.repository.edu.CourseRepository;
 import com.rdlab.education.domain.repository.edu.LessonRepository;
+import com.rdlab.education.domain.repository.edu.TestRepository;
 import com.rdlab.education.service.crud.CourseCrudService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,15 +24,13 @@ import static com.rdlab.education.utils.codes.ErrorCode.UPDATE_COURSE_EXCEPTION;
 
 
 @Service
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class CourseServiceImpl implements CourseCrudService {
     private final CourseRepository courseRepository;
 
     private final LessonRepository lessonRepository;
 
-    public CourseServiceImpl(CourseRepository courseRepository, LessonRepository lessonRepository) {
-        this.courseRepository = courseRepository;
-        this.lessonRepository = lessonRepository;
-    }
+    private final TestRepository testRepository;
 
     @Override
     public List<CoursesResponseDto> findAll(Long page, Long size) {
@@ -63,17 +62,14 @@ public class CourseServiceImpl implements CourseCrudService {
                                 course.getDescription(),
                                 course.getBase64Images().getBase64Image(),
                                 course.getTags().stream().map(Tags::getName).toList(),
-                                lessonRepository.findAllByCourseId(course.getId())
-//                                        .stream()
-//                                        .map(lesson ->
-//                                                new LessonDto(lesson.getId(),
-//                                                        lesson.getLessonNumber(),
-//                                                        lesson.getTitle(),
-//                                                        lesson.getVideoUrl(),
-//                                                        lesson.getBodyText(),
-//                                                        lesson.getStatus(),
-//                                                        lesson.getIsCompleted()))
-//                                        .toList()
+                                lessonRepository.findAllByCourseId(course.getId()),
+                                testRepository.findById(course.getTest().getId())
+                                        .map(test -> new TestDto(
+                                                test.getId(),
+                                                test.getTitle(),
+                                                test.getState(),
+                                                test.getType()))
+                                        .orElse(null)
                         )
                 )
                 .orElseThrow(() -> new NoSuchElementException(COURSE_NOT_FOUND));
