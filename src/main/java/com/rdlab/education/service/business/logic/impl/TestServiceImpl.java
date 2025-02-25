@@ -4,8 +4,10 @@ import com.rdlab.education.domain.dto.question.QuestionDto;
 import com.rdlab.education.domain.dto.test.AnswerDto;
 import com.rdlab.education.domain.dto.test.TestAnswers;
 import com.rdlab.education.domain.entity.edu.Answer;
+import com.rdlab.education.domain.entity.edu.Question;
 import com.rdlab.education.service.business.logic.TestService;
 import com.rdlab.education.service.crud.AnswerCrudService;
+import com.rdlab.education.service.crud.QuestionService;
 import com.rdlab.education.service.crud.TestCrudService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,10 +23,12 @@ import static com.rdlab.education.utils.codes.ErrorCode.TEST_NOT_FOUND;
 public class TestServiceImpl implements TestService {
     private final AnswerCrudService answerCrudService;
     private final TestCrudService testCrudService;
+    private final QuestionService questionService;
 
-    public TestServiceImpl(AnswerCrudService answerCrudService, TestCrudService testCrudService) {
+    public TestServiceImpl(AnswerCrudService answerCrudService, TestCrudService testCrudService, QuestionService questionService) {
         this.answerCrudService = answerCrudService;
         this.testCrudService = testCrudService;
+        this.questionService = questionService;
     }
 
 
@@ -61,11 +65,15 @@ public class TestServiceImpl implements TestService {
     @Override
     public List<QuestionDto> startTest(Long id) {
         return testCrudService.findById(id)
-                .map(test -> test.getQuestions().stream()
+                .map(test -> questionService.findQuestionsByTestId(test.getId())
+                        .stream()
                         .map(question -> {
-                            List<AnswerDto> ansDto = question.getAnswers()
-                                    .stream()
-                                    .map(answer -> new AnswerDto(answer.getId(), answer.getText())).toList();
+                            List<AnswerDto> ansDto =
+                                    question.getAnswers()
+                                            .stream()
+                                            .map(answer ->
+                                                    new AnswerDto(answer.getId(), answer.getText()))
+                                            .toList();
 
                             return new QuestionDto(question.getId(),
                                     question.getQuestionNumber(),

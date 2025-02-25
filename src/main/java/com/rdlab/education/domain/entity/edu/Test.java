@@ -14,7 +14,7 @@ public class Test extends BusinessEntity<Long> {
     String title;
     String state;
     String type;
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     List<Question> questions = new ArrayList<>();
 
     public Test() {
