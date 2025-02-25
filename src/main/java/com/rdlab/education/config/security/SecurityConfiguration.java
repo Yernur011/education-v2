@@ -16,7 +16,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import static com.rdlab.education.utils.codes.ProductCode.MAIN_INFO_URI;
+import static com.rdlab.education.utils.codes.ProductCode.COURSE_URI;
+import static com.rdlab.education.utils.codes.ProductCode.FORUMS_URI;
+import static com.rdlab.education.utils.codes.ProductCode.TESTS_URI;
 import static com.rdlab.education.utils.codes.ProductCode.V1_URI;
 
 @Configuration
@@ -31,7 +33,10 @@ public class SecurityConfiguration {
             "/v3/api-docs",
             "/swagger-ui/**",
             "/v3/api-docs/swagger-config",
-            "/api/v1/main-info/**"
+            "/api/v1/main-info/**",
+            V1_URI + COURSE_URI + "/**",
+            V1_URI + TESTS_URI + "/**",
+            V1_URI + FORUMS_URI + "/**",
     };
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
@@ -50,12 +55,15 @@ public class SecurityConfiguration {
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http, @Qualifier("usernamePasswordAuthenticationManager") AuthenticationManager authenticationManager) throws Exception {
+    public SecurityFilterChain securityFilterChain(
+            HttpSecurity http,
+            @Qualifier("usernamePasswordAuthenticationManager") AuthenticationManager authenticationManager
+    ) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(httpReq -> {
                     httpReq.requestMatchers(HttpMethod.OPTIONS)
                             .permitAll()
-                            .requestMatchers(publicRouts)
+                            .requestMatchers(HttpMethod.GET, publicRouts)
                             .permitAll()
                             .anyRequest()
                             .authenticated();
