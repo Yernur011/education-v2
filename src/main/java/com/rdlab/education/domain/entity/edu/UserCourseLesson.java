@@ -31,10 +31,6 @@ public class UserCourseLesson extends BusinessEntity<Long> {
     @JoinColumn(name = "lesson_id", nullable = false)
     Lesson lesson;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
-    Users users;
-
     String status;
 
 }

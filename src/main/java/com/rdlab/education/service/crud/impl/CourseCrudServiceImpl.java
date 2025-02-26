@@ -9,6 +9,7 @@ import com.rdlab.education.domain.exceptions.InvalidValueException;
 import com.rdlab.education.domain.repository.edu.CourseRepository;
 import com.rdlab.education.domain.repository.edu.LessonRepository;
 import com.rdlab.education.domain.repository.edu.TestRepository;
+import com.rdlab.education.service.business.logic.CourseService;
 import com.rdlab.education.service.crud.CourseCrudService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +33,8 @@ public class CourseCrudServiceImpl implements CourseCrudService {
 
     private final TestRepository testRepository;
 
+    private final CourseService courseService;
+
     @Override
     public List<CoursesResponseDto> findAll(Long page, Long size) {
         return courseRepository.findAll(PageRequest.of(page.intValue(), size.intValue()))
@@ -50,6 +53,11 @@ public class CourseCrudServiceImpl implements CourseCrudService {
     @Override
     public List<Course> findAll() {
         return courseRepository.findAll();
+    }
+
+
+    public CourseDetailsDto findByIdAndProgress(Long id) {
+        return courseService.findByIdAndProgress(id);
     }
 
     @Override

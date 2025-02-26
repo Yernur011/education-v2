@@ -37,7 +37,7 @@ public class CourseController {
 
     @GetMapping("/{id}")
     public ResponseEntity<CourseDetailsDto> getCourse(@PathVariable Long id) {
-        return ResponseEntity.ok(courseCrudService.findById(id));
+        return ResponseEntity.ok(courseCrudService.findByIdAndProgress(id));
     }
 
     @GetMapping("/{id}" + USERS_URI)
