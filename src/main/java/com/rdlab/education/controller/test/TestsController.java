@@ -6,7 +6,9 @@ import com.rdlab.education.domain.dto.test.TestAnswers;
 import com.rdlab.education.domain.dto.test.TestDto;
 import com.rdlab.education.service.business.logic.TestService;
 import com.rdlab.education.service.crud.TestCrudService;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -52,8 +54,14 @@ public class TestsController {
     }
 
     @PostMapping("/{id}/finish") // todo check id and return like
-    public ResponseEntity<Integer> getTestResult(@PathVariable Long id, @RequestBody List<TestAnswers> answers) {
-        return ResponseEntity.ok(testService.getScore(answers));
+    public ResponseEntity<String> getTestResult(@PathVariable Long id, @RequestBody List<TestAnswers> answers) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        return ResponseEntity.ok()
+                .headers(headers)
+                .body("{\"correct\": " + testService.getScore(answers) + "}");
+
     }
 
     //TODO дописать

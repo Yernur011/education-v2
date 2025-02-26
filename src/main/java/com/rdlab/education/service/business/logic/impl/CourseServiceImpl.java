@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 import java.util.Comparator;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -87,8 +88,10 @@ public class CourseServiceImpl implements CourseService {
                 .orElseThrow(() -> new NotFoundException("Lesson Not Found"));
         var courseAndUser = userCourseRepository.findByCourseAndUser(lesson.getCourse(), userService.getCurrentUser());
 
-        userCourseLessonRepository.findByLessonId(lessonId)
-                .orElseThrow(() -> new NotFoundException("Lesson Already Exists"));
+        UserCourseLesson alreadyExists = userCourseLessonRepository.findByLessonIdAndUserCourse(lessonId, courseAndUser);
+        if (alreadyExists != null) {
+            throw new NotFoundException("Lesson Already Exists");
+        }
 
         userCourseLessonRepository.save(
                 new UserCourseLesson(null,
