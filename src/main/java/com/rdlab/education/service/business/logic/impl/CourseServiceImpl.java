@@ -8,6 +8,7 @@ import com.rdlab.education.domain.entity.edu.Tags;
 import com.rdlab.education.domain.entity.edu.UserCourse;
 import com.rdlab.education.domain.entity.edu.UserCourseLesson;
 import com.rdlab.education.domain.enums.UserCourseLessonStatusEnum;
+import com.rdlab.education.domain.enums.UserTestStatusEnum;
 import com.rdlab.education.domain.exceptions.NotFoundException;
 import com.rdlab.education.domain.repository.edu.CourseRepository;
 import com.rdlab.education.domain.repository.edu.LessonRepository;
@@ -20,8 +21,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.Comparator;
-
-import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
@@ -57,15 +56,48 @@ public class CourseServiceImpl implements CourseService {
 
 
     @Override
-    public LessonDto startLesson(Long lessonId) {
+    public List<LessonDto> doneLesson(Long lessonId) {
+        UserCourseLesson userCourseLesson = userCourseLessonRepository.findByLessonId(lessonId)
+                .orElseThrow(() -> new NotFoundException("User -> Lesson Not Found"));
+        if (userCourseLesson.getStatus().equals(UserCourseLessonStatusEnum.STARTED.getStatus())) {
+            userCourseLesson.setStatus(UserCourseLessonStatusEnum.COMPLETED.getStatus());
+            userCourseLessonRepository.save(userCourseLesson);
+
+//            return startLesson(nextLesson(lessonId));
+            Long userCourseId = userCourseLesson.getUserCourse().getId();
+            return getCurrentLessonsList(userCourseLessonRepository.findByUserCourseId(userCourseId));
+        }
+        throw new NotFoundException("User -> Lesson Status Not STARTED Before COMPLETED");
+    }
+
+    private Long nextLesson(Long lessonId) {
         var lesson = lessonRepository.findById(lessonId)
                 .orElseThrow(() -> new NotFoundException("Lesson Not Found"));
+        return lesson.getCourse().getLessons().stream()
+                .sorted(Comparator.comparing(Lesson::getLessonNumber))
+                .dropWhile(n -> n.getLessonNumber() <= lesson.getLessonNumber())
+                .findFirst().map(Lesson::getId)
+                .orElse(-1L);
+    }
+
+    @Override
+    public List<LessonDto> startLesson(Long lessonId) {
+        // todo if lessonId -1 test ACTIVE from NOT_ACTIVE (it calculates from lessons)
+        var lesson = lessonRepository.findById(lessonId)
+                .orElseThrow(() -> new NotFoundException("Lesson Not Found"));
+        var courseAndUser = userCourseRepository.findByCourseAndUser(lesson.getCourse(), userService.getCurrentUser());
+
+        userCourseLessonRepository.findByLessonId(lessonId)
+                .orElseThrow(() -> new NotFoundException("Lesson Already Exists"));
+
         userCourseLessonRepository.save(
                 new UserCourseLesson(null,
                         findUserCourse(lesson),
                         lesson,
                         UserCourseLessonStatusEnum.STARTED.getStatus()));
-        return new LessonDto();
+
+        var userCourseLessons = userCourseLessonRepository.findByUserCourseId(courseAndUser.getId());
+        return getCurrentLessonsList(userCourseLessons);
     }
 
     private UserCourse findUserCourse(Lesson lesson) {
@@ -78,7 +110,6 @@ public class CourseServiceImpl implements CourseService {
                 .map(course -> {
                             var courseAndUser = userCourseRepository.findByCourseAndUser(course, userService.getCurrentUser());
                             var userCourseLessons = userCourseLessonRepository.findByUserCourseId(courseAndUser.getId());
-
                             return new CourseDetailsDto(
                                     course.getId(),
                                     course.getTitle(),
@@ -96,13 +127,13 @@ public class CourseServiceImpl implements CourseService {
     }
 
     private TestDto getCurrentTest(List<UserCourseLesson> userCourseLesson) {
-        var state = "NOT_ACTIVE";
+        var state = UserTestStatusEnum.NOT_ACTIVE.getStatus();
         UserCourseLesson first = userCourseLesson.getFirst();
         if (userCourseLesson.stream()
                     .filter(l -> l.getStatus().equals(UserCourseLessonStatusEnum.COMPLETED.getStatus()))
                     .count()
             == first.getUserCourse().getCourse().getLessons().size()) {
-            state = "ACTIVE";
+            state = UserTestStatusEnum.ACTIVE.getStatus();
         }
 
         String finalState = state;

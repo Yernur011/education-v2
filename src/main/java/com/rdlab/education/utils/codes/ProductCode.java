@@ -4,6 +4,7 @@ public interface ProductCode {
     String V1_URI = "/api/v1";
     String POPULAR_URI = "/popular";
     String COURSE_URI = "/courses";
+    String LESSON_URI = "/lessons";
     String TESTS_URI = "/tests";
     String QUESTIONS_URI = "/questions";
     String ANSWERS_URI = "/answers";
