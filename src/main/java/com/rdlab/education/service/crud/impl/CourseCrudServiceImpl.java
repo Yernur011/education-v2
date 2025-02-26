@@ -2,8 +2,10 @@ package com.rdlab.education.service.crud.impl;
 
 import com.rdlab.education.domain.dto.course.CourseDetailsDto;
 import com.rdlab.education.domain.dto.course.CoursesResponseDto;
+import com.rdlab.education.domain.dto.lesson.LessonDto;
 import com.rdlab.education.domain.dto.test.TestDto;
 import com.rdlab.education.domain.entity.edu.Course;
+import com.rdlab.education.domain.entity.edu.Lesson;
 import com.rdlab.education.domain.entity.edu.Tags;
 import com.rdlab.education.domain.exceptions.InvalidValueException;
 import com.rdlab.education.domain.repository.edu.CourseRepository;
@@ -19,6 +21,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static com.rdlab.education.utils.codes.ErrorCode.COURSE_NOT_FOUND;
 import static com.rdlab.education.utils.codes.ErrorCode.UPDATE_COURSE_EXCEPTION;
@@ -70,7 +73,12 @@ public class CourseCrudServiceImpl implements CourseCrudService {
                                 course.getDescription(),
                                 course.getBase64Images().getBase64Image(),
                                 course.getTags().stream().map(Tags::getName).toList(),
-                                lessonRepository.findAllByCourseId(course.getId()),
+                                course.getLessons().stream()
+                                        .map(lesson -> new LessonDto(
+                                                lesson.getId(), lesson.getLessonNumber(), lesson.getTitle(), lesson.getVideoUrl(),
+                                                lesson.getBodyText(), lesson.getStatus(), lesson.getIsCompleted())
+
+                                        ).collect(Collectors.toList()),
                                 testRepository.findById(course.getTest().getId())
                                         .map(test -> new TestDto(
                                                         test.getId(),
