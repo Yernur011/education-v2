@@ -16,6 +16,8 @@ import com.rdlab.education.service.business.logic.CourseService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Comparator;
+
 @Service
 @RequiredArgsConstructor
 public class CourseServiceImpl implements CourseService {
@@ -34,7 +36,7 @@ public class CourseServiceImpl implements CourseService {
 
         startLesson(course.getLessons()
                 .stream()
-                .sorted((l1, l2) -> l1.getLessonNumber().compareTo(l2.getLessonNumber()))
+                .sorted(Comparator.comparing(Lesson::getLessonNumber))
                 .limit(1)
                 .toList().getFirst().getId());
         return new CourseDetailsDto();
