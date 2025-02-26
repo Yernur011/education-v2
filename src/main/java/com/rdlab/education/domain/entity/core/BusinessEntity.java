@@ -51,14 +51,13 @@ public abstract class BusinessEntity<Id extends Serializable> implements CoreEnt
     }
 
     private String findCurrentUser() {
-        String user = null;
         if (SecurityContextHolder.getContext().getAuthentication() != null) {
-            UserDetails userDetails = null;
-            if (SecurityContextHolder.getContext().getAuthentication().getPrincipal() instanceof UserDetails) {
-                userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            if (principal instanceof UserDetails) {
+                return ((UserDetails) principal).getUsername();
             }
-            user = userDetails != null ? userDetails.getUsername() : null;
+            return DEFAULT_USER;
         }
-        return user == null ? DEFAULT_USER : user;
+        return DEFAULT_USER;
     }
 }

@@ -30,10 +30,13 @@ public class TestCrudServiceImpl implements TestCrudService {
                 .getContent()
                 .stream()
                 .map(test ->
-                        new TestDto(test.getId(),
+                        new TestDto(
+                                test.getId(),
                                 test.getTitle(),
                                 test.getState(),
-                                test.getType())
+                                test.getType(),
+                                test.getCourse().getId()
+                        )
                 )
                 .toList();
     }
@@ -46,7 +49,9 @@ public class TestCrudServiceImpl implements TestCrudService {
                                 test.getId(),
                                 test.getTitle(),
                                 test.getState(),
-                                test.getType())
+                                test.getType(),
+                                test.getCourse().getId()
+                        )
                 ).orElseThrow(() -> new NoSuchElementException(TEST_NOT_FOUND));
     }
 
@@ -54,5 +59,6 @@ public class TestCrudServiceImpl implements TestCrudService {
     public Optional<Test> findById(Long id) {
         return testRepository.findById(id);
     }
+
 
 }

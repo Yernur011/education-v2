@@ -8,7 +8,9 @@ import com.rdlab.education.domain.exceptions.auth.AuthException;
 import com.rdlab.education.domain.exceptions.auth.RegistrationException;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.validation.ConstraintViolationException;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.BindingResult;
@@ -28,22 +30,27 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Object> usernameNotFound(UsernameNotFoundException ex, WebRequest request) {
         return buildErrorResponse(ex, HttpStatus.UNAUTHORIZED, request);
     }
+
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<Object> handleNotFoundException(NotFoundException ex, WebRequest request) {
         return buildErrorResponse(ex, HttpStatus.NOT_FOUND, request);
     }
+
     @ExceptionHandler(AuthException.class)
     public ResponseEntity<Object> handleAuthException(AuthException ex, WebRequest request) {
         return buildErrorResponse(ex, HttpStatus.UNAUTHORIZED, request);
     }
+
     @ExceptionHandler(RegistrationException.class)
     public ResponseEntity<Object> handleAuthException(RegistrationException ex, WebRequest request) {
         return buildErrorResponse(ex, HttpStatus.BAD_REQUEST, request);
     }
+
     @ExceptionHandler(ApiException.class)
     public ResponseEntity<Object> handleApiException(ApiException ex, WebRequest request) {
         return buildErrorResponse(ex, HttpStatus.INTERNAL_SERVER_ERROR, request);
     }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, String>> handleValidationExceptions(MethodArgumentNotValidException ex) {
         BindingResult bindingResult = ex.getBindingResult();
@@ -64,10 +71,12 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
     }
+
     @ExceptionHandler(ExpiredJwtException.class)
     public ResponseEntity<Object> handleExpiredJwtException(ExpiredJwtException ex, WebRequest request) {
         return buildErrorResponse(ex, HttpStatus.UNAUTHORIZED, request);
     }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Object> handleGlobalException(Exception ex, WebRequest request) {
         return buildErrorResponse(ex, HttpStatus.INTERNAL_SERVER_ERROR, request);
@@ -79,9 +88,13 @@ public class GlobalExceptionHandler {
                 ex.getMessage(),
                 request.getDescription(false));
 
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON); // 🎯 Set response type to application/json
+
         return ResponseEntity.status(status)
-                    .body(gson.newBuilder().setPrettyPrinting().create()
-                            .toJson(ans));
+                .headers(headers)
+                .body(gson.newBuilder().setPrettyPrinting().create()
+                        .toJson(ans));
 
     }
 }

@@ -12,13 +12,20 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
-import lombok.Data;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 @Entity
-@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
 public class Course extends BusinessEntity<Long> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -43,5 +50,8 @@ public class Course extends BusinessEntity<Long> {
 
     @OneToMany(fetch = FetchType.LAZY)
     List<Users> users = new ArrayList<>();
+
+    @OneToMany(mappedBy = "course")
+    private Collection<UserCourse> userCourse;
 
 }

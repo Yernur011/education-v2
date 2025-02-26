@@ -2,25 +2,33 @@ package com.rdlab.education.controller.course;
 
 import com.rdlab.education.domain.dto.course.CourseDetailsDto;
 import com.rdlab.education.domain.dto.course.CoursesResponseDto;
+import com.rdlab.education.service.business.logic.CourseService;
 import com.rdlab.education.service.crud.CourseCrudService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-import static com.rdlab.education.utils.codes.ProductCode.*;
+import static com.rdlab.education.utils.codes.ProductCode.COURSE_URI;
+import static com.rdlab.education.utils.codes.ProductCode.USERS_URI;
+import static com.rdlab.education.utils.codes.ProductCode.V1_URI;
 
 
 @RestController
 @RequestMapping(V1_URI + COURSE_URI)
+@RequiredArgsConstructor
 public class CourseController {
     private final CourseCrudService courseCrudService;
-
-    public CourseController(CourseCrudService courseCrudService) {
-        this.courseCrudService = courseCrudService;
-    }
+    private final CourseService courseService;
 
     @GetMapping
     public ResponseEntity<List<CoursesResponseDto>> getCourses(@RequestParam Long page, @RequestParam Long size) {
@@ -37,6 +45,12 @@ public class CourseController {
         return ResponseEntity.ok(List.of());
     }
 
+    @PostMapping("{id}/start")
+    public ResponseEntity<Object> startCourse(@PathVariable Long id) {
+        return ResponseEntity.ok(courseService.startCourse(id));
+    }
+
+    //    @PreAuthorize("moderator, admin") // todo
     @PostMapping
     public ResponseEntity<Object> createCourse(@RequestBody Object course) {
         return ResponseEntity.ok(List.of());

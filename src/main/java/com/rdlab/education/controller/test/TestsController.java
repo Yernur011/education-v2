@@ -6,14 +6,23 @@ import com.rdlab.education.domain.dto.test.TestAnswers;
 import com.rdlab.education.domain.dto.test.TestDto;
 import com.rdlab.education.service.business.logic.TestService;
 import com.rdlab.education.service.crud.TestCrudService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-import static com.rdlab.education.utils.codes.ProductCode.*;
+import static com.rdlab.education.utils.codes.ProductCode.TESTS_URI;
+import static com.rdlab.education.utils.codes.ProductCode.USERS_URI;
+import static com.rdlab.education.utils.codes.ProductCode.V1_URI;
 
 
 @RestController
@@ -37,12 +46,13 @@ public class TestsController {
         return ResponseEntity.ok(testCrudService.findDtoById(id));
     }
 
-    @PostMapping("/{id}")
+    @PostMapping("/{id}/start") // todo check test
     public ResponseEntity<List<QuestionDto>> startTest(@PathVariable Long id) {
         return ResponseEntity.ok(testService.startTest(id));
     }
-    @PostMapping(FINISH_URI)
-    public ResponseEntity<Integer> getTestResult(@RequestBody List<TestAnswers> answers) {
+
+    @PostMapping("/{id}/finish") // todo check id and return like
+    public ResponseEntity<Integer> getTestResult(@PathVariable Long id, @RequestBody List<TestAnswers> answers) {
         return ResponseEntity.ok(testService.getScore(answers));
     }
 
@@ -51,14 +61,17 @@ public class TestsController {
     public ResponseEntity<Object> getTestById(@PathVariable Long id) {
         return null;
     }
+
     @PostMapping
     public ResponseEntity<Object> createTest(@RequestBody Object test) {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
+
     @PutMapping
     public ResponseEntity<Object> updateTest(@RequestBody Object test) {
         return null;
     }
+
     @DeleteMapping
     public ResponseEntity<Void> deleteTest(@RequestBody Object test) {
         return null;

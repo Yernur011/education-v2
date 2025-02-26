@@ -25,7 +25,7 @@ import static com.rdlab.education.utils.codes.ErrorCode.UPDATE_COURSE_EXCEPTION;
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-public class CourseServiceImpl implements CourseCrudService {
+public class CourseCrudServiceImpl implements CourseCrudService {
     private final CourseRepository courseRepository;
 
     private final LessonRepository lessonRepository;
@@ -65,10 +65,13 @@ public class CourseServiceImpl implements CourseCrudService {
                                 lessonRepository.findAllByCourseId(course.getId()),
                                 testRepository.findById(course.getTest().getId())
                                         .map(test -> new TestDto(
-                                                test.getId(),
-                                                test.getTitle(),
-                                                test.getState(),
-                                                test.getType()))
+                                                        test.getId(),
+                                                        test.getTitle(),
+                                                        test.getState(),
+                                                        test.getType(),
+                                                        course.getId()
+                                                )
+                                        )
                                         .orElse(null)
                         )
                 )

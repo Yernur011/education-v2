@@ -1,0 +1,1 @@
+CREATE UNIQUE INDEX ux_user_course ON user_course (user_id, course_id);

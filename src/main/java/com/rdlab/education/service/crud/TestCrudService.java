@@ -10,6 +10,9 @@ public interface TestCrudService {
     List<TestDto> findAllTest(Long page, Long size);
 
     TestDto findDtoById(Long id);
+
     Optional<Test> findById(Long id);
+
+
 
 }

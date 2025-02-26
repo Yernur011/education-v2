@@ -1,5 +1,6 @@
 package com.rdlab.education.domain.entity.auth;
 
+import com.rdlab.education.domain.entity.edu.UserCourse;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -7,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
 
 @Entity
 @Table(name = "users", schema = "public")
@@ -49,4 +51,8 @@ public class Users {
     private String maskPassword(){
         return "********";
     }
+
+    @OneToMany(mappedBy = "user")
+    private Collection<UserCourse> userCourse;
+
 }
