@@ -1,11 +1,13 @@
 package com.rdlab.education.service.crud.impl;
 
+import com.rdlab.education.domain.dto.page.PageableDto;
 import com.rdlab.education.domain.dto.test.TestDto;
 import com.rdlab.education.domain.entity.edu.Test;
 import com.rdlab.education.domain.repository.edu.TestRepository;
 import com.rdlab.education.service.crud.TestCrudService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
@@ -39,6 +41,28 @@ public class TestCrudServiceImpl implements TestCrudService {
                         )
                 )
                 .toList();
+    }
+
+    @Override
+    public PageableDto<TestDto> findAllTestDto(Long page, Long size) {
+        PageableDto<TestDto> pageableDto = new PageableDto<>();
+        Page<Test> all = testRepository.findAll(PageRequest.of(page.intValue(), size.intValue()));
+
+        pageableDto.setTotalPages(all.getTotalPages());
+        pageableDto.setContent(all.getContent()
+                .stream()
+                .map(test ->
+                        new TestDto(
+                                test.getId(),
+                                test.getTitle(),
+                                test.getState(),
+                                test.getType(),
+                                test.getCourse().getId()
+                        )
+                )
+                .toList());
+
+        return pageableDto;
     }
 
     @Override

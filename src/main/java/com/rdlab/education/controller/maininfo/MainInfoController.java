@@ -2,6 +2,7 @@ package com.rdlab.education.controller.maininfo;
 
 import com.rdlab.education.domain.dto.course.CourseDetailsDto;
 import com.rdlab.education.domain.dto.course.CoursesResponseDto;
+import com.rdlab.education.domain.dto.page.PageableDto;
 import com.rdlab.education.domain.dto.test.TestDto;
 import com.rdlab.education.service.business.logic.TestService;
 import com.rdlab.education.service.crud.CourseCrudService;
@@ -26,8 +27,8 @@ public class MainInfoController {
     private final TestService testService;
 
     @GetMapping(POPULAR_URI + COURSE_URI)
-    private ResponseEntity<List<CoursesResponseDto>> popularCourse(@RequestParam Long page, @RequestParam Long size) {
-        return ResponseEntity.ok(courseCrudService.findAll(page, size));
+    private ResponseEntity<PageableDto<CoursesResponseDto>> popularCourse(@RequestParam Long page, @RequestParam Long size) {
+        return ResponseEntity.ok(courseCrudService.findAllPageable(page, size));
     }
     @GetMapping(POPULAR_URI+COURSE_URI+"/{id}")
     public ResponseEntity<CourseDetailsDto> getCourse(@PathVariable Long id) {
@@ -35,8 +36,8 @@ public class MainInfoController {
     }
 
     @GetMapping(POPULAR_URI + TESTS_URI)
-    public ResponseEntity<List<TestDto>> tests(@RequestParam Long page, @RequestParam Long size) {
-        return ResponseEntity.ok(testCrudService.findAllTest(page, size));
+    public ResponseEntity<PageableDto<TestDto>> tests(@RequestParam Long page, @RequestParam Long size) {
+        return ResponseEntity.ok(testCrudService.findAllTestDto(page, size));
     }
 
     @GetMapping(POPULAR_URI + TESTS_URI + "/{id}")

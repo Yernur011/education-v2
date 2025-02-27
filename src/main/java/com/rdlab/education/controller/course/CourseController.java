@@ -2,6 +2,7 @@ package com.rdlab.education.controller.course;
 
 import com.rdlab.education.domain.dto.course.CourseDetailsDto;
 import com.rdlab.education.domain.dto.course.CoursesResponseDto;
+import com.rdlab.education.domain.dto.page.PageableDto;
 import com.rdlab.education.service.business.logic.CourseService;
 import com.rdlab.education.service.crud.CourseCrudService;
 import lombok.RequiredArgsConstructor;
@@ -31,8 +32,8 @@ public class CourseController {
     private final CourseService courseService;
 
     @GetMapping
-    public ResponseEntity<List<CoursesResponseDto>> getCourses(@RequestParam Long page, @RequestParam Long size) {
-        return ResponseEntity.ok(courseCrudService.findAll(page, size));
+    public ResponseEntity<PageableDto<CoursesResponseDto>> getCourses(@RequestParam Long page, @RequestParam Long size) {
+        return ResponseEntity.ok(courseCrudService.findAllPageable(page, size));
     }
 
     @GetMapping("/{id}")

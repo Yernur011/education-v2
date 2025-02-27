@@ -3,9 +3,9 @@ package com.rdlab.education.service.crud.impl;
 import com.rdlab.education.domain.dto.course.CourseDetailsDto;
 import com.rdlab.education.domain.dto.course.CoursesResponseDto;
 import com.rdlab.education.domain.dto.lesson.LessonDto;
+import com.rdlab.education.domain.dto.page.PageableDto;
 import com.rdlab.education.domain.dto.test.TestDto;
 import com.rdlab.education.domain.entity.edu.Course;
-import com.rdlab.education.domain.entity.edu.Lesson;
 import com.rdlab.education.domain.entity.edu.Tags;
 import com.rdlab.education.domain.exceptions.InvalidValueException;
 import com.rdlab.education.domain.repository.edu.CourseRepository;
@@ -15,6 +15,7 @@ import com.rdlab.education.service.business.logic.CourseService;
 import com.rdlab.education.service.crud.CourseCrudService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
@@ -51,6 +52,24 @@ public class CourseCrudServiceImpl implements CourseCrudService {
                                 course.getTitle(),
                                 course.getDescription()))
                 .toList();
+    }
+
+    @Override
+    public PageableDto<CoursesResponseDto> findAllPageable(Long page, Long size) {
+        Page<Course> all = courseRepository.findAll(PageRequest.of(page.intValue(), size.intValue()));
+        PageableDto<CoursesResponseDto> coursesResponseDtoPageableDto = new PageableDto<>();
+        coursesResponseDtoPageableDto.setTotalPages(all.getTotalPages());
+        coursesResponseDtoPageableDto.setContent(all.getContent().stream()
+                .map(course ->
+                        new CoursesResponseDto(
+                                course.getId(),
+                                course.getBase64Images().getBase64Image(),
+                                course.getTags().stream().map(Tags::getName).toList(),
+                                course.getTitle(),
+                                course.getDescription()))
+                .toList());
+
+        return coursesResponseDtoPageableDto;
     }
 
     @Override

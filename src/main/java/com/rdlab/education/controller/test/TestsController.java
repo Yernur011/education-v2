@@ -1,6 +1,7 @@
 package com.rdlab.education.controller.test;
 
 
+import com.rdlab.education.domain.dto.page.PageableDto;
 import com.rdlab.education.domain.dto.question.QuestionDto;
 import com.rdlab.education.domain.dto.test.TestAnswers;
 import com.rdlab.education.domain.dto.test.TestDto;
@@ -39,8 +40,8 @@ public class TestsController {
     }
 
     @GetMapping
-    public ResponseEntity<List<TestDto>> tests(@RequestParam Long page, @RequestParam Long size) {
-        return ResponseEntity.ok(testCrudService.findAllTest(page, size));
+    public ResponseEntity<PageableDto<TestDto>> tests(@RequestParam Long page, @RequestParam Long size) {
+        return ResponseEntity.ok(testCrudService.findAllTestDto(page, size));
     }
 
     @GetMapping("/{id}")
