@@ -3,6 +3,7 @@ package com.rdlab.education.service.business.logic.impl;
 import com.rdlab.education.domain.dto.course.CourseDetailsDto;
 import com.rdlab.education.domain.dto.lesson.LessonDto;
 import com.rdlab.education.domain.dto.test.TestDto;
+import com.rdlab.education.domain.entity.edu.Course;
 import com.rdlab.education.domain.entity.edu.Lesson;
 import com.rdlab.education.domain.entity.edu.Tags;
 import com.rdlab.education.domain.entity.edu.UserCourse;
@@ -12,22 +13,22 @@ import com.rdlab.education.domain.enums.UserTestStatusEnum;
 import com.rdlab.education.domain.exceptions.NotFoundException;
 import com.rdlab.education.domain.repository.edu.CourseRepository;
 import com.rdlab.education.domain.repository.edu.LessonRepository;
+import com.rdlab.education.domain.repository.edu.TestRepository;
 import com.rdlab.education.domain.repository.edu.UserCourseLessonRepository;
 import com.rdlab.education.domain.repository.edu.UserCourseRepository;
 import com.rdlab.education.service.auth.UserService;
 import com.rdlab.education.service.business.logic.CourseService;
-import com.rdlab.education.service.crud.TestCrudService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.Comparator;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.rdlab.education.utils.codes.ErrorCode.COURSE_NOT_FOUND;
+import static com.rdlab.education.utils.codes.ErrorCode.TEST_NOT_FOUND;
 
 @Service
 @RequiredArgsConstructor
@@ -38,7 +39,7 @@ public class CourseServiceImpl implements CourseService {
     private final UserCourseLessonRepository userCourseLessonRepository;
     private final LessonRepository lessonRepository;
     private final UserService userService;
-    private final TestCrudService testRepository;
+    private final TestRepository testRepository;
 
     @Override
     public CourseDetailsDto startCourse(Long courseId) {
@@ -86,7 +87,7 @@ public class CourseServiceImpl implements CourseService {
         // todo if lessonId -1 test ACTIVE from NOT_ACTIVE (it calculates from lessons)
         var lesson = lessonRepository.findById(lessonId)
                 .orElseThrow(() -> new NotFoundException("Lesson Not Found"));
-        var courseAndUser = userCourseRepository.findByCourseAndUser(lesson.getCourse(), userService.getCurrentUser());
+        var courseAndUser = getByCourseAndUser(lesson.getCourse());
 
         UserCourseLesson alreadyExists = userCourseLessonRepository.findByLessonIdAndUserCourse(lessonId, courseAndUser);
         if (alreadyExists != null) {
@@ -104,7 +105,7 @@ public class CourseServiceImpl implements CourseService {
     }
 
     private UserCourse findUserCourse(Lesson lesson) {
-        return userCourseRepository.findByCourseAndUser(lesson.getCourse(), userService.getCurrentUser());
+        return getByCourseAndUser(lesson.getCourse());
     }
 
     @Override
@@ -126,7 +127,7 @@ public class CourseServiceImpl implements CourseService {
                                         .map(test -> new TestDto(
                                                         test.getId(),
                                                         test.getTitle(),
-                                                        test.getState(),
+                                                        UserTestStatusEnum.NOT_ACTIVE.getStatus(),
                                                         test.getType(),
                                                         course.getId()
                                                 )
@@ -139,17 +140,15 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public CourseDetailsDto findByIdAndProgress(Long courseId) {
-        var isNotExistCourseAndUser = userCourseRepository.findByCourseAndUser(
-                courseRepository.findById(courseId)
-                        .orElseThrow(() -> new NoSuchElementException(COURSE_NOT_FOUND)),
-                userService.getCurrentUser()) == null;
+        var isNotExistCourseAndUser = getByCourseAndUser(courseRepository.findById(courseId)
+                .orElseThrow(() -> new NoSuchElementException(COURSE_NOT_FOUND))) == null;
         if (isNotExistCourseAndUser) {
             return findByIdWithoutProgress(courseId);
         }
         return courseRepository.findById(courseId)
                 .map(course -> {
-                            var courseAndUser = userCourseRepository.findByCourseAndUser(course, userService.getCurrentUser());
-                            var userCourseLessons = userCourseLessonRepository.findByUserCourseId(courseAndUser.getId());
+                            var courseAndUser = getByCourseAndUser(course);
+                            var userCourseLessons = getUserCourseLessons(courseAndUser);
                             return new CourseDetailsDto(
                                     course.getId(),
                                     course.getTitle(),
@@ -164,6 +163,33 @@ public class CourseServiceImpl implements CourseService {
                 )
                 .orElseThrow(() -> new NoSuchElementException(COURSE_NOT_FOUND));
 
+    }
+
+    public TestDto getCurrentTestByCourse(Long courseId) {
+        var course = courseRepository.findById(courseId)
+                .orElseThrow(() -> new NoSuchElementException(COURSE_NOT_FOUND));
+        var courseAndUser = getByCourseAndUser(course);
+        if (courseAndUser == null) {
+            return testRepository.findById(course.getTest().getId())
+                    .map(test -> new TestDto(
+                                    test.getId(),
+                                    test.getTitle(),
+                                    UserTestStatusEnum.NOT_ACTIVE.getStatus(),
+                                    test.getType(),
+                                    course.getId()
+                            )
+                    ).orElseThrow(() -> new NoSuchElementException(TEST_NOT_FOUND));
+        }
+        List<UserCourseLesson> userCourseLessons = getUserCourseLessons(courseAndUser);
+        return getCurrentTest(userCourseLessons);
+    }
+
+    private List<UserCourseLesson> getUserCourseLessons(UserCourse courseAndUser) {
+        return userCourseLessonRepository.findByUserCourseId(courseAndUser.getId());
+    }
+
+    private UserCourse getByCourseAndUser(Course course) {
+        return userCourseRepository.findByCourseAndUser(course, userService.getCurrentUser());
     }
 
     private TestDto getCurrentTest(List<UserCourseLesson> userCourseLesson) {

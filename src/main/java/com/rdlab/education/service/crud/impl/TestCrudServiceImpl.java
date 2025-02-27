@@ -3,7 +3,10 @@ package com.rdlab.education.service.crud.impl;
 import com.rdlab.education.domain.dto.page.PageableDto;
 import com.rdlab.education.domain.dto.test.TestDto;
 import com.rdlab.education.domain.entity.edu.Test;
+import com.rdlab.education.domain.enums.UserTestStatusEnum;
 import com.rdlab.education.domain.repository.edu.TestRepository;
+import com.rdlab.education.service.business.logic.CourseService;
+import com.rdlab.education.service.business.logic.impl.CourseServiceImpl;
 import com.rdlab.education.service.crud.TestCrudService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,12 +22,10 @@ import static com.rdlab.education.utils.codes.ErrorCode.TEST_NOT_FOUND;
 
 
 @Service
+@RequiredArgsConstructor
 public class TestCrudServiceImpl implements TestCrudService {
     private final TestRepository testRepository;
-
-    public TestCrudServiceImpl(TestRepository testRepository) {
-        this.testRepository = testRepository;
-    }
+    private final CourseService courseService;
 
     @Override
     public List<TestDto> findAllTest(Long page, Long size) {
@@ -51,15 +52,7 @@ public class TestCrudServiceImpl implements TestCrudService {
         pageableDto.setTotalPages(all.getTotalPages());
         pageableDto.setContent(all.getContent()
                 .stream()
-                .map(test ->
-                        new TestDto(
-                                test.getId(),
-                                test.getTitle(),
-                                test.getState(),
-                                test.getType(),
-                                test.getCourse().getId()
-                        )
-                )
+                .map(test -> courseService.getCurrentTestByCourse(test.getCourse().getId()))
                 .toList());
 
         return pageableDto;
@@ -68,15 +61,8 @@ public class TestCrudServiceImpl implements TestCrudService {
     @Override
     public TestDto findDtoById(Long id) {
         return testRepository.findById(id)
-                .map(test ->
-                        new TestDto(
-                                test.getId(),
-                                test.getTitle(),
-                                test.getState(),
-                                test.getType(),
-                                test.getCourse().getId()
-                        )
-                ).orElseThrow(() -> new NoSuchElementException(TEST_NOT_FOUND));
+                .map(test -> courseService.getCurrentTestByCourse(test.getCourse().getId()))
+                .orElseThrow(() -> new NoSuchElementException(TEST_NOT_FOUND));
     }
 
     @Override

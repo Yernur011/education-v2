@@ -9,6 +9,7 @@ import java.util.Optional;
 
 public interface TestCrudService {
     List<TestDto> findAllTest(Long page, Long size);
+
     PageableDto<TestDto> findAllTestDto(Long page, Long size);
 
     TestDto findDtoById(Long id);
