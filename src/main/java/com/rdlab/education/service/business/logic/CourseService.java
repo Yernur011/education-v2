@@ -6,9 +6,9 @@ import com.rdlab.education.domain.dto.lesson.LessonDto;
 import java.util.List;
 
 public interface CourseService {
+    CourseDetailsDto findByIdWithoutProgress(Long id);
     CourseDetailsDto findByIdAndProgress(Long courseId);
     CourseDetailsDto startCourse(Long courseId);
     List<LessonDto> startLesson(Long lessonId);
     List<LessonDto> doneLesson(Long lessonId);
-
 }

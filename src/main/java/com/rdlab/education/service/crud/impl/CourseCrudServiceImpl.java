@@ -84,33 +84,7 @@ public class CourseCrudServiceImpl implements CourseCrudService {
 
     @Override
     public CourseDetailsDto findById(Long id) {
-        return courseRepository.findById(id)
-                .map(course ->
-                        new CourseDetailsDto(
-                                course.getId(),
-                                course.getTitle(),
-                                course.getDescription(),
-                                course.getBase64Images().getBase64Image(),
-                                course.getTags().stream().map(Tags::getName).toList(),
-                                course.getLessons().stream()
-                                        .map(lesson -> new LessonDto(
-                                                lesson.getId(), lesson.getLessonNumber(), lesson.getTitle(), lesson.getVideoUrl(),
-                                                lesson.getBodyText(), lesson.getStatus(), lesson.getIsCompleted())
-
-                                        ).collect(Collectors.toList()),
-                                testRepository.findById(course.getTest().getId())
-                                        .map(test -> new TestDto(
-                                                        test.getId(),
-                                                        test.getTitle(),
-                                                        test.getState(),
-                                                        test.getType(),
-                                                        course.getId()
-                                                )
-                                        )
-                                        .orElse(null)
-                        )
-                )
-                .orElseThrow(() -> new NoSuchElementException(COURSE_NOT_FOUND));
+        return courseService.findByIdWithoutProgress(id);
     }
 
     @Override

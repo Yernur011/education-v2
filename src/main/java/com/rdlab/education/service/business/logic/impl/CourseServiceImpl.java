@@ -108,7 +108,44 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
+    public CourseDetailsDto findByIdWithoutProgress(Long id) {
+        return courseRepository.findById(id)
+                .map(course ->
+                        new CourseDetailsDto(
+                                course.getId(),
+                                course.getTitle(),
+                                course.getDescription(),
+                                course.getBase64Images().getBase64Image(),
+                                course.getTags().stream().map(Tags::getName).toList(),
+                                course.getLessons().stream()
+                                        .map(lesson -> new LessonDto(
+                                                lesson.getId(), lesson.getLessonNumber(), lesson.getTitle(), lesson.getVideoUrl(),
+                                                lesson.getBodyText(), lesson.getStatus(), lesson.getIsCompleted())
+                                        ).collect(Collectors.toList()),
+                                testRepository.findById(course.getTest().getId())
+                                        .map(test -> new TestDto(
+                                                        test.getId(),
+                                                        test.getTitle(),
+                                                        test.getState(),
+                                                        test.getType(),
+                                                        course.getId()
+                                                )
+                                        )
+                                        .orElse(null)
+                        )
+                )
+                .orElseThrow(() -> new NoSuchElementException(COURSE_NOT_FOUND));
+    }
+
+    @Override
     public CourseDetailsDto findByIdAndProgress(Long courseId) {
+        var isNotExistCourseAndUser = userCourseRepository.findByCourseAndUser(
+                courseRepository.findById(courseId)
+                        .orElseThrow(() -> new NoSuchElementException(COURSE_NOT_FOUND)),
+                userService.getCurrentUser()) == null;
+        if (isNotExistCourseAndUser) {
+            return findByIdWithoutProgress(courseId);
+        }
         return courseRepository.findById(courseId)
                 .map(course -> {
                             var courseAndUser = userCourseRepository.findByCourseAndUser(course, userService.getCurrentUser());
