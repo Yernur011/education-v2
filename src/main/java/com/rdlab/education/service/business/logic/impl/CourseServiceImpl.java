@@ -19,6 +19,7 @@ import com.rdlab.education.domain.repository.edu.UserCourseRepository;
 import com.rdlab.education.service.auth.UserService;
 import com.rdlab.education.service.business.logic.CourseService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.Comparator;
@@ -168,6 +169,17 @@ public class CourseServiceImpl implements CourseService {
     public TestDto getCurrentTestByCourse(Long courseId) {
         var course = courseRepository.findById(courseId)
                 .orElseThrow(() -> new NoSuchElementException(COURSE_NOT_FOUND));
+        if (SecurityContextHolder.getContext().getAuthentication().getPrincipal().equals("anonymousUser")) {
+            return testRepository.findById(course.getTest().getId())
+                    .map(test -> new TestDto(
+                                    test.getId(),
+                                    test.getTitle(),
+                                    UserTestStatusEnum.NOT_ACTIVE.getStatus(),
+                                    test.getType(),
+                                    course.getId()
+                            )
+                    ).orElseThrow(() -> new NoSuchElementException(TEST_NOT_FOUND));
+        }
         var courseAndUser = getByCourseAndUser(course);
         if (courseAndUser == null) {
             return testRepository.findById(course.getTest().getId())
