@@ -36,7 +36,7 @@ public class Users {
     @Column(name = "updated_at")
     LocalDateTime updatedAt;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_details")
     UserDetails userDetails;
 
