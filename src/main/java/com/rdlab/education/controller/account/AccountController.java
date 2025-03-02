@@ -1,5 +1,6 @@
 package com.rdlab.education.controller.account;
 
+import com.rdlab.education.domain.dto.profile.GetProfile;
 import com.rdlab.education.domain.dto.user.info.UserInfoDto;
 import com.rdlab.education.domain.dto.user.info.UserInfoOutputDto;
 import com.rdlab.education.domain.entity.image.Base64Images;
@@ -19,6 +20,11 @@ import static com.rdlab.education.utils.codes.ProductCode.*;
 @RequestMapping(V1_URI + ACCOUNT_URI)
 public class AccountController {
     private final AccountService accountService;
+
+    @GetMapping
+    public ResponseEntity<GetProfile> getProfile(){
+        return ResponseEntity.ok(accountService.getProfile());
+    }
 
     @GetMapping(COURSE_URI + ACTIVE_URI)
     public ResponseEntity<List<Object>> getCourses() {

@@ -1,5 +1,6 @@
 package com.rdlab.education.service.crud.impl;
 
+import com.rdlab.education.domain.dto.profile.GetProfile;
 import com.rdlab.education.domain.dto.user.info.UserInfoDto;
 import com.rdlab.education.domain.dto.user.info.UserInfoOutputDto;
 import com.rdlab.education.domain.entity.auth.Users;
@@ -61,6 +62,20 @@ public class UserAccountServiceImpl implements AccountService {
                 .map(userRepository::save)
                 .map(users -> users.getUserDetails().getImages())
                 .orElseThrow(() -> new ApiException("Не удалось сохранить Фото пользователя"));
+    }
+
+    @Override
+    public GetProfile getProfile() {
+        String name = SecurityContextHolder.getContext().getAuthentication().getName();
+        return userRepository.findByUsername(name)
+                .map(users ->
+                        new GetProfile(
+                                users.getName(),
+                                users.getUserDetails().getLastname(),
+                                users.getUserDetails().getImages().getBase64Image()
+                        ))
+                .orElseThrow(() -> new ApiException("Похоже нет такого пользователя!"));
+
     }
 
 }
