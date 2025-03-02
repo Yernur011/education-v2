@@ -61,8 +61,7 @@ public class AccountController {
     }
 
     @PostMapping("/update-user-info")
-    public ResponseEntity<UserInfoOutputDto> saveUserInfo(@RequestBody UserInfoDto userInfoDto
-                                                          ) {
+    public ResponseEntity<UserInfoOutputDto> saveUserInfo(@RequestBody UserInfoDto userInfoDto) {
         return ResponseEntity.ok(accountService.updateUserData(userInfoDto));
     }
 }

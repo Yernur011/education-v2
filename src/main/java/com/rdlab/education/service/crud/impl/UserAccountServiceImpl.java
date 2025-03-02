@@ -48,8 +48,10 @@ public class UserAccountServiceImpl implements AccountService {
                 .map(user -> {
                     UserDetails userDetails = user.getUserDetails();
                     try {
-                        String image = Base64.getEncoder().encodeToString(multipartFile.getBytes());
-                        userDetails.setImages(new Base64Images(image));
+                        StringBuffer strBuf = new StringBuffer();
+                        strBuf.append("data:image/png;base64,");
+                        strBuf.append(Base64.getEncoder().encodeToString(multipartFile.getBytes()));
+                        userDetails.setImages(new Base64Images(strBuf.toString()));
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }

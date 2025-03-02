@@ -60,7 +60,9 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public List<LessonDto> doneLesson(Long lessonId) {
-        UserCourseLesson userCourseLesson = userCourseLessonRepository.findByLessonId(lessonId)
+        var lesson = lessonRepository.findById(lessonId).orElseThrow(() -> new NotFoundException("Lesson Not Found"));
+        var courseAndUser = getByCourseAndUser(lesson.getCourse());
+        UserCourseLesson userCourseLesson = userCourseLessonRepository.findByLessonIdAndUserCourse(lessonId, courseAndUser)
                 .orElseThrow(() -> new NotFoundException("User -> Lesson Not Found"));
         if (userCourseLesson.getStatus().equals(UserCourseLessonStatusEnum.STARTED.getStatus())) {
             userCourseLesson.setStatus(UserCourseLessonStatusEnum.COMPLETED.getStatus());
@@ -90,7 +92,8 @@ public class CourseServiceImpl implements CourseService {
                 .orElseThrow(() -> new NotFoundException("Lesson Not Found"));
         var courseAndUser = getByCourseAndUser(lesson.getCourse());
 
-        UserCourseLesson alreadyExists = userCourseLessonRepository.findByLessonIdAndUserCourse(lessonId, courseAndUser);
+        UserCourseLesson alreadyExists = userCourseLessonRepository.findByLessonIdAndUserCourse(lessonId, courseAndUser)
+                .orElseThrow(() -> new NotFoundException("User -> Lesson Not Found"));
         if (alreadyExists != null) {
             throw new NotFoundException("Lesson Already Exists");
         }

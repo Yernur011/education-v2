@@ -10,5 +10,5 @@ import java.util.Optional;
 public interface UserCourseLessonRepository extends JpaRepository<UserCourseLesson, Long> {
     List<UserCourseLesson> findByUserCourseId(Long userCourseId);
     Optional<UserCourseLesson> findByLessonId(Long lessonId);
-    UserCourseLesson findByLessonIdAndUserCourse(Long lessonId, UserCourse userCourse);
+    Optional<UserCourseLesson> findByLessonIdAndUserCourse(Long lessonId, UserCourse userCourse);
 }
