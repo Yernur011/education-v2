@@ -93,7 +93,7 @@ public class CourseServiceImpl implements CourseService {
         var courseAndUser = getByCourseAndUser(lesson.getCourse());
 
         UserCourseLesson alreadyExists = userCourseLessonRepository.findByLessonIdAndUserCourse(lessonId, courseAndUser)
-                .orElseThrow(() -> new NotFoundException("User -> Lesson Not Found"));
+                .orElse(null);
         if (alreadyExists != null) {
             throw new NotFoundException("Lesson Already Exists");
         }
