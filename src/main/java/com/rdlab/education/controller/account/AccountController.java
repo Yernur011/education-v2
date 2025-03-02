@@ -3,7 +3,9 @@ package com.rdlab.education.controller.account;
 import com.rdlab.education.domain.dto.profile.GetProfile;
 import com.rdlab.education.domain.dto.user.info.UserInfoDto;
 import com.rdlab.education.domain.dto.user.info.UserInfoOutputDto;
+import com.rdlab.education.domain.entity.auth.ChangePasswordRequest;
 import com.rdlab.education.domain.entity.image.Base64Images;
+import com.rdlab.education.service.auth.ChangePassword;
 import com.rdlab.education.service.crud.AccountService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +22,7 @@ import static com.rdlab.education.utils.codes.ProductCode.*;
 @RequestMapping(V1_URI + ACCOUNT_URI)
 public class AccountController {
     private final AccountService accountService;
-
+    private final ChangePassword changePassword;
     @GetMapping
     public ResponseEntity<GetProfile> getProfile(){
         return ResponseEntity.ok(accountService.getProfile());
@@ -69,5 +71,12 @@ public class AccountController {
     @PostMapping("/update-user-info")
     public ResponseEntity<UserInfoOutputDto> saveUserInfo(@RequestBody UserInfoDto userInfoDto) {
         return ResponseEntity.ok(accountService.updateUserData(userInfoDto));
+    }
+
+    @PostMapping("/change-password")
+    public ResponseEntity<Void> update(@RequestBody ChangePasswordRequest request) {
+        changePassword.changePassword(request);
+
+        return ResponseEntity.ok().build();
     }
 }
