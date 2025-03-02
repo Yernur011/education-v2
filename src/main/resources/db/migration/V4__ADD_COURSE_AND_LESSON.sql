@@ -1,8 +1,8 @@
 -- Insert default images
-INSERT INTO base64images (base64image)
-VALUES ('https://i0.wp.com/e4developer.com/wp-content/uploads/2018/01/spring-boot.png?w=1300&ssl=1'),
-       ('https://miro.medium.com/v2/resize:fit:1400/1*gausz1aacOvPJT1MEuBDTA.png'),
-       ('https://img.reg.ru/faq/20-08-2020-postgresql.png');
+INSERT INTO base64images (id, base64image)
+VALUES (1, 'https://i0.wp.com/e4developer.com/wp-content/uploads/2018/01/spring-boot.png?w=1300&ssl=1'),
+       (2, 'https://miro.medium.com/v2/resize:fit:1400/1*gausz1aacOvPJT1MEuBDTA.png'),
+       (3, 'https://img.reg.ru/faq/20-08-2020-postgresql.png');
 
 
 INSERT INTO course (id, title, description, base64images_id, created_by, created_date, last_updated_by,

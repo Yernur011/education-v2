@@ -77,7 +77,7 @@ public class CourseCrudServiceImpl implements CourseCrudService {
         return courseRepository.findAll();
     }
 
-
+    @Override
     public CourseDetailsDto findByIdAndProgress(Long id) {
         return courseService.findByIdAndProgress(id);
     }
