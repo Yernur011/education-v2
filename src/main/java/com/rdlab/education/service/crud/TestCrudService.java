@@ -12,10 +12,10 @@ public interface TestCrudService {
 
     PageableDto<TestDto> findAllTestDto(Long page, Long size);
 
+    PageableDto<TestDto> findCompletedTestDto(Long page, Long size);
+
     TestDto findDtoById(Long id);
 
     Optional<Test> findById(Long id);
-
-
 
 }

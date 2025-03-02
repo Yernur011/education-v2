@@ -1,4 +1,4 @@
-package com.rdlab.education.controller;
+package com.rdlab.education.controller.course;
 
 import com.rdlab.education.service.business.logic.CourseService;
 import lombok.RequiredArgsConstructor;

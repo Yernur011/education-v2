@@ -5,6 +5,11 @@ import com.rdlab.education.domain.dto.test.AnswerDto;
 import com.rdlab.education.domain.dto.test.TestAnswers;
 import com.rdlab.education.domain.entity.edu.Answer;
 import com.rdlab.education.domain.entity.edu.Question;
+import com.rdlab.education.domain.entity.edu.Test;
+import com.rdlab.education.domain.entity.edu.UserTest;
+import com.rdlab.education.domain.repository.edu.TestRepository;
+import com.rdlab.education.domain.repository.edu.UserTestRepository;
+import com.rdlab.education.service.auth.UserService;
 import com.rdlab.education.service.business.logic.TestService;
 import com.rdlab.education.service.crud.AnswerCrudService;
 import com.rdlab.education.service.crud.QuestionService;
@@ -20,17 +25,14 @@ import static com.rdlab.education.utils.codes.ErrorCode.TEST_NOT_FOUND;
 
 
 @Service
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class TestServiceImpl implements TestService {
     private final AnswerCrudService answerCrudService;
     private final TestCrudService testCrudService;
     private final QuestionService questionService;
-
-    public TestServiceImpl(AnswerCrudService answerCrudService, TestCrudService testCrudService, QuestionService questionService) {
-        this.answerCrudService = answerCrudService;
-        this.testCrudService = testCrudService;
-        this.questionService = questionService;
-    }
-
+    private final UserTestRepository userTestRepository;
+    private final UserService userService;
+    private final TestRepository testRepository;
 
     @Override
     public Boolean checkAnswer(TestAnswers testAnswers) {
@@ -55,11 +57,23 @@ public class TestServiceImpl implements TestService {
     }
 
     @Override
-    public Integer getScore(List<TestAnswers> questions) {
-        return questions.stream()
+    public Integer getScore(Long id, List<TestAnswers> questions) {
+        int correctAnswered = questions.stream()
                 .map(this::checkAnswer)
                 .mapToInt(ans -> ans ? 1 : 0)
                 .sum();
+        saveResults(id, correctAnswered);
+        return correctAnswered;
+    }
+
+    private void saveResults(Long id, int correctAnswered) {
+        userTestRepository.save(
+                new UserTest(null,
+                        userService.getCurrentUser(),
+                        testRepository.findById(id).get(),
+                        correctAnswered,
+                        questionService.findQuestionsByTestId(id).size()
+                ));
     }
 
     @Override

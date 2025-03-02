@@ -18,7 +18,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
-public class UserCourse extends BusinessEntity<Long> {
+public class UserTest extends BusinessEntity<Long> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
@@ -28,9 +28,10 @@ public class UserCourse extends BusinessEntity<Long> {
     Users user;
 
     @ManyToOne
-    @JoinColumn(name = "course_id", nullable = false)
-    Course course;
+    @JoinColumn(name = "test_id", nullable = false)
+    Test test;
 
-    String status;
+    Integer correctAnswered;
 
+    Integer allQuestions;
 }

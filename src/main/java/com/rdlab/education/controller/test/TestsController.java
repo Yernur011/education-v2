@@ -5,6 +5,7 @@ import com.rdlab.education.domain.dto.page.PageableDto;
 import com.rdlab.education.domain.dto.question.QuestionDto;
 import com.rdlab.education.domain.dto.test.TestAnswers;
 import com.rdlab.education.domain.dto.test.TestDto;
+import com.rdlab.education.service.business.logic.CourseService;
 import com.rdlab.education.service.business.logic.TestService;
 import com.rdlab.education.service.crud.TestCrudService;
 import org.springframework.http.HttpHeaders;
@@ -24,7 +25,6 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 import static com.rdlab.education.utils.codes.ProductCode.TESTS_URI;
-import static com.rdlab.education.utils.codes.ProductCode.USERS_URI;
 import static com.rdlab.education.utils.codes.ProductCode.V1_URI;
 
 
@@ -33,10 +33,17 @@ import static com.rdlab.education.utils.codes.ProductCode.V1_URI;
 public class TestsController {
     private final TestCrudService testCrudService;
     private final TestService testService;
+    private final CourseService courseService;
 
-    public TestsController(TestCrudService testCrudService, TestService testService) {
+    public TestsController(TestCrudService testCrudService, TestService testService, CourseService courseService) {
         this.testCrudService = testCrudService;
         this.testService = testService;
+        this.courseService = courseService;
+    }
+
+    @GetMapping("history")
+    public ResponseEntity<PageableDto<TestDto>> testHistory(@RequestParam Long page, @RequestParam Long size) {
+        return ResponseEntity.ok(testCrudService.findCompletedTestDto(page, size));
     }
 
     @GetMapping
@@ -56,19 +63,15 @@ public class TestsController {
 
     @PostMapping("/{id}/finish") // todo check id and return like
     public ResponseEntity<String> getTestResult(@PathVariable Long id, @RequestBody List<TestAnswers> answers) {
+        courseService.testFinished(id);
+
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
         return ResponseEntity.ok()
                 .headers(headers)
-                .body("{\"correct\": " + testService.getScore(answers) + "}");
+                .body("{\"correct\": " + testService.getScore(id, answers) + "}");
 
-    }
-
-    //TODO дописать
-    @GetMapping("/{id}" + USERS_URI)
-    public ResponseEntity<Object> getTestById(@PathVariable Long id) {
-        return null;
     }
 
     @PostMapping

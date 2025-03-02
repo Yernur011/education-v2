@@ -22,4 +22,5 @@ public class CourseDetailsDto {
     List<String> tags = new ArrayList<>();
     List<LessonDto> lessons = new ArrayList<>();
     TestDto test;
+    String status;
 }

@@ -9,6 +9,6 @@ import java.util.List;
 
 public interface TestService {
     Boolean checkAnswer(TestAnswers testAnswers);
-    Integer getScore(List<TestAnswers> questions);
+    Integer getScore(Long id, List<TestAnswers> questions);
     List<QuestionDto> startTest(Long id);
 }

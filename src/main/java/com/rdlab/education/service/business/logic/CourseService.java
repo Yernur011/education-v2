@@ -13,4 +13,5 @@ public interface CourseService {
     List<LessonDto> startLesson(Long lessonId);
     List<LessonDto> doneLesson(Long lessonId);
     TestDto getCurrentTestByCourse(Long courseId);
+    void testFinished(Long id);
 }

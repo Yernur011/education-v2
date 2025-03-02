@@ -39,14 +39,27 @@ public class CourseServiceImpl implements CourseService {
     private final UserCourseRepository userCourseRepository;
     private final UserCourseLessonRepository userCourseLessonRepository;
     private final LessonRepository lessonRepository;
-    private final UserService userService;
     private final TestRepository testRepository;
+    private final UserService userService;
+
+    @Override
+    public void testFinished(Long id) {
+        testRepository.findById(id)
+                .ifPresent(test -> {
+                    UserCourse userCourse = getByCourseAndUser(test.getCourse());
+                    userCourse.setStatus(UserCourseLessonStatusEnum.COMPLETED.getStatus());
+                    userCourseRepository.save(userCourse);
+                });
+    }
 
     @Override
     public CourseDetailsDto startCourse(Long courseId) {
         var course = courseRepository.findById(courseId)
                 .orElseThrow(() -> new NotFoundException("Course Not Found"));
-        userCourseRepository.save(new UserCourse(null, userService.getCurrentUser(), course));
+        userCourseRepository.save(new UserCourse(null,
+                userService.getCurrentUser(),
+                course,
+                UserCourseLessonStatusEnum.STARTED.getStatus()));
 
         startLesson(course.getLessons()
                 .stream()
@@ -127,19 +140,15 @@ public class CourseServiceImpl implements CourseService {
                                                 lesson.getId(), lesson.getLessonNumber(), lesson.getTitle(), lesson.getVideoUrl(),
                                                 lesson.getBodyText(), lesson.getStatus(), lesson.getIsCompleted())
                                         ).collect(Collectors.toList()),
-                                testRepository.findById(course.getTest().getId())
-                                        .map(test -> new TestDto(
-                                                        test.getId(),
-                                                        test.getTitle(),
-                                                        UserTestStatusEnum.NOT_ACTIVE.getStatus(),
-                                                        test.getType(),
-                                                        course.getId()
-                                                )
-                                        )
-                                        .orElse(null)
+                                getDefaultTestDtoForNonProgresses(course),
+                                UserCourseLessonStatusEnum.ACTIVE.getStatus()
                         )
                 )
                 .orElseThrow(() -> new NoSuchElementException(COURSE_NOT_FOUND));
+    }
+
+    private String getCurrentCourseStatus(Course course) {
+        return getByCourseAndUser(course).getStatus();
     }
 
     @Override
@@ -160,7 +169,8 @@ public class CourseServiceImpl implements CourseService {
                                     course.getBase64Images().getBase64Image(),
                                     course.getTags().stream().map(Tags::getName).toList(),
                                     getCurrentLessonsList(userCourseLessons),
-                                    getCurrentTest(userCourseLessons)
+                                    getCurrentTest(userCourseLessons),
+                                    getCurrentCourseStatus(course)
                             );
 
                         }
@@ -173,30 +183,26 @@ public class CourseServiceImpl implements CourseService {
         var course = courseRepository.findById(courseId)
                 .orElseThrow(() -> new NoSuchElementException(COURSE_NOT_FOUND));
         if (SecurityContextHolder.getContext().getAuthentication().getPrincipal().equals("anonymousUser")) {
-            return testRepository.findById(course.getTest().getId())
-                    .map(test -> new TestDto(
-                                    test.getId(),
-                                    test.getTitle(),
-                                    UserTestStatusEnum.NOT_ACTIVE.getStatus(),
-                                    test.getType(),
-                                    course.getId()
-                            )
-                    ).orElseThrow(() -> new NoSuchElementException(TEST_NOT_FOUND));
+            return getDefaultTestDtoForNonProgresses(course);
         }
         var courseAndUser = getByCourseAndUser(course);
         if (courseAndUser == null) {
-            return testRepository.findById(course.getTest().getId())
-                    .map(test -> new TestDto(
-                                    test.getId(),
-                                    test.getTitle(),
-                                    UserTestStatusEnum.NOT_ACTIVE.getStatus(),
-                                    test.getType(),
-                                    course.getId()
-                            )
-                    ).orElseThrow(() -> new NoSuchElementException(TEST_NOT_FOUND));
+            return getDefaultTestDtoForNonProgresses(course);
         }
         List<UserCourseLesson> userCourseLessons = getUserCourseLessons(courseAndUser);
         return getCurrentTest(userCourseLessons);
+    }
+
+    private TestDto getDefaultTestDtoForNonProgresses(Course course) {
+        return testRepository.findById(course.getTest().getId())
+                .map(test -> new TestDto(
+                                test.getId(),
+                                test.getTitle(),
+                                UserTestStatusEnum.NOT_ACTIVE.getStatus(),
+                                test.getType(),
+                                course.getId(), null,null
+                        )
+                ).orElse(null);
     }
 
     private List<UserCourseLesson> getUserCourseLessons(UserCourse courseAndUser) {
@@ -224,7 +230,7 @@ public class CourseServiceImpl implements CourseService {
                                 test.getTitle(),
                                 finalState,
                                 test.getType(),
-                                first.getUserCourse().getCourse().getId()
+                                first.getUserCourse().getCourse().getId(), null,null
                         )
                 )
                 .orElse(null);
