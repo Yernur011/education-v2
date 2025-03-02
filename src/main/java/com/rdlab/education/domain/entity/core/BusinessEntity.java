@@ -14,8 +14,6 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.TimeZone;
 
-@Getter
-@Setter
 @MappedSuperclass
 public abstract class BusinessEntity<Id extends Serializable> implements CoreEntity<Id> {
 
@@ -59,5 +57,37 @@ public abstract class BusinessEntity<Id extends Serializable> implements CoreEnt
             return DEFAULT_USER;
         }
         return DEFAULT_USER;
+    }
+
+    public String getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
+    }
+
+    public LocalDateTime getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(LocalDateTime creationDate) {
+        this.creationDate = creationDate;
+    }
+
+    public String getLastUpdatedBy() {
+        return lastUpdatedBy;
+    }
+
+    public void setLastUpdatedBy(String lastUpdatedBy) {
+        this.lastUpdatedBy = lastUpdatedBy;
+    }
+
+    public LocalDateTime getLastUpdateDate() {
+        return lastUpdateDate;
+    }
+
+    public void setLastUpdateDate(LocalDateTime lastUpdateDate) {
+        this.lastUpdateDate = lastUpdateDate;
     }
 }

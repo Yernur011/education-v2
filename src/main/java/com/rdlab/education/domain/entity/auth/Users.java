@@ -1,6 +1,7 @@
 package com.rdlab.education.domain.entity.auth;
 
 import com.rdlab.education.domain.entity.edu.UserCourse;
+import com.rdlab.education.domain.entity.edu.UserDetails;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -34,6 +35,10 @@ public class Users {
     LocalDateTime createdAt;
     @Column(name = "updated_at")
     LocalDateTime updatedAt;
+
+    @OneToOne
+    @JoinColumn(name = "user_details")
+    UserDetails userDetails;
 
     @Override
     public String toString() {

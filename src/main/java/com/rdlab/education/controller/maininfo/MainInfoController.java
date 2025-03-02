@@ -19,7 +19,7 @@ import static com.rdlab.education.utils.codes.ProductCode.*;
 
 @RestController
 @RequestMapping(V1_URI + MAIN_INFO_URI)
-@RequiredArgsConstructor(onConstructor = @__(@Autowired))
+@RequiredArgsConstructor(onConstructor = @  __(@Autowired))
 public class MainInfoController {
 
     private final CourseCrudService courseCrudService;
