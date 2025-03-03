@@ -31,14 +31,14 @@ public class UserAccountServiceImpl implements AccountService {
 
         return userRepository.findByUsername(name)
                 .map(user -> {
-                    UserDetails userDetails = user.getUserDetails();
+//                    UserDetails userDetails = getUserDetails(user);
                     user.setName(userInfoDto.firstname());
-                    userDetails.setLastname(userInfoDto.lastname());
-                    user.setUserDetails(userDetails);
+                    user.setLastname(userInfoDto.lastname());
+//                    user.setUserDetails(userDetails);
                     return user;
                 })
                 .map(userRepository::save)
-                .map(users -> new UserInfoOutputDto(users.getName(), users.getUserDetails().getLastname(), users.getUserDetails().getImages().getBase64Image()))
+                .map(users -> new UserInfoOutputDto(users.getName(), users.getLastname(), users.getImage().getBase64Image()))
                 .orElseThrow(() -> new ApiException("Ошибка при обновлении данных пользователя: " + name));
     }
 
@@ -47,12 +47,12 @@ public class UserAccountServiceImpl implements AccountService {
         String name = SecurityContextHolder.getContext().getAuthentication().getName();
         return userRepository.findByUsername(name)
                 .map(user -> {
-                    UserDetails userDetails = user.getUserDetails();
                     try {
                         StringBuffer strBuf = new StringBuffer();
                         strBuf.append("data:image/png;base64,");
                         strBuf.append(Base64.getEncoder().encodeToString(multipartFile.getBytes()));
-                        userDetails.setImages(new Base64Images(strBuf.toString()));
+                        user.setImage(new Base64Images(strBuf.toString()));
+
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
@@ -60,7 +60,7 @@ public class UserAccountServiceImpl implements AccountService {
                     return user;
                 })
                 .map(userRepository::save)
-                .map(users -> users.getUserDetails().getImages())
+                .map(users -> users.getImage())
                 .orElseThrow(() -> new ApiException("Не удалось сохранить Фото пользователя"));
     }
 
@@ -71,11 +71,10 @@ public class UserAccountServiceImpl implements AccountService {
                 .map(users ->
                         new GetProfile(
                                 users.getName(),
-                                users.getUserDetails().getLastname(),
-                                users.getUserDetails().getImages().getBase64Image()
+                                users.getLastname(),
+                                users.getImage().getBase64Image()
                         ))
                 .orElseThrow(() -> new ApiException("Похоже нет такого пользователя!"));
 
     }
-
 }

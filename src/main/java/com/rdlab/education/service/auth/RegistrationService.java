@@ -5,15 +5,18 @@ import com.rdlab.education.domain.dto.auth.RegistrationResponse;
 import com.rdlab.education.domain.dto.auth.VerifyOtpRequest;
 import com.rdlab.education.domain.entity.auth.RegisterUser;
 import com.rdlab.education.domain.entity.auth.Users;
+import com.rdlab.education.domain.entity.image.Base64Images;
 import com.rdlab.education.domain.enums.UserRole;
 import com.rdlab.education.domain.exceptions.ApiException;
 import com.rdlab.education.domain.exceptions.auth.RegistrationException;
 import com.rdlab.education.domain.mail.RequestToSendEmailDto;
+import com.rdlab.education.domain.repository.Base64ImagesRepository;
 import com.rdlab.education.domain.repository.RegisterUserRepository;
 import com.rdlab.education.domain.repository.UserRepository;
 import com.rdlab.education.service.email.MailSenderService;
 import com.rdlab.education.service.otp.OtpService;
 import io.vavr.control.Try;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Async;
@@ -24,6 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.concurrent.CompletableFuture;
 
 @Service
+@RequiredArgsConstructor
 public class RegistrationService {
     private static final Logger log = LoggerFactory.getLogger(RegistrationService.class);
     private final PasswordEncoder passwordEncoder;
@@ -31,15 +35,7 @@ public class RegistrationService {
     private final UserRepository userRepository;
     private final OtpService otpService;
     private final MailSenderService mailSenderService;
-
-    public RegistrationService(PasswordEncoder passwordEncoder, RegisterUserRepository registerUserRepository, UserRepository userRepository, OtpService otpService, MailSenderService mailSenderService) {
-        this.passwordEncoder = passwordEncoder;
-        this.registerUserRepository = registerUserRepository;
-        this.userRepository = userRepository;
-        this.otpService = otpService;
-        this.mailSenderService = mailSenderService;
-    }
-
+    private final Base64ImagesRepository base64ImagesRepository;
 
     public RegistrationResponse register(RegistrationDto registrationDto) {
         if (userRepository.existsByUsername(registrationDto.username())) {
@@ -87,7 +83,7 @@ public class RegistrationService {
                     String code = registerUser.getOtpCode();
                     if (code.equals(verifyOtpRequest.otp())) {
                         updateUser(registerUser);
-                        return new RegistrationResponse("OTP-код успешно подтвержден.","User registered successfully.");
+                        return new RegistrationResponse("OTP-код успешно подтвержден.", "User registered successfully.");
                     } else {
                         throw new RegistrationException("OTP-код неверный или истек.");
                     }
@@ -113,6 +109,7 @@ public class RegistrationService {
         users.setName(registerUser.getName());
         users.setEnabled(true);
         users.setRole(UserRole.USER.getRole());
+        users.setImage(base64ImagesRepository.findById(4L).get());
         userRepository.save(users);
         registerUserRepository.delete(registerUser);
     }

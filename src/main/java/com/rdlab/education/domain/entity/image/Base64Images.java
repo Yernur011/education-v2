@@ -18,7 +18,7 @@ public class Base64Images {
     Long id;
     String base64Image;
 
-    public Base64Images(String base64Image){
+    public Base64Images(String base64Image) {
         this.base64Image = base64Image;
     }
 }

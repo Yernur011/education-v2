@@ -1,0 +1,1 @@
+ALTER SEQUENCE base64images_id_seq RESTART WITH 10;
