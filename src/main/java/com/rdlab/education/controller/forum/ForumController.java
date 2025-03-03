@@ -1,6 +1,7 @@
 package com.rdlab.education.controller.forum;
 
 import com.rdlab.education.domain.dto.forum.CreateQuestionDto;
+import com.rdlab.education.domain.dto.forum.ForumAnswerDto;
 import com.rdlab.education.domain.dto.forum.GetForums;
 import com.rdlab.education.domain.dto.page.PageableDto;
 import com.rdlab.education.domain.entity.edu.ForumCategory;
@@ -44,24 +45,13 @@ public class ForumController {
         return ResponseEntity.ok(forumService.getForumByCategory(page, size, forumCategoryId));
     }
 
-    //TODO написать логику опубликовывания ответов
-    @GetMapping("/{id}")
-    public ResponseEntity<Object> getForum(@PathVariable Long id) {
-        return null;
+    @PostMapping("/like/{id}") //question id
+    public ResponseEntity<Integer> likeQuestion(@PathVariable Long id) {
+        return ResponseEntity.ok(forumService.likeQuestion(id));
     }
 
-    @GetMapping("/{id}" + USERS_URI)
-    public ResponseEntity<Object> getForumUsers(@PathVariable Long id) {
-        return null;
-    }
-
-    @PutMapping
-    public ResponseEntity<Object> updateForum(@RequestBody Object forum) {
-        return null;
-    }
-
-    @DeleteMapping
-    public ResponseEntity<Void> deleteForum(@RequestBody Object forum) {
-        return null;
+    @PostMapping("/answer/{id}")
+    public ResponseEntity<ForumAnswerDto> answerQuestion(@PathVariable Long id, @RequestBody ForumAnswerDto forumAnswerDto) {
+        return ResponseEntity.ok(forumService.addAnswer(forumAnswerDto, id));
     }
 }

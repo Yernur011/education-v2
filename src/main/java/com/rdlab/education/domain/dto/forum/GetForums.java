@@ -8,6 +8,7 @@ public record GetForums(
         String userImage,
         String title,
         LocalDateTime createdAt,
-        Integer answerCont) {
+        Integer answerCont,
+        Integer likes) {
 
 }

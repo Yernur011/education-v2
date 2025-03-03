@@ -1,5 +1,6 @@
 package com.rdlab.education.domain.entity.edu;
 
+import com.rdlab.education.domain.entity.auth.Users;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -7,8 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.time.LocalDateTime;
 
 @Entity
 @Data
@@ -19,9 +19,8 @@ public class ForumAnswers {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
+    @ManyToOne
+    Users user;
     String answerText;
-
-    @OneToMany(cascade = CascadeType.ALL)
-    List<ForumLikes> likes = new ArrayList<>();
-
+    LocalDateTime createdDate = LocalDateTime.now();
 }

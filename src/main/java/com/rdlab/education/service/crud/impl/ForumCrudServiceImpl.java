@@ -1,14 +1,19 @@
 package com.rdlab.education.service.crud.impl;
 
 import com.rdlab.education.domain.dto.forum.CreateQuestionDto;
+import com.rdlab.education.domain.dto.forum.ForumAnswerDto;
 import com.rdlab.education.domain.dto.forum.GetForums;
 import com.rdlab.education.domain.dto.page.PageableDto;
+import com.rdlab.education.domain.entity.auth.Users;
+import com.rdlab.education.domain.entity.edu.ForumAnswers;
 import com.rdlab.education.domain.entity.edu.ForumCategory;
+import com.rdlab.education.domain.entity.edu.ForumLikes;
 import com.rdlab.education.domain.entity.edu.ForumQuestion;
 import com.rdlab.education.domain.entity.image.Base64Images;
 import com.rdlab.education.domain.enums.ForumQuestionState;
 import com.rdlab.education.domain.exceptions.ApiException;
 import com.rdlab.education.domain.repository.edu.ForumCategoryRepository;
+import com.rdlab.education.domain.repository.edu.ForumLikesRepository;
 import com.rdlab.education.domain.repository.edu.ForumQuestionRepository;
 import com.rdlab.education.service.auth.UserService;
 import com.rdlab.education.service.crud.ForumCrudService;
@@ -26,6 +31,7 @@ public class ForumCrudServiceImpl implements ForumCrudService {
     private final ForumQuestionRepository forumQuestionRepository;
     private final ForumCategoryRepository forumCategoryRepository;
     private final UserService userService;
+    private final ForumLikesRepository likesRepository;
 
     @Override
     public void createForumQuestion(CreateQuestionDto questionDto) {
@@ -54,7 +60,9 @@ public class ForumCrudServiceImpl implements ForumCrudService {
                                 userService.getCurrentUser().getImage().getBase64Image(),
                                 forumQuestion.getTitle(),
                                 forumQuestion.getCreatedAt(),
-                                forumQuestion.getAnswers().size()))
+                                forumQuestion.getAnswers().size(),
+                                likesRepository.countByForumId(forumQuestion.getId())
+                        ))
                 .toList();
 
         getForumsPageableDto.setContent(list);
@@ -67,7 +75,7 @@ public class ForumCrudServiceImpl implements ForumCrudService {
         ForumCategory forumCategory = forumCategoryRepository.findById(categoryId).orElseThrow(() -> new ApiException("Нет такой категоии!"));
 
         Page<ForumQuestion> forumQuestionByForumCategoryAndStatus =
-                forumQuestionRepository.findForumQuestionByForumCategoryAndStatus(forumCategory, ForumQuestionState.APPROVED.getState(), PageRequest.of(page, size));
+                forumQuestionRepository.findForumQuestionByCategoryAndStatus(forumCategory, ForumQuestionState.APPROVED.getState(), PageRequest.of(page, size));
 
         List<GetForums> list = forumQuestionByForumCategoryAndStatus.getContent().stream()
                 .map(forumQuestion ->
@@ -76,12 +84,40 @@ public class ForumCrudServiceImpl implements ForumCrudService {
                                 userService.getCurrentUser().getImage().getBase64Image(),
                                 forumQuestion.getTitle(),
                                 forumQuestion.getCreatedAt(),
-                                forumQuestion.getAnswers().size()))
+                                forumQuestion.getAnswers().size(),
+                                likesRepository.countByForumId(forumQuestion.getId())))
                 .toList();
 
         PageableDto<GetForums> getForumsPageableDto = new PageableDto<>();
         getForumsPageableDto.setTotalPages(forumQuestionByForumCategoryAndStatus.getTotalPages());
         getForumsPageableDto.setContent(list);
         return getForumsPageableDto;
+    }
+
+    @Override
+    public Integer likeQuestion(Long id) {
+        Users currentUser = userService.getCurrentUser();
+        Long userId = currentUser.getId();
+        if (likesRepository.existsByUserIdAndForumId(userId, id)) {
+            throw new ApiException("У пользователя есть лайк!");
+        }
+        ForumLikes forumLikes = new ForumLikes();
+        forumLikes.setForumId(id);
+        forumLikes.setUserId(userId);
+        likesRepository.save(forumLikes);
+        return likesRepository.countByForumId(id);
+    }
+
+    @Override
+    public ForumAnswerDto addAnswer(ForumAnswerDto forumAnswerDto, Long forumId) {
+        Users currentUser = userService.getCurrentUser();
+        ForumQuestion forumQuestion = forumQuestionRepository.findById(forumId)
+                .orElseThrow(() -> new ApiException("Нет такого Форума!"));
+        ForumAnswers forumAnswers = new ForumAnswers();
+        forumAnswers.setUser(currentUser);
+        forumAnswers.setAnswerText(forumAnswerDto.text());
+        forumQuestion.getAnswers().add(forumAnswers);
+        forumQuestionRepository.save(forumQuestion);
+        return forumAnswerDto;
     }
 }

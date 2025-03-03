@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface ForumQuestionRepository extends JpaRepository<ForumQuestion, Long> {
 
-    Page<ForumQuestion> findForumQuestionByForumCategoryAndStatus(ForumCategory forumCategory, String status, Pageable pageable);
+    Page<ForumQuestion> findForumQuestionByCategoryAndStatus(ForumCategory forumCategory, String status, Pageable pageable);
 
     Page<ForumQuestion> findForumQuestionByStatus(String status, Pageable pageable);
 
