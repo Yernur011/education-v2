@@ -19,8 +19,15 @@ public class ForumAnswers {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
+
+    @ManyToOne
+    @JoinColumn(name = "question_id") // Добавляем внешний ключ к ForumQuestion
+    ForumQuestion question;
+
     @ManyToOne
     Users user;
+
     String answerText;
+
     LocalDateTime createdDate = LocalDateTime.now();
 }

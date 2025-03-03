@@ -32,6 +32,6 @@ public class ForumQuestion {
     String questionText;
     @ManyToOne
     Users author;
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "question")
     List<ForumAnswers> answers = new ArrayList<>();
 }

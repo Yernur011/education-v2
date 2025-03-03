@@ -41,7 +41,9 @@ public class ForumCrudServiceImpl implements ForumCrudService {
         forumQuestion.setAuthor(userService.getCurrentUser());
         forumQuestion.setQuestionText(questionDto.text());
         forumQuestion.setTitle(questionDto.title());
+        if (questionDto.base64Image() != null){
         forumQuestion.setImages(new Base64Images(questionDto.base64Image()));
+        }
         forumQuestion.setStatus(ForumQuestionState.CREATED.getState());
         forumQuestionRepository.save(forumQuestion);
     }
@@ -53,11 +55,11 @@ public class ForumCrudServiceImpl implements ForumCrudService {
 
         PageableDto<GetForums> getForumsPageableDto = new PageableDto<>();
 
-        List<GetForums> list = forumQuestionByStatus.get()
+        List<GetForums> list = forumQuestionByStatus.stream()
                 .map(forumQuestion ->
                         new GetForums(
                                 forumQuestion.getId(),
-                                userService.getCurrentUser().getImage().getBase64Image(),
+                                userService.getCurrentUser().getImage() == null ? "" : userService.getCurrentUser().getImage().getBase64Image(),
                                 forumQuestion.getTitle(),
                                 forumQuestion.getCreatedAt(),
                                 forumQuestion.getAnswers().size(),
@@ -81,7 +83,7 @@ public class ForumCrudServiceImpl implements ForumCrudService {
                 .map(forumQuestion ->
                         new GetForums(
                                 forumQuestion.getId(),
-                                userService.getCurrentUser().getImage().getBase64Image(),
+                                userService.getCurrentUser().getImage() == null ? "" : userService.getCurrentUser().getImage().getBase64Image(),
                                 forumQuestion.getTitle(),
                                 forumQuestion.getCreatedAt(),
                                 forumQuestion.getAnswers().size(),

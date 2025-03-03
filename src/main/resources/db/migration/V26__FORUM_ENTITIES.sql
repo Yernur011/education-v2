@@ -19,8 +19,9 @@ CREATE TABLE forum_answers (
                                user_id INT REFERENCES users(id) ON DELETE SET NULL,
                                answer_text TEXT NOT NULL,
                                created_date TIMESTAMP DEFAULT NOW(),
-                               forum_question_id INT REFERENCES forum_question(id) ON DELETE CASCADE
+                               question_id INT REFERENCES forum_question(id) ON DELETE CASCADE
 );
+
 
 CREATE TABLE forum_likes (
                              id SERIAL PRIMARY KEY,
