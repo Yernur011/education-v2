@@ -14,6 +14,7 @@ import com.rdlab.education.domain.entity.edu.ForumQuestion;
 import com.rdlab.education.domain.entity.image.Base64Images;
 import com.rdlab.education.domain.enums.ForumQuestionState;
 import com.rdlab.education.domain.exceptions.ApiException;
+import com.rdlab.education.domain.repository.edu.ForumAnswerRepository;
 import com.rdlab.education.domain.repository.edu.ForumCategoryRepository;
 import com.rdlab.education.domain.repository.edu.ForumLikesRepository;
 import com.rdlab.education.domain.repository.edu.ForumQuestionRepository;
@@ -32,6 +33,7 @@ import java.util.Optional;
 public class ForumCrudServiceImpl implements ForumCrudService {
     private final ForumQuestionRepository forumQuestionRepository;
     private final ForumCategoryRepository forumCategoryRepository;
+    private final ForumAnswerRepository forumAnswerRepository;
     private final UserService userService;
     private final ForumLikesRepository likesRepository;
 
@@ -120,8 +122,8 @@ public class ForumCrudServiceImpl implements ForumCrudService {
         ForumAnswers forumAnswers = new ForumAnswers();
         forumAnswers.setUser(currentUser);
         forumAnswers.setAnswerText(forumAnswerDto.text());
-        forumQuestion.getAnswers().add(forumAnswers);
-        forumQuestionRepository.save(forumQuestion);
+        forumAnswers.setQuestion(forumQuestion);
+        forumAnswerRepository.saveAndFlush(forumAnswers);
         return forumAnswerDto;
     }
 
