@@ -2,21 +2,27 @@ package com.rdlab.education.controller.forum;
 
 import com.rdlab.education.domain.dto.forum.CreateQuestionDto;
 import com.rdlab.education.domain.dto.forum.ForumAnswerDto;
+import com.rdlab.education.domain.dto.forum.GetForumWithAnswers;
 import com.rdlab.education.domain.dto.forum.GetForums;
 import com.rdlab.education.domain.dto.page.PageableDto;
 import com.rdlab.education.domain.entity.edu.ForumCategory;
 import com.rdlab.education.service.crud.ForumCategoryService;
 import com.rdlab.education.service.crud.ForumCrudService;
-import com.rdlab.education.service.crud.ForumService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-import static com.rdlab.education.utils.codes.ProductCode.*;
+import static com.rdlab.education.utils.codes.ProductCode.FORUMS_URI;
+import static com.rdlab.education.utils.codes.ProductCode.V1_URI;
 
 @RestController
 @RequiredArgsConstructor
@@ -40,6 +46,12 @@ public class ForumController {
     public ResponseEntity<PageableDto<GetForums>> getForums(@RequestParam Integer page, @RequestParam Integer size) {
         return ResponseEntity.ok(forumService.forumQuestions(page, size));
     }
+
+    @GetMapping("{id}")
+    public ResponseEntity<GetForumWithAnswers> getForums(@PathVariable Integer id) {
+        return ResponseEntity.ok(forumService.forumQuestionWithAnswers(Long.valueOf(id)));
+    }
+
     @GetMapping("/by-forum-category")
     public ResponseEntity<PageableDto<GetForums>> getForumCategory(@RequestParam Integer page, @RequestParam Integer size, @RequestParam Long forumCategoryId) {
         return ResponseEntity.ok(forumService.getForumByCategory(page, size, forumCategoryId));

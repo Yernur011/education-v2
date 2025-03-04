@@ -1,5 +1,9 @@
 package com.rdlab.education.domain.dto.forum;
 
-public record ForumAnswerDto(String text) {
+import com.rdlab.education.domain.dto.user.info.UserInfoOutputDto;
+
+import java.time.LocalDateTime;
+
+public record ForumAnswerDto(String text, LocalDateTime createdDate, UserInfoOutputDto user) {
     
 }

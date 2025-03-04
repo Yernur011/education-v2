@@ -27,7 +27,7 @@ public class ForumQuestion {
     String title;
     @ManyToOne
     ForumCategory category;
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     Base64Images images;
     String questionText;
     @ManyToOne

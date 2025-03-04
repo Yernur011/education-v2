@@ -31,14 +31,13 @@ public class UserAccountServiceImpl implements AccountService {
 
         return userRepository.findByUsername(name)
                 .map(user -> {
-//                    UserDetails userDetails = getUserDetails(user);
                     user.setName(userInfoDto.firstname());
                     user.setLastname(userInfoDto.lastname());
-//                    user.setUserDetails(userDetails);
                     return user;
                 })
                 .map(userRepository::save)
-                .map(users -> new UserInfoOutputDto(users.getName(), users.getLastname(), users.getImage().getBase64Image()))
+                .map(users ->
+                        new UserInfoOutputDto(users.getName(), users.getLastname(), users.getImage().getBase64Image()))
                 .orElseThrow(() -> new ApiException("Ошибка при обновлении данных пользователя: " + name));
     }
 

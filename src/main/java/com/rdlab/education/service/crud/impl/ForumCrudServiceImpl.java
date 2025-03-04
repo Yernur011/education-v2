@@ -2,8 +2,10 @@ package com.rdlab.education.service.crud.impl;
 
 import com.rdlab.education.domain.dto.forum.CreateQuestionDto;
 import com.rdlab.education.domain.dto.forum.ForumAnswerDto;
+import com.rdlab.education.domain.dto.forum.GetForumWithAnswers;
 import com.rdlab.education.domain.dto.forum.GetForums;
 import com.rdlab.education.domain.dto.page.PageableDto;
+import com.rdlab.education.domain.dto.user.info.UserInfoOutputDto;
 import com.rdlab.education.domain.entity.auth.Users;
 import com.rdlab.education.domain.entity.edu.ForumAnswers;
 import com.rdlab.education.domain.entity.edu.ForumCategory;
@@ -41,10 +43,10 @@ public class ForumCrudServiceImpl implements ForumCrudService {
         forumQuestion.setAuthor(userService.getCurrentUser());
         forumQuestion.setQuestionText(questionDto.text());
         forumQuestion.setTitle(questionDto.title());
-        if (questionDto.base64Image() != null){
-        forumQuestion.setImages(new Base64Images(questionDto.base64Image()));
+        if (questionDto.base64Image() != null) {
+            forumQuestion.setImages(new Base64Images(questionDto.base64Image()));
         }
-        forumQuestion.setStatus(ForumQuestionState.CREATED.getState());
+        forumQuestion.setStatus(ForumQuestionState.APPROVED.getState());
         forumQuestionRepository.save(forumQuestion);
     }
 
@@ -121,5 +123,25 @@ public class ForumCrudServiceImpl implements ForumCrudService {
         forumQuestion.getAnswers().add(forumAnswers);
         forumQuestionRepository.save(forumQuestion);
         return forumAnswerDto;
+    }
+
+    @Override
+    public GetForumWithAnswers forumQuestionWithAnswers(Long id) {
+        ForumQuestion forumQuestion = forumQuestionRepository.findById(id)
+                .orElseThrow(() -> new ApiException("Нет такого Форума!"));
+        GetForumWithAnswers getForumWithAnswers = new GetForumWithAnswers();
+        getForumWithAnswers.setAnswerCount(forumQuestion.getAnswers().size());
+        getForumWithAnswers.setLikes(likesRepository.countByForumId(forumQuestion.getId()));
+        getForumWithAnswers.setQuestionId(forumQuestion.getId());
+        getForumWithAnswers.setCreatedAt(forumQuestion.getCreatedAt());
+        getForumWithAnswers.setUserImage(forumQuestion.getImages().getBase64Image());
+        getForumWithAnswers.setAnswersList(forumQuestion.getAnswers()
+                .stream().map(forumAnswer -> new ForumAnswerDto(
+                        forumAnswer.getAnswerText(),
+                        forumAnswer.getCreatedDate(),
+                        new UserInfoOutputDto(forumAnswer.getUser().getName(), forumAnswer.getUser().getLastname(), forumAnswer.getUser().getImage().getBase64Image())
+                ))
+                .toList());
+        return getForumWithAnswers;
     }
 }
