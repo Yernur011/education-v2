@@ -41,23 +41,6 @@ public class CourseCrudServiceImpl implements CourseCrudService {
     private final UserService userService;
 
     @Override
-    public List<CoursesResponseDto> findAll(Long page, Long size) {
-        return courseRepository.findAll(PageRequest.of(page.intValue(), size.intValue()))
-                .getContent()
-                .stream()
-                .map(course ->
-                        new CoursesResponseDto(
-                                course.getId(),
-                                course.getBase64Images().getBase64Image(),
-                                course.getTags().stream().map(Tags::getName).toList(),
-                                course.getTitle(),
-                                course.getDescription(), null
-                        )
-                )
-                .toList();
-    }
-
-    @Override
     public PageableDto<CoursesResponseDto> findAllPageable(Long page, Long size) {
         Page<Course> all = courseRepository.findAll(PageRequest.of(page.intValue(), size.intValue()));
         PageableDto<CoursesResponseDto> coursesResponseDtoPageableDto = new PageableDto<>();
@@ -79,8 +62,10 @@ public class CourseCrudServiceImpl implements CourseCrudService {
 
     @Override
     public PageableDto<CoursesResponseDto> getCouresHistory(Long page, Long size) {
-        Page<UserCourse> all = userCourseRepository.findByUser(
-                userService.getCurrentUser(), PageRequest.of(page.intValue(), size.intValue()));
+        Page<UserCourse> all = userCourseRepository.findByUserAndStatus(
+                userService.getCurrentUser(),
+                UserCourseLessonStatusEnum.COMPLETED.getStatus(),
+                PageRequest.of(page.intValue(), size.intValue()));
         PageableDto<CoursesResponseDto> coursesResponseDtoPageableDto = new PageableDto<>();
         coursesResponseDtoPageableDto.setTotalPages(all.getTotalPages());
         coursesResponseDtoPageableDto.setContent(all.getContent().stream()
@@ -98,11 +83,6 @@ public class CourseCrudServiceImpl implements CourseCrudService {
                         }
                 ).toList());
         return coursesResponseDtoPageableDto;
-    }
-
-    @Override
-    public List<Course> findAll() {
-        return courseRepository.findAll();
     }
 
     @Override

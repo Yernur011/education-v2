@@ -7,12 +7,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.util.List;
-
 public interface UserCourseRepository extends JpaRepository<UserCourse, Long> {
 
     UserCourse findByCourseAndUser(Course course, Users user);
 
-    Page<UserCourse> findByUser(Users user, Pageable pageable);
+    Page<UserCourse> findByUserAndStatus(Users user, String status, Pageable pageable);
 
 }
