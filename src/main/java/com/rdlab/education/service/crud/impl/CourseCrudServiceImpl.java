@@ -8,6 +8,7 @@ import com.rdlab.education.domain.dto.test.TestDto;
 import com.rdlab.education.domain.entity.edu.Course;
 import com.rdlab.education.domain.entity.edu.Tags;
 import com.rdlab.education.domain.entity.edu.UserCourse;
+import com.rdlab.education.domain.enums.UserCourseLessonStatusEnum;
 import com.rdlab.education.domain.exceptions.InvalidValueException;
 import com.rdlab.education.domain.repository.edu.CourseRepository;
 import com.rdlab.education.domain.repository.edu.LessonRepository;
@@ -50,7 +51,9 @@ public class CourseCrudServiceImpl implements CourseCrudService {
                                 course.getBase64Images().getBase64Image(),
                                 course.getTags().stream().map(Tags::getName).toList(),
                                 course.getTitle(),
-                                course.getDescription()))
+                                course.getDescription(), null
+                        )
+                )
                 .toList();
     }
 
@@ -66,8 +69,10 @@ public class CourseCrudServiceImpl implements CourseCrudService {
                                 course.getBase64Images().getBase64Image(),
                                 course.getTags().stream().map(Tags::getName).toList(),
                                 course.getTitle(),
-                                course.getDescription()))
-                .toList());
+                                course.getDescription(),
+                                UserCourseLessonStatusEnum.ACTIVE.getStatus()
+                        )
+                ).toList());
 
         return coursesResponseDtoPageableDto;
     }
@@ -79,14 +84,18 @@ public class CourseCrudServiceImpl implements CourseCrudService {
         PageableDto<CoursesResponseDto> coursesResponseDtoPageableDto = new PageableDto<>();
         coursesResponseDtoPageableDto.setTotalPages(all.getTotalPages());
         coursesResponseDtoPageableDto.setContent(all.getContent().stream()
-                .map(UserCourse::getCourse)
-                .map(course ->
-                        new CoursesResponseDto(
-                                course.getId(),
-                                course.getBase64Images().getBase64Image(),
-                                course.getTags().stream().map(Tags::getName).toList(),
-                                course.getTitle(),
-                                course.getDescription())
+//                .map(UserCourse::getCourse)
+                .map(userCourse -> {
+                            Course course = userCourse.getCourse();
+                            return new CoursesResponseDto(
+                                    course.getId(),
+                                    course.getBase64Images().getBase64Image(),
+                                    course.getTags().stream().map(Tags::getName).toList(),
+                                    course.getTitle(),
+                                    course.getDescription(),
+                                    userCourse.getStatus()
+                            );
+                        }
                 ).toList());
         return coursesResponseDtoPageableDto;
     }

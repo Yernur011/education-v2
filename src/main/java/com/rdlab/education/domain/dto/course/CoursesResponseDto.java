@@ -16,4 +16,5 @@ public class CoursesResponseDto {
     List<String> tags = new ArrayList<>();
     String title;
     String description;
+    String status;
 }
