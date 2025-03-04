@@ -2,6 +2,7 @@ package com.rdlab.education.controller.forum;
 
 import com.rdlab.education.domain.dto.forum.CreateQuestionDto;
 import com.rdlab.education.domain.dto.forum.ForumAnswerDto;
+import com.rdlab.education.domain.dto.forum.ForumCategoryDto;
 import com.rdlab.education.domain.dto.forum.GetForumWithAnswers;
 import com.rdlab.education.domain.dto.forum.GetForums;
 import com.rdlab.education.domain.dto.page.PageableDto;
@@ -38,7 +39,7 @@ public class ForumController {
     }
 
     @GetMapping("/category")
-    public ResponseEntity<List<ForumCategory>> getForumCategories() {
+    public ResponseEntity<List<ForumCategoryDto>> getForumCategories() {
         return ResponseEntity.ok(forumCategoryService.findAll());
     }
 
