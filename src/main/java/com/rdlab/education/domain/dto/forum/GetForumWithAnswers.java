@@ -15,8 +15,10 @@ import java.util.List;
 @Setter
 public class GetForumWithAnswers {
     Long questionId;
-    String userImage;
-    String title;
+    String authorImage;
+    String authorName;
+    String forumImage;
+    String forumTitle;
     LocalDateTime createdAt;
     Integer answerCount;
     List<ForumAnswerDto> answersList;

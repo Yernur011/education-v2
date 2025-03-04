@@ -61,7 +61,7 @@ public class ForumCrudServiceImpl implements ForumCrudService {
                 .map(forumQuestion ->
                         new GetForums(
                                 forumQuestion.getId(),
-                                userService.getCurrentUser().getImage() == null ? "" : userService.getCurrentUser().getImage().getBase64Image(),
+                                forumQuestion.getAuthor().getImage() == null ? "" : forumQuestion.getAuthor().getImage().getBase64Image(),
                                 forumQuestion.getTitle(),
                                 forumQuestion.getCreatedAt(),
                                 forumQuestion.getAnswers().size(),
@@ -85,7 +85,7 @@ public class ForumCrudServiceImpl implements ForumCrudService {
                 .map(forumQuestion ->
                         new GetForums(
                                 forumQuestion.getId(),
-                                userService.getCurrentUser().getImage() == null ? "" : userService.getCurrentUser().getImage().getBase64Image(),
+                                forumQuestion.getAuthor().getImage() == null ? "" : forumQuestion.getAuthor().getImage().getBase64Image(),
                                 forumQuestion.getTitle(),
                                 forumQuestion.getCreatedAt(),
                                 forumQuestion.getAnswers().size(),
@@ -134,7 +134,10 @@ public class ForumCrudServiceImpl implements ForumCrudService {
         getForumWithAnswers.setLikes(likesRepository.countByForumId(forumQuestion.getId()));
         getForumWithAnswers.setQuestionId(forumQuestion.getId());
         getForumWithAnswers.setCreatedAt(forumQuestion.getCreatedAt());
-        getForumWithAnswers.setUserImage(forumQuestion.getImages().getBase64Image());
+        getForumWithAnswers.setForumTitle(forumQuestion.getTitle());
+        getForumWithAnswers.setForumImage(forumQuestion.getImages().getBase64Image());
+        getForumWithAnswers.setAuthorName(forumQuestion.getAuthor().getName());
+        getForumWithAnswers.setAuthorImage(forumQuestion.getAuthor().getImage().getBase64Image());
         getForumWithAnswers.setAnswersList(forumQuestion.getAnswers()
                 .stream().map(forumAnswer -> new ForumAnswerDto(
                         forumAnswer.getAnswerText(),
