@@ -22,4 +22,6 @@ public interface ForumQuestionRepository extends JpaRepository<ForumQuestion, Lo
 
     Page<ForumQuestion> findForumQuestionByAuthor(Users author, Pageable pageable);
 
+    List<ForumQuestion> findByTitleContainingIgnoreCaseOrQuestionTextContainingIgnoreCase(String title, String text);
+
 }

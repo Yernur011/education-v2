@@ -19,7 +19,7 @@ import static com.rdlab.education.utils.codes.ProductCode.*;
 
 @RestController
 @RequestMapping(V1_URI + MAIN_INFO_URI)
-@RequiredArgsConstructor(onConstructor = @  __(@Autowired))
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class MainInfoController {
 
     private final CourseCrudService courseCrudService;
@@ -30,7 +30,8 @@ public class MainInfoController {
     private ResponseEntity<PageableDto<CoursesResponseDto>> popularCourse(@RequestParam Long page, @RequestParam Long size) {
         return ResponseEntity.ok(courseCrudService.findAllPageable(page, size));
     }
-    @GetMapping(POPULAR_URI+COURSE_URI+"/{id}")
+
+    @GetMapping(POPULAR_URI + COURSE_URI + "/{id}")
     public ResponseEntity<CourseDetailsDto> getCourse(@PathVariable Long id) {
         return ResponseEntity.ok(courseCrudService.findById(id));
     }

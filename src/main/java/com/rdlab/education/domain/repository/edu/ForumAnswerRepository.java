@@ -6,6 +6,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface ForumAnswerRepository extends JpaRepository<ForumAnswers, Long>  {
+import java.util.List;
+
+public interface ForumAnswerRepository extends JpaRepository<ForumAnswers, Long> {
     Page<ForumAnswers> findByUser(Users user, Pageable pageable);
+
+    List<ForumAnswers> findByAnswerTextContainingIgnoreCase(String text);
+
 }
