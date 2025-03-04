@@ -49,7 +49,7 @@ public class ForumController {
 
     @GetMapping("{id}")
     public ResponseEntity<GetForumWithAnswers> getForums(@PathVariable Integer id) {
-        return ResponseEntity.ok(forumService.forumQuestionWithAnswers(Long.valueOf(id)));
+        return ResponseEntity.ok(forumService.forumQuestionWithAnswers(Long.valueOf(id), true));
     }
 
     @GetMapping("/by-forum-category")
@@ -65,5 +65,15 @@ public class ForumController {
     @PostMapping("/answer/{id}")
     public ResponseEntity<ForumAnswerDto> answerQuestion(@PathVariable Long id, @RequestBody ForumAnswerDto forumAnswerDto) {
         return ResponseEntity.ok(forumService.addAnswer(forumAnswerDto, id));
+    }
+
+    @GetMapping("/answer/history")
+    public ResponseEntity<PageableDto<ForumAnswerDto>> answerQuestionHistory(@RequestParam Integer page, @RequestParam Integer size) {
+        return ResponseEntity.ok(forumService.getAnswersHistory(page, size));
+    }
+
+    @GetMapping("history")
+    ResponseEntity<PageableDto<GetForums>> getForumsHistory(@RequestParam Integer page, @RequestParam Integer size) {
+        return ResponseEntity.ok(forumService.forumQuestionsHistory(page, size));
     }
 }

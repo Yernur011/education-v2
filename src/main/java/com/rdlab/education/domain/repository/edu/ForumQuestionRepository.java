@@ -1,5 +1,6 @@
 package com.rdlab.education.domain.repository.edu;
 
+import com.rdlab.education.domain.entity.auth.Users;
 import com.rdlab.education.domain.entity.edu.ForumCategory;
 import com.rdlab.education.domain.entity.edu.ForumQuestion;
 import org.springframework.data.domain.Page;
@@ -13,5 +14,7 @@ public interface ForumQuestionRepository extends JpaRepository<ForumQuestion, Lo
     Page<ForumQuestion> findForumQuestionByCategoryAndStatus(ForumCategory forumCategory, String status, Pageable pageable);
 
     Page<ForumQuestion> findForumQuestionByStatus(String status, Pageable pageable);
+
+    Page<ForumQuestion> findForumQuestionByAuthor(Users author, Pageable pageable);
 
 }

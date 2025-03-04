@@ -14,6 +14,7 @@ import com.rdlab.education.domain.entity.edu.ForumQuestion;
 import com.rdlab.education.domain.entity.image.Base64Images;
 import com.rdlab.education.domain.enums.ForumQuestionState;
 import com.rdlab.education.domain.exceptions.ApiException;
+import com.rdlab.education.domain.repository.edu.AnswerRepository;
 import com.rdlab.education.domain.repository.edu.ForumAnswerRepository;
 import com.rdlab.education.domain.repository.edu.ForumCategoryRepository;
 import com.rdlab.education.domain.repository.edu.ForumLikesRepository;
@@ -54,26 +55,8 @@ public class ForumCrudServiceImpl implements ForumCrudService {
 
     @Override
     public PageableDto<GetForums> forumQuestions(int page, int size) {
-        Page<ForumQuestion> forumQuestionByStatus =
-                forumQuestionRepository.findForumQuestionByStatus(ForumQuestionState.APPROVED.getState(), PageRequest.of(page, size));
-
-        PageableDto<GetForums> getForumsPageableDto = new PageableDto<>();
-
-        List<GetForums> list = forumQuestionByStatus.stream()
-                .map(forumQuestion ->
-                        new GetForums(
-                                forumQuestion.getId(),
-                                forumQuestion.getAuthor().getImage() == null ? "" : forumQuestion.getAuthor().getImage().getBase64Image(),
-                                forumQuestion.getTitle(),
-                                forumQuestion.getCreatedAt(),
-                                forumQuestion.getAnswers().size(),
-                                likesRepository.countByForumId(forumQuestion.getId())
-                        ))
-                .toList();
-
-        getForumsPageableDto.setContent(list);
-        getForumsPageableDto.setTotalPages(forumQuestionByStatus.getTotalPages());
-        return getForumsPageableDto;
+        return getGetForumsPageableDto(forumQuestionRepository
+                .findForumQuestionByStatus(ForumQuestionState.APPROVED.getState(), PageRequest.of(page, size)));
     }
 
     @Override
@@ -97,6 +80,32 @@ public class ForumCrudServiceImpl implements ForumCrudService {
         PageableDto<GetForums> getForumsPageableDto = new PageableDto<>();
         getForumsPageableDto.setTotalPages(forumQuestionByForumCategoryAndStatus.getTotalPages());
         getForumsPageableDto.setContent(list);
+        return getForumsPageableDto;
+    }
+
+    @Override
+    public PageableDto<GetForums> forumQuestionsHistory(Integer page, Integer size) {
+        return getGetForumsPageableDto(forumQuestionRepository
+                .findForumQuestionByAuthor(userService.getCurrentUser(), PageRequest.of(page, size)));
+    }
+
+    private PageableDto<GetForums> getGetForumsPageableDto(Page<ForumQuestion> forumQuestionsHistory) {
+        PageableDto<GetForums> getForumsPageableDto = new PageableDto<>();
+
+        List<GetForums> list = forumQuestionsHistory.stream()
+                .map(forumQuestion ->
+                        new GetForums(
+                                forumQuestion.getId(),
+                                forumQuestion.getAuthor().getImage() == null ? "" : forumQuestion.getAuthor().getImage().getBase64Image(),
+                                forumQuestion.getTitle(),
+                                forumQuestion.getCreatedAt(),
+                                forumQuestion.getAnswers().size(),
+                                likesRepository.countByForumId(forumQuestion.getId())
+                        ))
+                .toList();
+
+        getForumsPageableDto.setContent(list);
+        getForumsPageableDto.setTotalPages(forumQuestionsHistory.getTotalPages());
         return getForumsPageableDto;
     }
 
@@ -128,7 +137,7 @@ public class ForumCrudServiceImpl implements ForumCrudService {
     }
 
     @Override
-    public GetForumWithAnswers forumQuestionWithAnswers(Long id) {
+    public GetForumWithAnswers forumQuestionWithAnswers(Long id, boolean answerListNeeded) {
         ForumQuestion forumQuestion = forumQuestionRepository.findById(id)
                 .orElseThrow(() -> new ApiException("Нет такого Форума!"));
         GetForumWithAnswers getForumWithAnswers = new GetForumWithAnswers();
@@ -140,14 +149,35 @@ public class ForumCrudServiceImpl implements ForumCrudService {
         getForumWithAnswers.setForumImage(forumQuestion.getImages().getBase64Image());
         getForumWithAnswers.setAuthorName(forumQuestion.getAuthor().getName());
         getForumWithAnswers.setAuthorImage(forumQuestion.getAuthor().getImage().getBase64Image());
-        getForumWithAnswers.setAnswersList(forumQuestion.getAnswers()
-                .stream().map(forumAnswer -> new ForumAnswerDto(
-                        forumAnswer.getAnswerText(),
-                        forumAnswer.getCreatedDate(),
-                        new UserInfoOutputDto(forumAnswer.getUser().getName(), forumAnswer.getUser().getLastname(), forumAnswer.getUser().getImage().getBase64Image())
-                ))
-                .toList());
         getForumWithAnswers.setText(forumQuestion.getQuestionText());
+
+        if (answerListNeeded)
+            getForumWithAnswers.setAnswersList(forumQuestion.getAnswers()
+                    .stream().map(forumAnswer -> new ForumAnswerDto(
+                            forumAnswer.getAnswerText(),
+                            forumAnswer.getCreatedDate(),
+                            new UserInfoOutputDto(forumAnswer.getUser().getName(), forumAnswer.getUser().getLastname(), forumAnswer.getUser().getImage().getBase64Image())
+                            , null
+                    ))
+                    .toList());
         return getForumWithAnswers;
+    }
+
+    @Override
+    public PageableDto<ForumAnswerDto> getAnswersHistory(Integer page, Integer size) {
+        Page<ForumAnswers> byUser = forumAnswerRepository.findByUser(userService.getCurrentUser(), PageRequest.of(page, size));
+        List<ForumAnswerDto> answers = byUser.getContent().stream()
+                .map(answer -> new ForumAnswerDto(
+                        answer.getAnswerText(),
+                        answer.getCreatedDate(),
+                        null,
+                        forumQuestionWithAnswers(answer.getQuestion().getId(), false)
+                )).toList();
+
+        PageableDto<ForumAnswerDto> getForumsAnswerDto = new PageableDto<>();
+        getForumsAnswerDto.setTotalPages(byUser.getTotalPages());
+        getForumsAnswerDto.setContent(answers);
+        return getForumsAnswerDto;
+
     }
 }

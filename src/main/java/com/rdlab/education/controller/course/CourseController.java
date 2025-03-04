@@ -36,6 +36,13 @@ public class CourseController {
         return ResponseEntity.ok(courseCrudService.findAllPageable(page, size));
     }
 
+    @GetMapping("history")
+    public ResponseEntity<PageableDto<CoursesResponseDto>> getCourseHistory(@RequestParam Long page, @RequestParam Long size) {
+        return ResponseEntity.ok(courseCrudService.getCouresHistory(page, size));
+    }
+
+
+
     @GetMapping("/{id}")
     public ResponseEntity<CourseDetailsDto> getCourse(@PathVariable Long id) {
         return ResponseEntity.ok(courseCrudService.findByIdAndProgress(id));
