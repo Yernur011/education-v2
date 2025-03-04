@@ -19,6 +19,7 @@ public class GetForumWithAnswers {
     String authorName;
     String forumImage;
     String forumTitle;
+    String text;
     LocalDateTime createdAt;
     Integer answerCount;
     List<ForumAnswerDto> answersList;

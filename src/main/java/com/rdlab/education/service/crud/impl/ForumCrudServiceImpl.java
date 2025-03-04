@@ -147,6 +147,7 @@ public class ForumCrudServiceImpl implements ForumCrudService {
                         new UserInfoOutputDto(forumAnswer.getUser().getName(), forumAnswer.getUser().getLastname(), forumAnswer.getUser().getImage().getBase64Image())
                 ))
                 .toList());
+        getForumWithAnswers.setText(forumQuestion.getQuestionText());
         return getForumWithAnswers;
     }
 }
