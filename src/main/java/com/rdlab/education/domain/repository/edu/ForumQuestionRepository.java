@@ -15,7 +15,7 @@ public interface ForumQuestionRepository extends JpaRepository<ForumQuestion, Lo
 
     Page<ForumQuestion> findForumQuestionByCategoryAndStatus(ForumCategory forumCategory, String status, Pageable pageable);
 
-    @Query("SELECT COUNT(q) FROM ForumQuestion q WHERE q.category.id = :categoryId and q.status = :status")
+    @Query("SELECT COUNT(q) FROM ForumQuestion q WHERE q.category.id = :categoryId and q.status = :status order by q.id desc")
     Long countQuestionsByCategoryId(@Param("categoryId") Long categoryId, String status);
 
     Page<ForumQuestion> findForumQuestionByStatus(String status, Pageable pageable);

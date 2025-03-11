@@ -24,6 +24,7 @@ import com.rdlab.education.service.crud.ForumCrudService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -56,7 +57,7 @@ public class ForumCrudServiceImpl implements ForumCrudService {
     @Override
     public PageableDto<GetForums> forumQuestions(int page, int size) {
         return getGetForumsPageableDto(forumQuestionRepository
-                .findForumQuestionByStatus(ForumQuestionState.APPROVED.getState(), PageRequest.of(page, size)));
+                .findForumQuestionByStatus(ForumQuestionState.APPROVED.getState(), PageRequest.of(page, size, Sort.by("id").descending())));
     }
 
     @Override
@@ -64,7 +65,7 @@ public class ForumCrudServiceImpl implements ForumCrudService {
         ForumCategory forumCategory = forumCategoryRepository.findById(categoryId).orElseThrow(() -> new ApiException("Нет такой категоии!"));
 
         Page<ForumQuestion> forumQuestionByForumCategoryAndStatus =
-                forumQuestionRepository.findForumQuestionByCategoryAndStatus(forumCategory, ForumQuestionState.APPROVED.getState(), PageRequest.of(page, size));
+                forumQuestionRepository.findForumQuestionByCategoryAndStatus(forumCategory, ForumQuestionState.APPROVED.getState(), PageRequest.of(page, size, Sort.by("id").descending()));
 
         List<GetForums> list = forumQuestionByForumCategoryAndStatus.getContent().stream()
                 .map(forumQuestion ->
@@ -86,7 +87,7 @@ public class ForumCrudServiceImpl implements ForumCrudService {
     @Override
     public PageableDto<GetForums> forumQuestionsHistory(Integer page, Integer size) {
         return getGetForumsPageableDto(forumQuestionRepository
-                .findForumQuestionByAuthor(userService.getCurrentUser(), PageRequest.of(page, size)));
+                .findForumQuestionByAuthor(userService.getCurrentUser(), PageRequest.of(page, size, Sort.by("id").descending())));
     }
 
     private PageableDto<GetForums> getGetForumsPageableDto(Page<ForumQuestion> forumQuestionsHistory) {
