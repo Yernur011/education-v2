@@ -12,6 +12,7 @@ import com.rdlab.education.domain.repository.UserRepository;
 import com.rdlab.education.service.crud.AccountService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -65,14 +66,16 @@ public class UserAccountServiceImpl implements AccountService {
 
     @Override
     public GetProfile getProfile() {
-        String name = SecurityContextHolder.getContext().getAuthentication().getName();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String name = authentication.getName();
+        String role = authentication.getAuthorities().stream().findFirst().orElseThrow().getAuthority();
         return userRepository.findByUsername(name)
                 .map(users ->
                         new GetProfile(
                                 users.getName(),
                                 users.getLastname(),
-                                users.getImage() == null ? "": users.getImage().getBase64Image(),
-                                SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream().findFirst().orElseThrow().getAuthority()
+                                users.getImage() == null ? "" : users.getImage().getBase64Image(),
+                                role
                         ))
                 .orElseThrow(() -> new ApiException("Похоже нет такого пользователя!"));
 
