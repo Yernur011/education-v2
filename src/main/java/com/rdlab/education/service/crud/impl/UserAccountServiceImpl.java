@@ -71,7 +71,8 @@ public class UserAccountServiceImpl implements AccountService {
                         new GetProfile(
                                 users.getName(),
                                 users.getLastname(),
-                                users.getImage().getBase64Image()
+                                users.getImage() == null ? "": users.getImage().getBase64Image(),
+                                SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream().findFirst().orElseThrow().getAuthority()
                         ))
                 .orElseThrow(() -> new ApiException("Похоже нет такого пользователя!"));
 
