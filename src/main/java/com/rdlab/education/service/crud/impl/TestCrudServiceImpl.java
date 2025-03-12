@@ -98,5 +98,10 @@ public class TestCrudServiceImpl implements TestCrudService {
         return testRepository.findById(id);
     }
 
+    @Override
+    public Test save(Test test) {
+        return null;
+    }
+
 
 }

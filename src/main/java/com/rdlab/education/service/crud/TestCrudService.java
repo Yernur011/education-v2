@@ -17,5 +17,5 @@ public interface TestCrudService {
     TestDto findDtoById(Long id);
 
     Optional<Test> findById(Long id);
-
+    Test save(Test test);
 }

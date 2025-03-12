@@ -1,5 +1,6 @@
 package com.rdlab.education.service.crud.impl;
 
+import com.rdlab.education.domain.dto.course.AdminCourseResponse;
 import com.rdlab.education.domain.dto.course.CourseDetailsDto;
 import com.rdlab.education.domain.dto.course.CoursesResponseDto;
 import com.rdlab.education.domain.dto.lesson.LessonDto;
@@ -61,6 +62,27 @@ public class CourseCrudServiceImpl implements CourseCrudService {
     }
 
     @Override
+    public PageableDto<AdminCourseResponse> findAll(Long page, Long size) {
+        Page<Course> all = courseRepository.findAll(PageRequest.of(page.intValue(), size.intValue()));
+        PageableDto<AdminCourseResponse> coursesResponseDtoPageableDto = new PageableDto<>();
+        coursesResponseDtoPageableDto.setTotalPages(all.getTotalPages());
+        coursesResponseDtoPageableDto.setContent(
+                all.getContent()
+                        .stream()
+                        .map(course -> {
+                            AdminCourseResponse adminCourseResponse = new AdminCourseResponse();
+                            adminCourseResponse.setId(course.getId());
+                            adminCourseResponse.setTags(course.getTags().stream().map(Tags::getName).toList());
+                            adminCourseResponse.setTitle(course.getTitle());
+                            adminCourseResponse.setCreatedAt(course.getCreatedAt());
+                            return adminCourseResponse;
+                        }).toList()
+        );
+
+        return coursesResponseDtoPageableDto;
+    }
+
+    @Override
     public PageableDto<CoursesResponseDto> getCouresHistory(Long page, Long size) {
         Page<UserCourse> all = userCourseRepository.findByUserAndStatus(
                 userService.getCurrentUser(),
@@ -91,9 +113,32 @@ public class CourseCrudServiceImpl implements CourseCrudService {
     }
 
     @Override
-    public CourseDetailsDto findById(Long id) {
+    public CourseDetailsDto findByIdWithoutProgress(Long id) {
         return courseService.findByIdWithoutProgress(id);
     }
+
+    @Override
+    public CourseDetailsDto findById(Long id) {
+        return courseRepository.findById(id)
+                .map(course ->
+                        new CourseDetailsDto(
+                                course.getId(),
+                                course.getTitle(),
+                                course.getDescription(),
+                                course.getBase64Images().getBase64Image(),
+                                course.getTags().stream().map(Tags::getName).toList(),
+                                course.getLessons().stream()
+                                        .map(lesson -> new LessonDto(
+                                                lesson.getId(), lesson.getLessonNumber(), lesson.getTitle(), lesson.getVideoUrl(),
+                                                lesson.getBodyText(), lesson.getStatus(), lesson.getIsCompleted())
+                                        ).collect(Collectors.toList()),
+                                null,
+                                course.getStatus()
+                        )
+                )
+                .orElseThrow(() -> new NoSuchElementException(COURSE_NOT_FOUND));
+    }
+
 
     @Override
     public Course save(Course course) {

@@ -1,6 +1,7 @@
 package com.rdlab.education.config.security;
 
 
+import com.rdlab.education.domain.enums.UserRole;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,8 +17,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import static com.rdlab.education.utils.codes.ProductCode.MAIN_INFO_URI;
-import static com.rdlab.education.utils.codes.ProductCode.V1_URI;
+import static com.rdlab.education.utils.codes.ProductCode.*;
 
 @Configuration
 @EnableWebSecurity
@@ -57,6 +57,8 @@ public class SecurityConfiguration {
                             .permitAll()
                             .requestMatchers(publicRouts)
                             .permitAll()
+                            .requestMatchers(V1_URI + ADMIN_URI + "/**")
+                            .hasAnyRole(UserRole.ADMIN.getRole())
                             .anyRequest()
                             .authenticated();
                 })
