@@ -31,8 +31,9 @@ public class AdminController {
         return ResponseEntity.ok(courseService.createCourse(request));
     }
 
-    @PutMapping(COURSE_URI + "/{id}")
-    public ResponseEntity<AdminCourseResponse> updateCourse(@PathVariable Long id, @RequestBody CourseDetailsDto request) {
+    @PutMapping(COURSE_URI)
+    public ResponseEntity<AdminCourseResponse> updateCourse(@RequestBody CourseDetailsDto request) {
+
         return ResponseEntity.ok().build(); //todo
     }
 

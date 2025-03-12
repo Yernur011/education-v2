@@ -8,6 +8,7 @@ import com.rdlab.education.domain.entity.image.Base64Images;
 import com.rdlab.education.domain.enums.CourseStatus;
 import com.rdlab.education.domain.enums.UserCourseLessonStatusEnum;
 import com.rdlab.education.domain.enums.UserTestStatusEnum;
+import com.rdlab.education.domain.exceptions.ApiException;
 import com.rdlab.education.domain.exceptions.NotFoundException;
 import com.rdlab.education.domain.repository.edu.*;
 import com.rdlab.education.service.auth.UserService;
@@ -37,7 +38,6 @@ public class CourseServiceImpl implements CourseService {
     private final LessonRepository lessonRepository;
     private final TestRepository testRepository;
     private final UserService userService;
-    private final CourseCrudService courseCrudService;
     private final TagsRepository tagsRepository;
 
     @Override
@@ -78,7 +78,41 @@ public class CourseServiceImpl implements CourseService {
                 })
                 .toList());
 
-        return courseCrudService.save(course);
+        return courseRepository.save(course);
+    }
+
+    @Override
+    public Course updateCourse(CourseDetailsDto courseDetailsDto) {
+        Optional<Course> byId = courseRepository.findById(courseDetailsDto.getId());
+        if (byId.isPresent()) {
+            Course course = byId.get();
+            course.setTitle(courseDetailsDto.getTitle());
+            course.setDescription(courseDetailsDto.getDescription());
+            if (!course.getBase64Images().getBase64Image().equals(courseDetailsDto.getImage())){
+                course.setBase64Images(new Base64Images(courseDetailsDto.getImage()));
+            }
+            course.getTags().addAll(courseDetailsDto.getTags()
+                    .stream()
+                    .map(tagsRepository::findByName)
+                    .map(tags -> tags.orElse(null))
+                    .toList());
+            course.getLessons().addAll(courseDetailsDto.getLessons()
+                    .stream()
+                    .map(lessonDto -> {
+                        Lesson lesson = new Lesson();
+                        lesson.setTitle(lessonDto.getTitle());
+                        lesson.setStatus(UserCourseLessonStatusEnum.ACTIVE.getStatus());
+                        lesson.setLessonNumber(lessonDto.getLessonNumber());
+                        lesson.setVideoUrl(lessonDto.getVideoUrl());
+                        lesson.setBodyText(lessonDto.getBodyText());
+                        lesson.setIsCompleted(false);
+                        return lesson;
+                    })
+                    .toList());
+            course.setStatus(courseDetailsDto.getStatus());
+            return courseRepository.save(course);
+        }
+        throw new ApiException("Course Not Found");
     }
 
     @Override

@@ -48,7 +48,4 @@ public class Course extends BusinessEntity<Long> {
 
     @Column(name = "course_status", nullable = false)
     String status;
-
-    @Column(name = "created_date")
-    LocalDateTime createdAt = LocalDateTime.now();
 }

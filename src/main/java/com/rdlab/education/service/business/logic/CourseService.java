@@ -16,4 +16,6 @@ public interface CourseService {
     TestDto getCurrentTestByCourse(Long courseId);
     void testFinished(Long id);
     Course createCourse(CourseDetailsDto courseDetailsDto);
+
+    Course updateCourse(CourseDetailsDto courseDetailsDto);
 }
