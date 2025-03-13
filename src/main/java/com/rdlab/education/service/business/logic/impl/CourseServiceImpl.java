@@ -106,6 +106,16 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
+    public Tags saveTags(Tags tags) {
+        return tagsRepository.save(tags);
+    }
+
+    @Override
+    public void deleteTags(Long id) {
+        tagsRepository.deleteById(id);
+    }
+
+    @Override
     public CourseDetailsDto updateCourse(CourseDetailsDto courseDetailsDto) {
         Optional<Course> byId = courseRepository.findById(courseDetailsDto.getId());
         if (byId.isPresent()) {
@@ -233,6 +243,11 @@ public class CourseServiceImpl implements CourseService {
 
     private UserCourse findUserCourse(Lesson lesson) {
         return getByCourseAndUser(lesson.getCourse());
+    }
+
+    @Override
+    public List<Tags> findAllTags() {
+        return tagsRepository.findAll();
     }
 
     @Override

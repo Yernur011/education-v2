@@ -3,10 +3,12 @@ package com.rdlab.education.controller.course;
 import com.rdlab.education.domain.dto.course.CourseDetailsDto;
 import com.rdlab.education.domain.dto.course.CoursesResponseDto;
 import com.rdlab.education.domain.dto.page.PageableDto;
+import com.rdlab.education.domain.entity.edu.Tags;
 import com.rdlab.education.service.business.logic.CourseService;
 import com.rdlab.education.service.crud.CourseCrudService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -41,7 +43,10 @@ public class CourseController {
         return ResponseEntity.ok(courseCrudService.getCouresHistory(page, size));
     }
 
-
+    @GetMapping("/tags")
+    public ResponseEntity<List<Tags>> getTags() {
+        return ResponseEntity.ok(courseService.findAllTags());
+    }
 
     @GetMapping("/{id}")
     public ResponseEntity<CourseDetailsDto> getCourse(@PathVariable Long id) {

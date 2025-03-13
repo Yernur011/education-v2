@@ -1,5 +1,6 @@
 package com.rdlab.education.domain.entity.edu;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -14,6 +15,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Tags {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

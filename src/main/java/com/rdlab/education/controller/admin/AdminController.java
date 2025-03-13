@@ -4,6 +4,7 @@ import com.rdlab.education.domain.dto.course.AdminCourseResponse;
 import com.rdlab.education.domain.dto.course.CourseDetailsDto;
 import com.rdlab.education.domain.dto.page.PageableDto;
 import com.rdlab.education.domain.entity.edu.Course;
+import com.rdlab.education.domain.entity.edu.Tags;
 import com.rdlab.education.service.business.logic.CourseService;
 import com.rdlab.education.service.crud.CourseCrudService;
 import lombok.RequiredArgsConstructor;
@@ -40,5 +41,21 @@ public class AdminController {
     public ResponseEntity<CourseDetailsDto> getCourse(@PathVariable Long id) {
         return ResponseEntity.ok(courseCrudService.findById(id));
     }
+    @PostMapping(COURSE_URI+TAGS_URI)
+    public ResponseEntity<Tags> createTags(@RequestBody Tags request) {
+        return ResponseEntity.ok(courseService.saveTags(request));
+    }
 
+    @DeleteMapping(COURSE_URI + TAGS_URI + "/{id}")
+    public ResponseEntity<Void> deleteTags(@PathVariable Long id) {
+        courseService.deleteTags(id);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping(COURSE_URI + "/{id}")
+    public ResponseEntity<Void> deleteCourse(@PathVariable Long id) {
+
+        courseCrudService.deleteById(id);
+        return ResponseEntity.ok().build();
+    }
 }
