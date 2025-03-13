@@ -27,14 +27,13 @@ public class AdminController {
     }
 
     @PostMapping(COURSE_URI)
-    public ResponseEntity<Course> createCourse(@RequestBody CourseDetailsDto request) {
+    public ResponseEntity<CourseDetailsDto> createCourse(@RequestBody CourseDetailsDto request) {
         return ResponseEntity.ok(courseService.createCourse(request));
     }
 
     @PutMapping(COURSE_URI)
-    public ResponseEntity<AdminCourseResponse> updateCourse(@RequestBody CourseDetailsDto request) {
-
-        return ResponseEntity.ok().build(); //todo
+    public ResponseEntity<CourseDetailsDto> updateCourse(@RequestBody CourseDetailsDto request) {
+        return ResponseEntity.ok(courseService.updateCourse(request));
     }
 
     @GetMapping(COURSE_URI + "/{id}")

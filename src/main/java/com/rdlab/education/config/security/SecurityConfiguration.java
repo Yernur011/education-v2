@@ -23,6 +23,7 @@ import static com.rdlab.education.utils.codes.ProductCode.*;
 @EnableWebSecurity
 @EnableMethodSecurity
 public class SecurityConfiguration {
+    private final String PREFIX = "ROLE_";
     private final String[] publicRouts = {
             "/api/v1/auth/register",
             "/api/v1/auth/verify",
@@ -58,7 +59,7 @@ public class SecurityConfiguration {
                             .requestMatchers(publicRouts)
                             .permitAll()
                             .requestMatchers(V1_URI + ADMIN_URI + "/**")
-                            .hasAnyRole(UserRole.ADMIN.getRole())
+                            .hasAuthority(UserRole.ADMIN.getRole())
                             .anyRequest()
                             .authenticated();
                 })

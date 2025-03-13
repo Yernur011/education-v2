@@ -75,6 +75,7 @@ public class CourseCrudServiceImpl implements CourseCrudService {
                             adminCourseResponse.setTags(course.getTags().stream().map(Tags::getName).toList());
                             adminCourseResponse.setTitle(course.getTitle());
                             adminCourseResponse.setCreatedAt(course.getCreationDate());
+                            adminCourseResponse.setStatus(course.getStatus());
                             return adminCourseResponse;
                         }).toList()
         );

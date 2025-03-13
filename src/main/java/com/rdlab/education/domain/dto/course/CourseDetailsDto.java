@@ -1,5 +1,6 @@
 package com.rdlab.education.domain.dto.course;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.rdlab.education.domain.dto.lesson.LessonDto;
 import com.rdlab.education.domain.dto.test.TestDto;
 import lombok.AllArgsConstructor;
@@ -14,6 +15,7 @@ import java.util.List;
 @NoArgsConstructor
 @Getter
 @Setter
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class CourseDetailsDto {
     Long id;
     String title;

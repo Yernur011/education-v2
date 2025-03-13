@@ -1,6 +1,7 @@
 package com.rdlab.education.service.business.logic.impl;
 
 import com.rdlab.education.domain.dto.course.CourseDetailsDto;
+import com.rdlab.education.domain.dto.course.CoursesResponseDto;
 import com.rdlab.education.domain.dto.lesson.LessonDto;
 import com.rdlab.education.domain.dto.test.TestDto;
 import com.rdlab.education.domain.entity.edu.*;
@@ -51,7 +52,7 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    public Course createCourse(CourseDetailsDto courseDetailsDto) {
+    public CourseDetailsDto createCourse(CourseDetailsDto courseDetailsDto) {
         Course course = new Course();
         course.setTitle(courseDetailsDto.getTitle());
         course.setDescription(courseDetailsDto.getDescription());
@@ -74,15 +75,38 @@ public class CourseServiceImpl implements CourseService {
                     lesson.setVideoUrl(lessonDto.getVideoUrl());
                     lesson.setBodyText(lessonDto.getBodyText());
                     lesson.setIsCompleted(false);
+                    lesson.setCourse(course);
                     return lesson;
                 })
                 .toList());
 
-        return courseRepository.save(course);
+        Course save = courseRepository.save(course);
+        CourseDetailsDto courseDetailsDto1 = new CourseDetailsDto();
+        courseDetailsDto1.setTitle(save.getTitle());
+        courseDetailsDto1.setDescription(save.getDescription());
+        courseDetailsDto1.setId(save.getId());
+        courseDetailsDto1.setStatus(save.getStatus());
+        courseDetailsDto1.setTags(save.getTags().stream().map(Tags::getName).toList());
+        courseDetailsDto1.setImage(course.getBase64Images().getBase64Image());
+        courseDetailsDto1.setLessons(
+                save.getLessons()
+                        .stream()
+                        .map(lesson ->
+                                new LessonDto(
+                                        lesson.getId(),
+                                        lesson.getLessonNumber(),
+                                        lesson.getTitle(),
+                                        lesson.getVideoUrl(),
+                                        lesson.getBodyText(),
+                                        lesson.getStatus(),
+                                        lesson.getIsCompleted()))
+                        .toList()
+        );
+        return courseDetailsDto1;
     }
 
     @Override
-    public Course updateCourse(CourseDetailsDto courseDetailsDto) {
+    public CourseDetailsDto updateCourse(CourseDetailsDto courseDetailsDto) {
         Optional<Course> byId = courseRepository.findById(courseDetailsDto.getId());
         if (byId.isPresent()) {
             Course course = byId.get();
@@ -106,11 +130,34 @@ public class CourseServiceImpl implements CourseService {
                         lesson.setVideoUrl(lessonDto.getVideoUrl());
                         lesson.setBodyText(lessonDto.getBodyText());
                         lesson.setIsCompleted(false);
+                        lesson.setCourse(course);
                         return lesson;
                     })
                     .toList());
-            course.setStatus(courseDetailsDto.getStatus());
-            return courseRepository.save(course);
+
+            Course save = courseRepository.save(course);
+            CourseDetailsDto courseDetailsDto1 = new CourseDetailsDto();
+            courseDetailsDto1.setTitle(save.getTitle());
+            courseDetailsDto1.setDescription(save.getDescription());
+            courseDetailsDto1.setId(save.getId());
+            courseDetailsDto1.setStatus(save.getStatus());
+            courseDetailsDto1.setTags(save.getTags().stream().map(Tags::getName).toList());
+            courseDetailsDto1.setImage(course.getBase64Images().getBase64Image());
+            courseDetailsDto1.setLessons(
+                    save.getLessons()
+                            .stream()
+                            .map(lesson ->
+                                    new LessonDto(
+                                            lesson.getId(),
+                                            lesson.getLessonNumber(),
+                                            lesson.getTitle(),
+                                            lesson.getVideoUrl(),
+                                            lesson.getBodyText(),
+                                            lesson.getStatus(),
+                                            lesson.getIsCompleted()))
+                            .toList()
+            );
+            return courseDetailsDto1;
         }
         throw new ApiException("Course Not Found");
     }
