@@ -33,7 +33,7 @@ public class MainInfoController {
 
     @GetMapping(POPULAR_URI + COURSE_URI + "/{id}")
     public ResponseEntity<CourseDetailsDto> getCourse(@PathVariable Long id) {
-        return ResponseEntity.ok(courseCrudService.findById(id));
+        return ResponseEntity.ok(courseCrudService.findByIdWithoutProgress(id));
     }
 
     @GetMapping(POPULAR_URI + TESTS_URI)

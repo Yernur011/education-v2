@@ -14,6 +14,7 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.TimeZone;
 
+@Getter
 @MappedSuperclass
 public abstract class BusinessEntity<Id extends Serializable> implements CoreEntity<Id> {
 

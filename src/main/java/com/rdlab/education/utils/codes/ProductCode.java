@@ -16,4 +16,5 @@ public interface ProductCode {
     String FORUMS_URI = "/forums";
     String USERS_URI = "/users";
     String SEARCH_URI = "/search";
+    String ADMIN_URI = "/admin";
 }

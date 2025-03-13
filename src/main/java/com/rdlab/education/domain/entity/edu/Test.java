@@ -21,6 +21,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
+
 @Setter
 public class Test extends BusinessEntity<Long> {
     @Id
@@ -36,4 +37,11 @@ public class Test extends BusinessEntity<Long> {
     @OneToOne(mappedBy = "test")
     private Course course;
 
+    public Test(String title, String state, String type, List<Question> questions, Course course) {
+        this.title = title;
+        this.state = state;
+        this.type = type;
+        this.questions = questions;
+        this.course = course;
+    }
 }

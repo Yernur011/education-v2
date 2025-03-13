@@ -1,28 +1,28 @@
 package com.rdlab.education.domain.dto.course;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.rdlab.education.domain.dto.lesson.LessonDto;
-import com.rdlab.education.domain.dto.test.TestDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-@AllArgsConstructor
-@NoArgsConstructor
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class CourseDetailsDto {
+public class AdminCourseResponse {
     Long id;
+
     String title;
-    String description;
-    String image;
+
+    LocalDateTime createdAt;
+
     List<String> tags = new ArrayList<>();
-    List<LessonDto> lessons = new ArrayList<>();
-    TestDto test;
+
     String status;
 }

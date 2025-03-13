@@ -1,23 +1,20 @@
 package com.rdlab.education.service.business.logic.impl;
 
 import com.rdlab.education.domain.dto.course.CourseDetailsDto;
+import com.rdlab.education.domain.dto.course.CoursesResponseDto;
 import com.rdlab.education.domain.dto.lesson.LessonDto;
 import com.rdlab.education.domain.dto.test.TestDto;
-import com.rdlab.education.domain.entity.edu.Course;
-import com.rdlab.education.domain.entity.edu.Lesson;
-import com.rdlab.education.domain.entity.edu.Tags;
-import com.rdlab.education.domain.entity.edu.UserCourse;
-import com.rdlab.education.domain.entity.edu.UserCourseLesson;
+import com.rdlab.education.domain.entity.edu.*;
+import com.rdlab.education.domain.entity.image.Base64Images;
+import com.rdlab.education.domain.enums.CourseStatus;
 import com.rdlab.education.domain.enums.UserCourseLessonStatusEnum;
 import com.rdlab.education.domain.enums.UserTestStatusEnum;
+import com.rdlab.education.domain.exceptions.ApiException;
 import com.rdlab.education.domain.exceptions.NotFoundException;
-import com.rdlab.education.domain.repository.edu.CourseRepository;
-import com.rdlab.education.domain.repository.edu.LessonRepository;
-import com.rdlab.education.domain.repository.edu.TestRepository;
-import com.rdlab.education.domain.repository.edu.UserCourseLessonRepository;
-import com.rdlab.education.domain.repository.edu.UserCourseRepository;
+import com.rdlab.education.domain.repository.edu.*;
 import com.rdlab.education.service.auth.UserService;
 import com.rdlab.education.service.business.logic.CourseService;
+import com.rdlab.education.service.crud.CourseCrudService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -25,6 +22,7 @@ import org.springframework.stereotype.Service;
 import java.util.Comparator;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -41,6 +39,7 @@ public class CourseServiceImpl implements CourseService {
     private final LessonRepository lessonRepository;
     private final TestRepository testRepository;
     private final UserService userService;
+    private final TagsRepository tagsRepository;
 
     @Override
     public void testFinished(Long id) {
@@ -50,6 +49,117 @@ public class CourseServiceImpl implements CourseService {
                     userCourse.setStatus(UserCourseLessonStatusEnum.COMPLETED.getStatus());
                     userCourseRepository.save(userCourse);
                 });
+    }
+
+    @Override
+    public CourseDetailsDto createCourse(CourseDetailsDto courseDetailsDto) {
+        Course course = new Course();
+        course.setTitle(courseDetailsDto.getTitle());
+        course.setDescription(courseDetailsDto.getDescription());
+        course.setBase64Images(new Base64Images(courseDetailsDto.getImage()));
+        course.setStatus(CourseStatus.CREATED.name());
+
+        course.getTags().addAll(courseDetailsDto.getTags()
+                .stream()
+                .map(tagsRepository::findByName)
+                .map(tags -> tags.orElse(null))
+                .toList());
+
+        course.getLessons().addAll(courseDetailsDto.getLessons()
+                .stream()
+                .map(lessonDto -> {
+                    Lesson lesson = new Lesson();
+                    lesson.setTitle(lessonDto.getTitle());
+                    lesson.setStatus(UserCourseLessonStatusEnum.ACTIVE.getStatus());
+                    lesson.setLessonNumber(lessonDto.getLessonNumber());
+                    lesson.setVideoUrl(lessonDto.getVideoUrl());
+                    lesson.setBodyText(lessonDto.getBodyText());
+                    lesson.setIsCompleted(false);
+                    lesson.setCourse(course);
+                    return lesson;
+                })
+                .toList());
+
+        Course save = courseRepository.save(course);
+        CourseDetailsDto courseDetailsDto1 = new CourseDetailsDto();
+        courseDetailsDto1.setTitle(save.getTitle());
+        courseDetailsDto1.setDescription(save.getDescription());
+        courseDetailsDto1.setId(save.getId());
+        courseDetailsDto1.setStatus(save.getStatus());
+        courseDetailsDto1.setTags(save.getTags().stream().map(Tags::getName).toList());
+        courseDetailsDto1.setImage(course.getBase64Images().getBase64Image());
+        courseDetailsDto1.setLessons(
+                save.getLessons()
+                        .stream()
+                        .map(lesson ->
+                                new LessonDto(
+                                        lesson.getId(),
+                                        lesson.getLessonNumber(),
+                                        lesson.getTitle(),
+                                        lesson.getVideoUrl(),
+                                        lesson.getBodyText(),
+                                        lesson.getStatus(),
+                                        lesson.getIsCompleted()))
+                        .toList()
+        );
+        return courseDetailsDto1;
+    }
+
+    @Override
+    public CourseDetailsDto updateCourse(CourseDetailsDto courseDetailsDto) {
+        Optional<Course> byId = courseRepository.findById(courseDetailsDto.getId());
+        if (byId.isPresent()) {
+            Course course = byId.get();
+            course.setTitle(courseDetailsDto.getTitle());
+            course.setDescription(courseDetailsDto.getDescription());
+            if (!course.getBase64Images().getBase64Image().equals(courseDetailsDto.getImage())){
+                course.setBase64Images(new Base64Images(courseDetailsDto.getImage()));
+            }
+            course.getTags().addAll(courseDetailsDto.getTags()
+                    .stream()
+                    .map(tagsRepository::findByName)
+                    .map(tags -> tags.orElse(null))
+                    .toList());
+            course.getLessons().addAll(courseDetailsDto.getLessons()
+                    .stream()
+                    .map(lessonDto -> {
+                        Lesson lesson = new Lesson();
+                        lesson.setTitle(lessonDto.getTitle());
+                        lesson.setStatus(UserCourseLessonStatusEnum.ACTIVE.getStatus());
+                        lesson.setLessonNumber(lessonDto.getLessonNumber());
+                        lesson.setVideoUrl(lessonDto.getVideoUrl());
+                        lesson.setBodyText(lessonDto.getBodyText());
+                        lesson.setIsCompleted(false);
+                        lesson.setCourse(course);
+                        return lesson;
+                    })
+                    .toList());
+
+            Course save = courseRepository.save(course);
+            CourseDetailsDto courseDetailsDto1 = new CourseDetailsDto();
+            courseDetailsDto1.setTitle(save.getTitle());
+            courseDetailsDto1.setDescription(save.getDescription());
+            courseDetailsDto1.setId(save.getId());
+            courseDetailsDto1.setStatus(save.getStatus());
+            courseDetailsDto1.setTags(save.getTags().stream().map(Tags::getName).toList());
+            courseDetailsDto1.setImage(course.getBase64Images().getBase64Image());
+            courseDetailsDto1.setLessons(
+                    save.getLessons()
+                            .stream()
+                            .map(lesson ->
+                                    new LessonDto(
+                                            lesson.getId(),
+                                            lesson.getLessonNumber(),
+                                            lesson.getTitle(),
+                                            lesson.getVideoUrl(),
+                                            lesson.getBodyText(),
+                                            lesson.getStatus(),
+                                            lesson.getIsCompleted()))
+                            .toList()
+            );
+            return courseDetailsDto1;
+        }
+        throw new ApiException("Course Not Found");
     }
 
     @Override

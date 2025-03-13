@@ -1,0 +1,17 @@
+package com.rdlab.education.domain.dto.question;
+
+import com.rdlab.education.domain.dto.test.AnswerCreateDto;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.util.List;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class QuestionCreateDto {
+    private Long id;
+    private String text;
+    private List<AnswerCreateDto> answers;
+}
