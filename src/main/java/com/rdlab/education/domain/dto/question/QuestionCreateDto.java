@@ -12,6 +12,7 @@ import java.util.List;
 @NoArgsConstructor
 public class QuestionCreateDto {
     private Long id;
+    private Long questionNumber;
     private String text;
     private List<AnswerCreateDto> answers;
 }

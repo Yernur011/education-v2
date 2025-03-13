@@ -354,7 +354,7 @@ public class CourseServiceImpl implements CourseService {
                                 test.getTitle(),
                                 UserTestStatusEnum.NOT_ACTIVE.getStatus(),
                                 test.getType(),
-                                course.getId(), null,null
+                                course.getId(), null,null,null
                         )
                 ).orElse(null);
     }
@@ -384,7 +384,7 @@ public class CourseServiceImpl implements CourseService {
                                 test.getTitle(),
                                 finalState,
                                 test.getType(),
-                                first.getUserCourse().getCourse().getId(), null,null
+                                first.getUserCourse().getCourse().getId(), null,null, null
                         )
                 )
                 .orElse(null);

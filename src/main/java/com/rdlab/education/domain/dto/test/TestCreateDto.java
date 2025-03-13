@@ -14,5 +14,7 @@ public class TestCreateDto {
     private Long id;
     private String title;
     private String state;
+    private Long courseId;
+    private String type;
     private List<QuestionCreateDto> questions;
 }
