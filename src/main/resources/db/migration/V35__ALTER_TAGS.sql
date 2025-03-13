@@ -1,0 +1,10 @@
+CREATE SEQUENCE tags_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+ALTER TABLE tags
+    ALTER COLUMN id SET DEFAULT nextval('tags_id_seq');
+

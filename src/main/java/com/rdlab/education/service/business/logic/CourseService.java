@@ -4,10 +4,12 @@ import com.rdlab.education.domain.dto.course.CourseDetailsDto;
 import com.rdlab.education.domain.dto.lesson.LessonDto;
 import com.rdlab.education.domain.dto.test.TestDto;
 import com.rdlab.education.domain.entity.edu.Course;
+import com.rdlab.education.domain.entity.edu.Tags;
 
 import java.util.List;
 
 public interface CourseService {
+    List<Tags> findAllTags();
     CourseDetailsDto findByIdWithoutProgress(Long id);
     CourseDetailsDto findByIdAndProgress(Long courseId);
     CourseDetailsDto startCourse(Long courseId);
@@ -16,6 +18,7 @@ public interface CourseService {
     TestDto getCurrentTestByCourse(Long courseId);
     void testFinished(Long id);
     CourseDetailsDto createCourse(CourseDetailsDto courseDetailsDto);
-
+    Tags saveTags(Tags tags);
+    void deleteTags(Long id);
     CourseDetailsDto updateCourse(CourseDetailsDto courseDetailsDto);
 }
