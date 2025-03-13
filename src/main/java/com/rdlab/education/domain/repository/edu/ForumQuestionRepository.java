@@ -24,4 +24,5 @@ public interface ForumQuestionRepository extends JpaRepository<ForumQuestion, Lo
 
     List<ForumQuestion> findByTitleContainingIgnoreCaseOrQuestionTextContainingIgnoreCase(String title, String text);
 
+    void removeForumQuestionById(Long id);
 }

@@ -1,7 +1,7 @@
 package com.rdlab.education.utils.codes;
 
 public interface ProductCode {
-    String V1_URI = "/api/v1";
+    String V1_URI = "api/v1";
     String POPULAR_URI = "/popular";
     String COURSE_URI = "/courses";
     String LESSON_URI = "/lessons";

@@ -5,11 +5,14 @@ import com.rdlab.education.domain.dto.course.CourseDetailsDto;
 import com.rdlab.education.domain.dto.lesson.LessonDto;
 import com.rdlab.education.domain.dto.page.PageableDto;
 import com.rdlab.education.domain.entity.edu.Course;
+import com.rdlab.education.domain.entity.edu.ForumQuestion;
 import com.rdlab.education.domain.entity.edu.Tags;
 import com.rdlab.education.service.business.logic.CourseService;
 import com.rdlab.education.service.crud.CourseCrudService;
+import com.rdlab.education.service.crud.ForumCrudService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,8 +25,9 @@ public class AdminController {
 
     private final CourseCrudService courseCrudService;
     private final CourseService courseService;
+    private final ForumCrudService forumCrudService;
 
-    //    courses
+//    Courses
     @GetMapping(COURSE_URI)
     public ResponseEntity<PageableDto<AdminCourseResponse>> getCourses(@RequestParam Long page, @RequestParam Long size) {
         return ResponseEntity.ok(courseCrudService.findAll(page, size));
@@ -51,8 +55,8 @@ public class AdminController {
     }
 
 
-    //    Tags
-    @PostMapping(COURSE_URI + TAGS_URI)
+//    Tags
+    @PostMapping(COURSE_URI+TAGS_URI)
     public ResponseEntity<Tags> createTags(@RequestBody Tags request) {
         return ResponseEntity.ok(courseService.saveTags(request));
     }
@@ -63,7 +67,7 @@ public class AdminController {
         return ResponseEntity.ok().build();
     }
 
-    //    Lesson
+//    Lesson
     @PutMapping(COURSE_URI +"/{courseId}"+ LESSON_URI)
     public ResponseEntity<LessonDto> updateLesson(@PathVariable Long courseId, @RequestBody LessonDto request) {
         return ResponseEntity.ok(courseService.updateLesson(courseId, request));
@@ -74,4 +78,27 @@ public class AdminController {
         courseService.deleteLesson(id);
         return ResponseEntity.ok().build();
     }
+
+//    ForumQuestion
+    @PostMapping(FORUMS_URI + "/approve")
+    public ResponseEntity<Void> approveForum(@RequestBody Long id) {
+        forumCrudService.approveForumQuestion(id);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    @PostMapping(FORUMS_URI + "/revoke")
+    public ResponseEntity<Void> revokeForum(@RequestBody Long id) {
+        forumCrudService.revokeForumQuestion(id);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    @DeleteMapping(FORUMS_URI)
+    public ResponseEntity<Void> deleteForum(@RequestBody Long id) {
+        forumCrudService.removeForumQuestion(id);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+
+
+
 }

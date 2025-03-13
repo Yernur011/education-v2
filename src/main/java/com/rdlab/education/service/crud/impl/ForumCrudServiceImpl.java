@@ -50,8 +50,28 @@ public class ForumCrudServiceImpl implements ForumCrudService {
         if (questionDto.base64Image() != null) {
             forumQuestion.setImages(new Base64Images(questionDto.base64Image()));
         }
-        forumQuestion.setStatus(ForumQuestionState.APPROVED.getState());
+        forumQuestion.setStatus(ForumQuestionState.CREATED.getState());
         forumQuestionRepository.save(forumQuestion);
+    }
+
+    public void approveForumQuestion(Long id) {
+        forumQuestionRepository.findById(id).ifPresent(forumQuestion -> {
+            forumQuestion.setStatus(ForumQuestionState.APPROVED.getState());
+            forumQuestionRepository.save(forumQuestion);
+        });
+    }
+
+    public void revokeForumQuestion(Long id) {
+        forumQuestionRepository.findById(id).ifPresent(forumQuestion -> {
+            forumQuestion.setStatus(ForumQuestionState.REVOKED.getState());
+            forumQuestionRepository.save(forumQuestion);
+        });
+    }
+
+
+    @Override
+    public void removeForumQuestion(Long id) {
+        forumQuestionRepository.removeForumQuestionById(id);
     }
 
     @Override
