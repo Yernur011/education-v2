@@ -20,10 +20,10 @@ public abstract class BusinessEntity<Id extends Serializable> implements CoreEnt
 
     public final static String DEFAULT_USER = "system";
 
-    @Column(name = "created_by", nullable = false)
+    @Column(name = "created_by", nullable = false, updatable = false)
     private String createdBy;
 
-    @Column(name = "created_date", nullable = false)
+    @Column(name = "created_date", nullable = false,updatable = false)
     private LocalDateTime creationDate;
 
     @Column(name = "last_updated_by", nullable = false)

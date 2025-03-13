@@ -2,6 +2,7 @@ package com.rdlab.education.controller.admin;
 
 import com.rdlab.education.domain.dto.course.AdminCourseResponse;
 import com.rdlab.education.domain.dto.course.CourseDetailsDto;
+import com.rdlab.education.domain.dto.lesson.LessonDto;
 import com.rdlab.education.domain.dto.page.PageableDto;
 import com.rdlab.education.domain.entity.edu.Course;
 import com.rdlab.education.domain.entity.edu.Tags;
@@ -22,7 +23,7 @@ public class AdminController {
     private final CourseCrudService courseCrudService;
     private final CourseService courseService;
 
-//    courses
+    //    courses
     @GetMapping(COURSE_URI)
     public ResponseEntity<PageableDto<AdminCourseResponse>> getCourses(@RequestParam Long page, @RequestParam Long size) {
         return ResponseEntity.ok(courseCrudService.findAll(page, size));
@@ -42,6 +43,7 @@ public class AdminController {
     public ResponseEntity<CourseDetailsDto> getCourse(@PathVariable Long id) {
         return ResponseEntity.ok(courseCrudService.findById(id));
     }
+
     @DeleteMapping(COURSE_URI + "/{id}")
     public ResponseEntity<Void> deleteCourse(@PathVariable Long id) {
         courseCrudService.deleteById(id);
@@ -50,7 +52,7 @@ public class AdminController {
 
 
     //    Tags
-    @PostMapping(COURSE_URI+TAGS_URI)
+    @PostMapping(COURSE_URI + TAGS_URI)
     public ResponseEntity<Tags> createTags(@RequestBody Tags request) {
         return ResponseEntity.ok(courseService.saveTags(request));
     }
@@ -61,4 +63,15 @@ public class AdminController {
         return ResponseEntity.ok().build();
     }
 
+    //    Lesson
+    @PutMapping(COURSE_URI +"/{courseId}"+ LESSON_URI)
+    public ResponseEntity<LessonDto> updateLesson(@PathVariable Long courseId, @RequestBody LessonDto request) {
+        return ResponseEntity.ok(courseService.updateLesson(courseId, request));
+    }
+
+    @DeleteMapping(COURSE_URI + LESSON_URI + "/{id}")
+    public ResponseEntity<Void> deleteLesson(@PathVariable Long id) {
+        courseService.deleteLesson(id);
+        return ResponseEntity.ok().build();
+    }
 }

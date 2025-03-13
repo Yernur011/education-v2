@@ -21,4 +21,6 @@ public interface CourseService {
     Tags saveTags(Tags tags);
     void deleteTags(Long id);
     CourseDetailsDto updateCourse(CourseDetailsDto courseDetailsDto);
+    LessonDto updateLesson(Long courseId,LessonDto lessonDto);
+    void deleteLesson(Long lessonId);
 }

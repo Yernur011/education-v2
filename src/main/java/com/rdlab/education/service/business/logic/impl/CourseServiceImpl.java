@@ -173,6 +173,35 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
+    public LessonDto updateLesson(Long courseId, LessonDto lessonDto) {
+        Lesson save = lessonRepository.save(
+                new Lesson(
+                        lessonDto.getId(),
+                        lessonDto.getLessonNumber(),
+                        lessonDto.getTitle(),
+                        lessonDto.getVideoUrl(),
+                        lessonDto.getBodyText(),
+                        lessonDto.getStatus(),
+                        lessonDto.getIsCompleted(),
+                        courseRepository.findById(courseId).orElseThrow(() -> new ApiException("Invalid Not Found")))
+        );
+        return new LessonDto(
+                save.getId(),
+                save.getLessonNumber(),
+                save.getTitle(),
+                save.getVideoUrl(),
+                save.getBodyText(),
+                save.getStatus(),
+                save.getIsCompleted());
+
+    }
+
+    @Override
+    public void deleteLesson(Long lessonId) {
+        lessonRepository.deleteById(lessonId);
+    }
+
+    @Override
     public CourseDetailsDto startCourse(Long courseId) {
         var course = courseRepository.findById(courseId)
                 .orElseThrow(() -> new NotFoundException("Course Not Found"));
