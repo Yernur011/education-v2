@@ -25,4 +25,8 @@ public interface TestCrudService {
     TestCreateDto getTestDetails(Long id);
 
     void deleteTest(Long id);
+
+    void deleteQuestion(Long testId, Long questionId);
+
+    void deleteAnswer(Long questionId, Long answerId);
 }

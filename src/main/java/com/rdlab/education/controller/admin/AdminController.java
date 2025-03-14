@@ -118,10 +118,23 @@ public class AdminController {
     public ResponseEntity<TestDto> createTest(@RequestBody TestCreateDto request) {
         return ResponseEntity.ok(testCrudService.save(request));
     }
+
     @PutMapping(TESTS_URI)
     public ResponseEntity<TestDto> updateTest(@RequestBody TestCreateDto request) {
         return ResponseEntity.ok(testCrudService.update(request));
     }
 
+    //    question and answers
+    @DeleteMapping(TESTS_URI +"/{tid}"+ QUESTIONS_URI + "/{qid}")
+    public ResponseEntity<String> deleteQuestion(@PathVariable("tid") Long testId,@PathVariable("qid") Long questionId) {
+        testCrudService.deleteQuestion(testId, questionId);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping(TESTS_URI+QUESTIONS_URI+"/{qid}" + ANSWERS_URI + "/{aid}")
+    public ResponseEntity<String> deleteAnswer(@PathVariable Long qid, @PathVariable Long aid) {
+        testCrudService.deleteAnswer(qid, aid);
+        return ResponseEntity.ok().build();
+    }
 
 }

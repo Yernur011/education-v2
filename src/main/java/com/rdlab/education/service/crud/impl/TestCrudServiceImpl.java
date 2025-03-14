@@ -8,9 +8,7 @@ import com.rdlab.education.domain.dto.test.TestDto;
 import com.rdlab.education.domain.entity.edu.*;
 import com.rdlab.education.domain.enums.UserCourseLessonStatusEnum;
 import com.rdlab.education.domain.exceptions.ApiException;
-import com.rdlab.education.domain.repository.edu.CourseRepository;
-import com.rdlab.education.domain.repository.edu.TestRepository;
-import com.rdlab.education.domain.repository.edu.UserTestRepository;
+import com.rdlab.education.domain.repository.edu.*;
 import com.rdlab.education.service.auth.UserService;
 import com.rdlab.education.service.business.logic.CourseService;
 import com.rdlab.education.service.crud.TestCrudService;
@@ -39,6 +37,8 @@ public class TestCrudServiceImpl implements TestCrudService {
     private final UserTestRepository userTestRepository;
     private final UserService userService;
     private final CourseRepository courseRepository;
+    private final QuestionRepository questionRepository;
+    private final AnswerRepository answerRepository;
 
 
     @Override
@@ -226,37 +226,66 @@ public class TestCrudServiceImpl implements TestCrudService {
     public TestCreateDto getTestDetails(Long id) {
 
         return testRepository.findById(id)
-                .map(test ->
-                        new TestCreateDto(
-                                test.getId(),
-                                test.getTitle(),
-                                test.getState(),
-                                test.getCourse().getId(),
-                                test.getType(),
-                                test.getQuestions()
-                                        .stream()
-                                        .map(question ->
-                                                new QuestionCreateDto(
-                                                        question.getId(),
-                                                        question.getQuestionNumber(),
-                                                        question.getText(),
-                                                        question.getAnswers()
-                                                                .stream()
-                                                                .map(answer ->
-                                                                        new AnswerCreateDto(
-                                                                                answer.getId(),
-                                                                                answer.getText(),
-                                                                                answer.getCorrect()
-                                                                        ))
-                                                                .toList()
-                                                ))
-                                        .toList()
-                        ))
+                .map(test -> {
+                    Course course = courseRepository.findCourseByTest_Id(test.getId()).orElse(null);
+                    return new TestCreateDto(
+                            test.getId(),
+                            test.getTitle(),
+                            test.getState(),
+                            course == null ? null : course.getId(),
+                            test.getType(),
+                            test.getQuestions()
+                                    .stream()
+                                    .map(question ->
+                                            new QuestionCreateDto(
+                                                    question.getId(),
+                                                    question.getQuestionNumber(),
+                                                    question.getText(),
+                                                    question.getAnswers()
+                                                            .stream()
+                                                            .map(answer ->
+                                                                    new AnswerCreateDto(
+                                                                            answer.getId(),
+                                                                            answer.getText(),
+                                                                            answer.getCorrect()
+                                                                    ))
+                                                            .toList()))
+                                    .toList());})
                 .orElseThrow(() -> new ApiException(TEST_NOT_FOUND));
     }
 
     @Override
     public void deleteTest(Long id) {
         testRepository.deleteById(id);
+    }
+
+    @Override
+    @Transactional
+    public void deleteQuestion(Long testId, Long questionId) {
+        Test test = testRepository.findById(testId).orElseThrow(() -> new NoSuchElementException("Тест не найден"));
+
+        Question questionToRemove = test.getQuestions().stream()
+                .filter(q -> q.getId().equals(questionId))
+                .findFirst()
+                .orElseThrow(() -> new NoSuchElementException("Вопрос не найден"));
+
+        test.getQuestions().remove(questionToRemove);
+
+        testRepository.save(test);
+
+    }
+
+    @Override
+    @Transactional
+    public void deleteAnswer(Long questionId, Long answerId) {
+        Question question = questionRepository.findById(questionId).orElseThrow();
+        Answer answerToRemove = question.getAnswers().stream()
+                .filter(a -> a.getId().equals(answerId))
+                .findFirst()
+                .orElseThrow(() -> new NoSuchElementException("Ответ не найден"));
+
+        question.getAnswers().remove(answerToRemove);
+
+        questionRepository.save(question);
     }
 }
