@@ -19,4 +19,10 @@ public interface TestCrudService {
 
     Optional<Test> findById(Long id);
     TestDto save(TestCreateDto test);
+
+    TestDto update(TestCreateDto test);
+
+    TestCreateDto getTestDetails(Long id);
+
+    void deleteTest(Long id);
 }

@@ -31,7 +31,7 @@ public class Test extends BusinessEntity<Long> {
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     List<Question> questions = new ArrayList<>();
 
-    @OneToOne(mappedBy = "test")
+    @OneToOne(mappedBy = "test", cascade = CascadeType.ALL)
     private Course course;
 
     public Test(String title, String state, String type, List<Question> questions, Course course) {

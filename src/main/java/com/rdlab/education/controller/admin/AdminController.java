@@ -105,10 +105,23 @@ public class AdminController {
     public ResponseEntity<PageableDto<TestDto>> getTests(@RequestParam Long page, @RequestParam Long size) {
         return ResponseEntity.ok(testCrudService.findAllTest(page, size));
     }
-
-    @PostMapping(TESTS_URI)
-    public ResponseEntity<TestDto> createTest(@RequestBody TestCreateDto request) {
-
+    @GetMapping(TESTS_URI + "/{id}")
+    public ResponseEntity<TestCreateDto> getTestDetails(@PathVariable Long id){
+        return ResponseEntity.ok(testCrudService.getTestDetails(id));
+    }
+    @DeleteMapping(TESTS_URI + "/{id}")
+    public ResponseEntity<TestCreateDto> deleteTestDetails(@PathVariable Long id){
+        testCrudService.deleteTest(id);
         return ResponseEntity.ok().build();
     }
+    @PostMapping(TESTS_URI)
+    public ResponseEntity<TestDto> createTest(@RequestBody TestCreateDto request) {
+        return ResponseEntity.ok(testCrudService.save(request));
+    }
+    @PutMapping(TESTS_URI)
+    public ResponseEntity<TestDto> updateTest(@RequestBody TestCreateDto request) {
+        return ResponseEntity.ok(testCrudService.update(request));
+    }
+
+
 }
