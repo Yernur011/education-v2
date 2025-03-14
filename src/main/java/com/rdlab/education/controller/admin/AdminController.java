@@ -2,6 +2,8 @@ package com.rdlab.education.controller.admin;
 
 import com.rdlab.education.domain.dto.course.AdminCourseResponse;
 import com.rdlab.education.domain.dto.course.CourseDetailsDto;
+import com.rdlab.education.domain.dto.forum.AdminForum;
+import com.rdlab.education.domain.dto.forum.GetForums;
 import com.rdlab.education.domain.dto.lesson.LessonDto;
 import com.rdlab.education.domain.dto.page.PageableDto;
 import com.rdlab.education.domain.dto.test.TestCreateDto;
@@ -92,6 +94,10 @@ public class AdminController {
     public ResponseEntity<Void> revokeForum(@RequestBody Long id) {
         forumCrudService.revokeForumQuestion(id);
         return ResponseEntity.status(HttpStatus.OK).build();
+    }
+    @GetMapping(FORUMS_URI)
+    public ResponseEntity<PageableDto<AdminForum>> getForums(@RequestParam Long page, @RequestParam Long size) {
+        return ResponseEntity.ok(forumCrudService.getAllForum(page.intValue(), size.intValue()));
     }
 
     @DeleteMapping(FORUMS_URI)

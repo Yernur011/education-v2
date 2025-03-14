@@ -1,9 +1,6 @@
 package com.rdlab.education.service.crud.impl;
 
-import com.rdlab.education.domain.dto.forum.CreateQuestionDto;
-import com.rdlab.education.domain.dto.forum.ForumAnswerDto;
-import com.rdlab.education.domain.dto.forum.GetForumWithAnswers;
-import com.rdlab.education.domain.dto.forum.GetForums;
+import com.rdlab.education.domain.dto.forum.*;
 import com.rdlab.education.domain.dto.page.PageableDto;
 import com.rdlab.education.domain.dto.user.info.UserInfoOutputDto;
 import com.rdlab.education.domain.entity.auth.Users;
@@ -200,5 +197,28 @@ public class ForumCrudServiceImpl implements ForumCrudService {
         getForumsAnswerDto.setContent(answers);
         return getForumsAnswerDto;
 
+    }
+
+    @Override
+    public PageableDto<AdminForum> getAllForum(int page, int size) {
+        PageableDto<AdminForum> getForumsPageableDto = new PageableDto<>();
+
+        Page<ForumQuestion> all = forumQuestionRepository.findAll(PageRequest.of(page, size));
+        List<AdminForum> list = all.stream()
+                .map(forumQuestion ->
+                        new AdminForum(
+                                forumQuestion.getId(),
+                                forumQuestion.getAuthor().getImage() == null ? "" : forumQuestion.getAuthor().getImage().getBase64Image(),
+                                forumQuestion.getTitle(),
+                                forumQuestion.getCreatedAt(),
+                                forumQuestion.getAnswers().size(),
+                                likesRepository.countByForumId(forumQuestion.getId()),
+                                forumQuestion.getStatus()
+                        ))
+                .toList();
+
+        getForumsPageableDto.setContent(list);
+        getForumsPageableDto.setTotalPages(all.getTotalPages());
+        return getForumsPageableDto;
     }
 }

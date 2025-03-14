@@ -1,9 +1,6 @@
 package com.rdlab.education.service.crud;
 
-import com.rdlab.education.domain.dto.forum.CreateQuestionDto;
-import com.rdlab.education.domain.dto.forum.ForumAnswerDto;
-import com.rdlab.education.domain.dto.forum.GetForumWithAnswers;
-import com.rdlab.education.domain.dto.forum.GetForums;
+import com.rdlab.education.domain.dto.forum.*;
 import com.rdlab.education.domain.dto.page.PageableDto;
 
 public interface ForumCrudService {
@@ -28,4 +25,6 @@ public interface ForumCrudService {
     GetForumWithAnswers forumQuestionWithAnswers(Long id, boolean answerListNeeded);
 
     PageableDto<ForumAnswerDto> getAnswersHistory(Integer page, Integer size);
+
+    PageableDto<AdminForum> getAllForum(int page, int size);
 }
