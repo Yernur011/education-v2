@@ -75,6 +75,7 @@ public class TestCrudServiceImpl implements TestCrudService {
         pageableDto.setTotalPages(all.getTotalPages());
         pageableDto.setContent(all.getContent()
                 .stream()
+                .filter(test -> test.getCourse() != null)
                 .map(test -> courseService.getCurrentTestByCourse(test.getCourse().getId()))
                 .toList());
 
