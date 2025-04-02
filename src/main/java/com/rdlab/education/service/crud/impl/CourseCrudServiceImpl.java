@@ -5,15 +5,12 @@ import com.rdlab.education.domain.dto.course.CourseDetailsDto;
 import com.rdlab.education.domain.dto.course.CoursesResponseDto;
 import com.rdlab.education.domain.dto.lesson.LessonDto;
 import com.rdlab.education.domain.dto.page.PageableDto;
-import com.rdlab.education.domain.dto.test.TestDto;
 import com.rdlab.education.domain.entity.edu.Course;
 import com.rdlab.education.domain.entity.edu.Tags;
 import com.rdlab.education.domain.entity.edu.UserCourse;
 import com.rdlab.education.domain.enums.UserCourseLessonStatusEnum;
 import com.rdlab.education.domain.exceptions.InvalidValueException;
 import com.rdlab.education.domain.repository.edu.CourseRepository;
-import com.rdlab.education.domain.repository.edu.LessonRepository;
-import com.rdlab.education.domain.repository.edu.TestRepository;
 import com.rdlab.education.domain.repository.edu.UserCourseRepository;
 import com.rdlab.education.service.auth.UserService;
 import com.rdlab.education.service.business.logic.CourseService;
@@ -24,7 +21,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -43,7 +39,7 @@ public class CourseCrudServiceImpl implements CourseCrudService {
 
     @Override
     public PageableDto<CoursesResponseDto> findAllPageable(Long page, Long size) {
-        Page<Course> all = courseRepository.findAll(PageRequest.of(page.intValue(), size.intValue()));
+        Page<Course> all = courseRepository.findAllByStatus(UserCourseLessonStatusEnum.ACTIVE.getStatus(), PageRequest.of(page.intValue(), size.intValue()));
         PageableDto<CoursesResponseDto> coursesResponseDtoPageableDto = new PageableDto<>();
         coursesResponseDtoPageableDto.setTotalPages(all.getTotalPages());
         coursesResponseDtoPageableDto.setContent(all.getContent().stream()
@@ -54,7 +50,7 @@ public class CourseCrudServiceImpl implements CourseCrudService {
                                 course.getTags().stream().map(Tags::getName).toList(),
                                 course.getTitle(),
                                 course.getDescription(),
-                                UserCourseLessonStatusEnum.ACTIVE.getStatus()
+                                course.getStatus()
                         )
                 ).toList());
 
@@ -63,7 +59,7 @@ public class CourseCrudServiceImpl implements CourseCrudService {
 
     @Override
     public PageableDto<AdminCourseResponse> findAll(Long page, Long size) {
-        Page<Course> all = courseRepository.findAll(PageRequest.of(page.intValue(), size.intValue()));
+        Page<Course> all = courseRepository.findAllPageable(PageRequest.of(page.intValue(), size.intValue()));
         PageableDto<AdminCourseResponse> coursesResponseDtoPageableDto = new PageableDto<>();
         coursesResponseDtoPageableDto.setTotalPages(all.getTotalPages());
         coursesResponseDtoPageableDto.setContent(

@@ -9,7 +9,10 @@ import java.util.List;
 import java.util.Optional;
 
 public interface CourseRepository extends JpaRepository<Course, Long> {
-    Page<Course> findAll(Pageable pageable);
+    Page<Course> findAllPageable(Pageable pageable);
+
+    Page<Course> findAllByStatus(String status, Pageable pageable);
+
     List<Course> findByTitleContainingIgnoreCase(String title);
 
     Optional<Course> findCourseByTest_Id(Long testId);
