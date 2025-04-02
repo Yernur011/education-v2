@@ -13,8 +13,10 @@ services:
       DATASOURCE_URL: jdbc:postgresql://db:5432/postgres
       USERNAME: postgres
       PASSWORD: 0zT7[C37x
+      JAVA_TOOL_OPTIONS: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005"
     ports:
       - "8080:8080"
+      - "5005:5005"
 
 
   db:
