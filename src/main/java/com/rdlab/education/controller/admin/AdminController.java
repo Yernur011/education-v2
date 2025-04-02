@@ -3,7 +3,6 @@ package com.rdlab.education.controller.admin;
 import com.rdlab.education.domain.dto.course.AdminCourseResponse;
 import com.rdlab.education.domain.dto.course.CourseDetailsDto;
 import com.rdlab.education.domain.dto.forum.AdminForum;
-import com.rdlab.education.domain.dto.forum.GetForums;
 import com.rdlab.education.domain.dto.lesson.LessonDto;
 import com.rdlab.education.domain.dto.page.PageableDto;
 import com.rdlab.education.domain.dto.test.TestCreateDto;
@@ -17,9 +16,25 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-import static com.rdlab.education.utils.codes.ProductCode.*;
+import static com.rdlab.education.utils.codes.ProductCode.ADMIN_URI;
+import static com.rdlab.education.utils.codes.ProductCode.ANSWERS_URI;
+import static com.rdlab.education.utils.codes.ProductCode.COURSE_URI;
+import static com.rdlab.education.utils.codes.ProductCode.FORUMS_URI;
+import static com.rdlab.education.utils.codes.ProductCode.LESSON_URI;
+import static com.rdlab.education.utils.codes.ProductCode.QUESTIONS_URI;
+import static com.rdlab.education.utils.codes.ProductCode.TAGS_URI;
+import static com.rdlab.education.utils.codes.ProductCode.TESTS_URI;
+import static com.rdlab.education.utils.codes.ProductCode.V1_URI;
 
 @RestController
 @RequestMapping(V1_URI + ADMIN_URI)

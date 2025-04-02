@@ -18,4 +18,5 @@ public interface ProductCode {
     String SEARCH_URI = "/search";
     String ADMIN_URI = "/admin";
     String TAGS_URI = "/tags";
+    String LAWS_URI = "/laws";
 }
