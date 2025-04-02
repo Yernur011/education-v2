@@ -125,6 +125,7 @@ public class CourseServiceImpl implements CourseService {
             if (!course.getBase64Images().getBase64Image().equals(courseDetailsDto.getImage())){
                 course.setBase64Images(new Base64Images(courseDetailsDto.getImage()));
             }
+            course.setStatus(courseDetailsDto.getStatus());
             course.getTags().addAll(courseDetailsDto.getTags()
                     .stream()
                     .map(tagsRepository::findByName)
