@@ -59,7 +59,7 @@ public class CourseCrudServiceImpl implements CourseCrudService {
 
     @Override
     public PageableDto<AdminCourseResponse> findAll(Long page, Long size) {
-        Page<Course> all = courseRepository.findAllPageable(PageRequest.of(page.intValue(), size.intValue()));
+        Page<Course> all = courseRepository.findAll(PageRequest.of(page.intValue(), size.intValue()));
         PageableDto<AdminCourseResponse> coursesResponseDtoPageableDto = new PageableDto<>();
         coursesResponseDtoPageableDto.setTotalPages(all.getTotalPages());
         coursesResponseDtoPageableDto.setContent(
