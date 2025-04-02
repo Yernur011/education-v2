@@ -296,7 +296,7 @@ public class CourseServiceImpl implements CourseService {
                                                 lesson.getBodyText(), lesson.getStatus(), lesson.getIsCompleted())
                                         ).collect(Collectors.toList()),
                                 getDefaultTestDtoForNonProgresses(course),
-                                UserCourseLessonStatusEnum.ACTIVE.getStatus()
+                                course.getStatus()
                         )
                 )
                 .orElseThrow(() -> new NoSuchElementException(COURSE_NOT_FOUND));
