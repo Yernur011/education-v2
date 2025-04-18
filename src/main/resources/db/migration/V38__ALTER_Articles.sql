@@ -1,0 +1,3 @@
+ALTER TABLE articles
+    ADD COLUMN file_id BIGINT,
+    ADD CONSTRAINT fk_files FOREIGN KEY (file_id) REFERENCES base64images(id) ON DELETE CASCADE;

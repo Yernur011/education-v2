@@ -12,6 +12,7 @@ public interface ProductCode {
     String FINISHED_URI = "/finished";
     String UPDATE_URI = "/update";
     String ACCOUNT_URI = "/account";
+    String ARTICLE_URI = "/articles";
     String MAIN_INFO_URI = "/main-info";
     String FORUMS_URI = "/forums";
     String USERS_URI = "/users";
