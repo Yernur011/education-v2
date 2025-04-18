@@ -19,4 +19,5 @@ public interface ProductCode {
     String ADMIN_URI = "/admin";
     String TAGS_URI = "/tags";
     String LAWS_URI = "/laws";
+    String DATABASE_URI = "/databases";
 }

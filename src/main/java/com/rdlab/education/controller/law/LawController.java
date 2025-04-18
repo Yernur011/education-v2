@@ -15,12 +15,12 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
-import static com.rdlab.education.utils.codes.ProductCode.LAWS_URI;
+import static com.rdlab.education.utils.codes.ProductCode.DATABASE_URI;
 import static com.rdlab.education.utils.codes.ProductCode.V1_URI;
 
 
 @RestController
-@RequestMapping(V1_URI + LAWS_URI)
+@RequestMapping(V1_URI + DATABASE_URI)
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class LawController {
 
