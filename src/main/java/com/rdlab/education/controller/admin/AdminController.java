@@ -1,5 +1,6 @@
 package com.rdlab.education.controller.admin;
 
+import com.rdlab.education.domain.dto.article.ArticleDto;
 import com.rdlab.education.domain.dto.course.AdminCourseResponse;
 import com.rdlab.education.domain.dto.course.CourseDetailsDto;
 import com.rdlab.education.domain.dto.forum.AdminForum;
@@ -9,9 +10,11 @@ import com.rdlab.education.domain.dto.test.TestCreateDto;
 import com.rdlab.education.domain.dto.test.TestDto;
 import com.rdlab.education.domain.entity.edu.Tags;
 import com.rdlab.education.service.business.logic.CourseService;
+import com.rdlab.education.service.crud.ArticleService;
 import com.rdlab.education.service.crud.CourseCrudService;
 import com.rdlab.education.service.crud.ForumCrudService;
 import com.rdlab.education.service.crud.TestCrudService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -28,6 +31,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import static com.rdlab.education.utils.codes.ProductCode.ADMIN_URI;
 import static com.rdlab.education.utils.codes.ProductCode.ANSWERS_URI;
+import static com.rdlab.education.utils.codes.ProductCode.ARTICLE_URI;
 import static com.rdlab.education.utils.codes.ProductCode.COURSE_URI;
 import static com.rdlab.education.utils.codes.ProductCode.FORUMS_URI;
 import static com.rdlab.education.utils.codes.ProductCode.LESSON_URI;
@@ -45,6 +49,7 @@ public class AdminController {
     private final CourseService courseService;
     private final ForumCrudService forumCrudService;
     private final TestCrudService testCrudService;
+    private final ArticleService articleService;
 
     //    Courses
     @GetMapping(COURSE_URI)
@@ -110,6 +115,7 @@ public class AdminController {
         forumCrudService.revokeForumQuestion(id);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
+
     @GetMapping(FORUMS_URI)
     public ResponseEntity<PageableDto<AdminForum>> getForums(@RequestParam Long page, @RequestParam Long size) {
         return ResponseEntity.ok(forumCrudService.getAllForum(page.intValue(), size.intValue()));
@@ -121,20 +127,23 @@ public class AdminController {
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
-//    Tests
+    //    Tests
     @GetMapping(TESTS_URI)
     public ResponseEntity<PageableDto<TestDto>> getTests(@RequestParam Long page, @RequestParam Long size) {
         return ResponseEntity.ok(testCrudService.findAllTest(page, size));
     }
+
     @GetMapping(TESTS_URI + "/{id}")
-    public ResponseEntity<TestCreateDto> getTestDetails(@PathVariable Long id){
+    public ResponseEntity<TestCreateDto> getTestDetails(@PathVariable Long id) {
         return ResponseEntity.ok(testCrudService.getTestDetails(id));
     }
+
     @DeleteMapping(TESTS_URI + "/{id}")
-    public ResponseEntity<TestCreateDto> deleteTestDetails(@PathVariable Long id){
+    public ResponseEntity<TestCreateDto> deleteTestDetails(@PathVariable Long id) {
         testCrudService.deleteTest(id);
         return ResponseEntity.ok().build();
     }
+
     @PostMapping(TESTS_URI)
     public ResponseEntity<TestDto> createTest(@RequestBody TestCreateDto request) {
         return ResponseEntity.ok(testCrudService.save(request));
@@ -146,16 +155,31 @@ public class AdminController {
     }
 
     //    question and answers
-    @DeleteMapping(TESTS_URI +"/{tid}"+ QUESTIONS_URI + "/{qid}")
-    public ResponseEntity<String> deleteQuestion(@PathVariable("tid") Long testId,@PathVariable("qid") Long questionId) {
+    @DeleteMapping(TESTS_URI + "/{tid}" + QUESTIONS_URI + "/{qid}")
+    public ResponseEntity<String> deleteQuestion(@PathVariable("tid") Long testId, @PathVariable("qid") Long questionId) {
         testCrudService.deleteQuestion(testId, questionId);
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping(TESTS_URI+QUESTIONS_URI+"/{qid}" + ANSWERS_URI + "/{aid}")
+    @DeleteMapping(TESTS_URI + QUESTIONS_URI + "/{qid}" + ANSWERS_URI + "/{aid}")
     public ResponseEntity<String> deleteAnswer(@PathVariable Long qid, @PathVariable Long aid) {
         testCrudService.deleteAnswer(qid, aid);
         return ResponseEntity.ok().build();
     }
 
+    @PostMapping(ARTICLE_URI)
+    public ResponseEntity<ArticleDto> create(@Valid @RequestBody ArticleDto dto) {
+        return ResponseEntity.ok(articleService.create(dto));
+    }
+
+    @PutMapping(ARTICLE_URI + "/{id}")
+    public ResponseEntity<ArticleDto> update(@PathVariable Long id, @Valid @RequestBody ArticleDto dto) {
+        return ResponseEntity.ok(articleService.update(id, dto));
+    }
+
+    @DeleteMapping(ARTICLE_URI + "/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        articleService.delete(id);
+        return ResponseEntity.noContent().build();
+    }
 }
