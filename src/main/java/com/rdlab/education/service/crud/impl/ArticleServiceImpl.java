@@ -1,6 +1,7 @@
 package com.rdlab.education.service.crud.impl;
 
 import com.rdlab.education.domain.dto.article.ArticleDto;
+import com.rdlab.education.domain.dto.page.PageableDto;
 import com.rdlab.education.domain.entity.edu.Articles;
 import com.rdlab.education.domain.entity.image.Base64Images;
 import com.rdlab.education.domain.mapper.ArticleMapper;
@@ -9,6 +10,8 @@ import com.rdlab.education.service.crud.ArticleService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -47,10 +50,23 @@ public class ArticleServiceImpl implements ArticleService {
     }
 
     @Override
+    public PageableDto<ArticleDto> findAll(int page, int size) {
+        Page<Articles> all = repository.findAll(PageRequest.of(page, size));
+        List<ArticleDto> list = all.getContent()
+                .stream()
+                .map(mapper::toDto)
+                .toList();
+        return new PageableDto<>(all.getTotalPages(), list);
+    }
+
+    @Override
     public ArticleDto update(Long id, ArticleDto dto) {
         repository.findById(id).orElseThrow(() -> new EntityNotFoundException("Article not found: " + id));
 
-        Articles updated = repository.save(mapper.toEntity(dto));
+        Articles entity = mapper.toEntity(dto);
+        entity.setId(id);
+
+        Articles updated = repository.save(entity);
         return mapper.toDto(updated);
     }
 

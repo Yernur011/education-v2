@@ -1,18 +1,13 @@
 package com.rdlab.education.controller.material;
 
 import com.rdlab.education.domain.dto.material.MaterialDto;
+import com.rdlab.education.domain.dto.page.PageableDto;
+import com.rdlab.education.domain.entity.edu.Material;
 import com.rdlab.education.domain.mapper.MaterialMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -26,12 +21,15 @@ public class MaterialController {
     private final MaterialMapper mapper;
 
     @GetMapping
-    public ResponseEntity<List<MaterialDto>> findAll() {
-        return ResponseEntity.ok(
-                materialService.getAll()
-                        .stream()
-                        .map(mapper::toDto)
-                        .toList());
+    public ResponseEntity<PageableDto<MaterialDto>> findAll(@RequestParam int page, @RequestParam int size) {
+        PageableDto<Material> all = materialService.findAll(page, size);
+
+        List<MaterialDto> list = all.getContent()
+                .stream()
+                .map(mapper::toDto)
+                .toList();
+
+        return ResponseEntity.ok(new PageableDto<>(all.getTotalPages(), list));
     }
 
     @GetMapping("/{id}")
