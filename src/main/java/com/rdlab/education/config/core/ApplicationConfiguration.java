@@ -1,5 +1,7 @@
 package com.rdlab.education.config.core;
 
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.info.Info;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -35,5 +37,18 @@ public class ApplicationConfiguration {
 //        mapper.registerModule(new Hibernate5Module());
 //        return mapper;
 //    }
+
+    @Bean(name = "com.rdlab.education.config.core.ApplicationConfiguration.apiInfo")
+    OpenAPI apiInfo() {
+        return new OpenAPI()
+                .info(
+                        new Info()
+                                .title("E-Catalog API")
+                                .description("API for E-Catalog platform.")
+                                .version("1.0.0")
+                )
+                ;
+    }
+
 
 }

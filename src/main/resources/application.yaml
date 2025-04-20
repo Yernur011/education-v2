@@ -45,3 +45,15 @@ jwt:
       expiration: ${ACCESS_TOKEN_EXPIRATION:3600}
     issuer: ${TOKEN_ISSUER:server}
 
+springdoc:
+  api-docs:
+    enabled: true
+    path: /v3/api-docs
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
