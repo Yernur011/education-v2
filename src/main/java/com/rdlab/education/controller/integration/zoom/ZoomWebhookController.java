@@ -18,7 +18,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/webhook/zoom")
+@RequestMapping("api/webhook/zoom")
 @Slf4j
 public class ZoomWebhookController {
 
