@@ -41,6 +41,7 @@ public class SecurityConfiguration {
             "/swagger-ui/**",
             "/swagger-ui.html",
             "/v3/api-docs/swagger-config",
+            "/webhook/zoom"
     };
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;

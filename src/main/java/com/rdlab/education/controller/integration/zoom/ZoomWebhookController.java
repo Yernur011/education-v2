@@ -29,9 +29,6 @@ public class ZoomWebhookController {
     public ResponseEntity<?> handleWebhook(@RequestBody ZoomWebhookRequest body,
                                            @RequestHeader(value = "Authorization", required = false) String authHeader) {
 
-        //Secret Token //u4poejQKQZeiZXV2nzaC6g
-        //Verification Token (Retires in June 2025) //b--1JLHORHGiUv5Xc2in9Q
-
         if (body.getEvent().equals("endpoint.url_validation")) {
             String encryptedToken = hmacSha256(body.getPayload().get("plainToken"), zoomSecret);
             return ResponseEntity.ok(Map.of(
