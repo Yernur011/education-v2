@@ -3,8 +3,6 @@ package com.rdlab.education.service.crud.impl;
 import com.rdlab.education.domain.dto.profile.GetProfile;
 import com.rdlab.education.domain.dto.user.info.UserInfoDto;
 import com.rdlab.education.domain.dto.user.info.UserInfoOutputDto;
-import com.rdlab.education.domain.entity.auth.Users;
-import com.rdlab.education.domain.entity.edu.UserDetails;
 import com.rdlab.education.domain.entity.image.Base64Images;
 import com.rdlab.education.domain.exceptions.ApiException;
 import com.rdlab.education.domain.repository.UserDetailsRepository;
@@ -69,13 +67,15 @@ public class UserAccountServiceImpl implements AccountService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String name = authentication.getName();
         String role = authentication.getAuthorities().stream().findFirst().orElseThrow().getAuthority();
+
         return userRepository.findByUsername(name)
                 .map(users ->
                         new GetProfile(
                                 users.getName(),
                                 users.getLastname(),
                                 users.getImage() == null ? "" : users.getImage().getBase64Image(),
-                                role
+                                role,
+                                users.getCategoryIdList().stream().toList()
                         ))
                 .orElseThrow(() -> new ApiException("Похоже нет такого пользователя!"));
 
