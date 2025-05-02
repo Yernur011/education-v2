@@ -1,17 +1,19 @@
 package com.rdlab.education.domain.entity.auth;
 
 import com.rdlab.education.domain.entity.edu.UserCourse;
-import com.rdlab.education.domain.entity.edu.UserDetails;
 import com.rdlab.education.domain.entity.image.Base64Images;
+import com.vladmihalcea.hibernate.type.json.JsonType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.CompositeType;
+import org.hibernate.annotations.Type;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "users", schema = "public")
@@ -43,6 +45,10 @@ public class Users {
 
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     Base64Images image;
+
+    @Type(JsonType.class)
+    @Column(name = "category_id_list", columnDefinition = "jsonb")
+    private Set<Long> categoryIdList = new HashSet<>();
 
 //    @OneToOne(fetch = FetchType.LAZY)
 //    @JoinColumn(name = "user_details")

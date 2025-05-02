@@ -4,6 +4,8 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
+import java.util.List;
+
 public record RegistrationDto(@NotBlank(message = "Имя пользователя не может быть пустыми")
                               @Email(message = "Укажте корректную почту")
                               String username,
@@ -13,6 +15,7 @@ public record RegistrationDto(@NotBlank(message = "Имя пользовател
                               String password,
 
                               @NotBlank(message = "Имя пользователя не может быть пустыми")
-                              String name
+                              String name,
+                              List<Long> categoryIdList
 ) {
 }

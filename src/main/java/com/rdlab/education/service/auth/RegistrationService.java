@@ -5,7 +5,6 @@ import com.rdlab.education.domain.dto.auth.RegistrationResponse;
 import com.rdlab.education.domain.dto.auth.VerifyOtpRequest;
 import com.rdlab.education.domain.entity.auth.RegisterUser;
 import com.rdlab.education.domain.entity.auth.Users;
-import com.rdlab.education.domain.entity.image.Base64Images;
 import com.rdlab.education.domain.enums.UserRole;
 import com.rdlab.education.domain.exceptions.ApiException;
 import com.rdlab.education.domain.exceptions.auth.RegistrationException;
@@ -66,6 +65,7 @@ public class RegistrationService {
                     registerUser.setPassword(passwordEncoder.encode(registrationDto.password()));
                     registerUser.setName(registrationDto.name());
                     registerUser.setOtpCode(otpCode);
+                    registerUser.getCategoryIdList().addAll(registrationDto.categoryIdList());
                     return registerUser;
                 });
         log.info("user password: {}", registerUser1.getPassword());
@@ -110,6 +110,7 @@ public class RegistrationService {
         users.setEnabled(true);
         users.setRole(UserRole.USER.getRole());
         users.setImage(base64ImagesRepository.findById(4L).get());
+        users.getCategoryIdList().addAll(registerUser.getCategoryIdList());
         userRepository.save(users);
         registerUserRepository.delete(registerUser);
     }
