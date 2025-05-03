@@ -5,6 +5,7 @@ import com.rdlab.education.domain.dto.course.CourseDetailsDto;
 import com.rdlab.education.domain.dto.course.CoursesResponseDto;
 import com.rdlab.education.domain.dto.lesson.LessonDto;
 import com.rdlab.education.domain.dto.page.PageableDto;
+import com.rdlab.education.domain.entity.edu.Category;
 import com.rdlab.education.domain.entity.edu.Course;
 import com.rdlab.education.domain.entity.edu.Tags;
 import com.rdlab.education.domain.entity.edu.UserCourse;
@@ -123,7 +124,8 @@ public class CourseCrudServiceImpl implements CourseCrudService {
                                 course.getTitle(),
                                 course.getDescription(),
                                 course.getBase64Images().getBase64Image(),
-                                course.getTags().stream().map(Tags::getName).toList(),
+                                course.getTags().stream().map(Tags::getId).collect(Collectors.toSet()),
+                                course.getCategories().stream().map(Category::getId).collect(Collectors.toSet()),
                                 course.getLessons().stream()
                                         .map(lesson -> new LessonDto(
                                                 lesson.getId(), lesson.getLessonNumber(), lesson.getTitle(), lesson.getVideoUrl(),

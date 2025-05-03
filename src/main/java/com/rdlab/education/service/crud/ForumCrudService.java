@@ -14,7 +14,7 @@ public interface ForumCrudService {
 
     PageableDto<GetForums> forumQuestions(int page, int size);
 
-    PageableDto<GetForums> getForumByCategory(int page, int size, Long categoryId);
+    PageableDto<GetForums> getForumByCategory(int page, int size, Long tagId);
 
     PageableDto<GetForums> forumQuestionsHistory(Integer page, Integer size);
 

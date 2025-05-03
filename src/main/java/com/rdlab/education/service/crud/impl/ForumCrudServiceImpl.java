@@ -5,17 +5,16 @@ import com.rdlab.education.domain.dto.page.PageableDto;
 import com.rdlab.education.domain.dto.user.info.UserInfoOutputDto;
 import com.rdlab.education.domain.entity.auth.Users;
 import com.rdlab.education.domain.entity.edu.ForumAnswers;
-import com.rdlab.education.domain.entity.edu.ForumCategory;
 import com.rdlab.education.domain.entity.edu.ForumLikes;
 import com.rdlab.education.domain.entity.edu.ForumQuestion;
+import com.rdlab.education.domain.entity.edu.Tags;
 import com.rdlab.education.domain.entity.image.Base64Images;
 import com.rdlab.education.domain.enums.ForumQuestionState;
 import com.rdlab.education.domain.exceptions.ApiException;
-import com.rdlab.education.domain.repository.edu.AnswerRepository;
 import com.rdlab.education.domain.repository.edu.ForumAnswerRepository;
-import com.rdlab.education.domain.repository.edu.ForumCategoryRepository;
 import com.rdlab.education.domain.repository.edu.ForumLikesRepository;
 import com.rdlab.education.domain.repository.edu.ForumQuestionRepository;
+import com.rdlab.education.domain.repository.edu.TagsRepository;
 import com.rdlab.education.service.auth.UserService;
 import com.rdlab.education.service.crud.ForumCrudService;
 import lombok.RequiredArgsConstructor;
@@ -31,16 +30,16 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class ForumCrudServiceImpl implements ForumCrudService {
     private final ForumQuestionRepository forumQuestionRepository;
-    private final ForumCategoryRepository forumCategoryRepository;
     private final ForumAnswerRepository forumAnswerRepository;
+    private final TagsRepository tagsRepository;
     private final UserService userService;
     private final ForumLikesRepository likesRepository;
 
     @Override
     public void createForumQuestion(CreateQuestionDto questionDto) {
-        Optional<ForumCategory> byId = forumCategoryRepository.findById(questionDto.category());
+        Optional<Tags> byId = tagsRepository.findById(questionDto.tagId());
         ForumQuestion forumQuestion = new ForumQuestion();
-        forumQuestion.setCategory(byId.orElseThrow(() -> new ApiException("Нет такой категоии!")));
+        forumQuestion.setTag(byId.orElseThrow(() -> new ApiException("Нет такой категоии!")));
         forumQuestion.setAuthor(userService.getCurrentUser());
         forumQuestion.setQuestionText(questionDto.text());
         forumQuestion.setTitle(questionDto.title());
@@ -78,11 +77,11 @@ public class ForumCrudServiceImpl implements ForumCrudService {
     }
 
     @Override
-    public PageableDto<GetForums> getForumByCategory(int page, int size, Long categoryId) {
-        ForumCategory forumCategory = forumCategoryRepository.findById(categoryId).orElseThrow(() -> new ApiException("Нет такой категоии!"));
+    public PageableDto<GetForums> getForumByCategory(int page, int size, Long tagId) {
+        Tags tags = tagsRepository.findById(tagId).orElseThrow(() -> new ApiException("Нет такого тега!"));
 
         Page<ForumQuestion> forumQuestionByForumCategoryAndStatus =
-                forumQuestionRepository.findForumQuestionByCategoryAndStatus(forumCategory, ForumQuestionState.APPROVED.getState(), PageRequest.of(page, size, Sort.by("id").descending()));
+                forumQuestionRepository.findForumQuestionByTagAndStatus(tags, ForumQuestionState.APPROVED.getState(), PageRequest.of(page, size, Sort.by("id").descending()));
 
         List<GetForums> list = forumQuestionByForumCategoryAndStatus.getContent().stream()
                 .map(forumQuestion ->

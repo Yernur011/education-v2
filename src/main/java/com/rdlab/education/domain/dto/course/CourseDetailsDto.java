@@ -9,7 +9,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -21,7 +23,8 @@ public class CourseDetailsDto {
     String title;
     String description;
     String image;
-    List<String> tags = new ArrayList<>();
+    Set<Long> tags = new HashSet<>();
+    Set<Long> categories = new HashSet<>();
     List<LessonDto> lessons = new ArrayList<>();
     TestDto test;
     String status;

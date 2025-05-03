@@ -2,8 +2,8 @@ package com.rdlab.education.controller.forum;
 
 import com.rdlab.education.domain.dto.forum.*;
 import com.rdlab.education.domain.dto.page.PageableDto;
-import com.rdlab.education.service.crud.ForumCategoryService;
 import com.rdlab.education.service.crud.ForumCrudService;
+import com.rdlab.education.service.crud.TagService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +18,7 @@ import static com.rdlab.education.utils.codes.ProductCode.V1_URI;
 @RequiredArgsConstructor
 @RequestMapping(V1_URI + FORUMS_URI)
 public class ForumController {
-    private final ForumCategoryService forumCategoryService;
+    private final TagService categoryService;
     private final ForumCrudService forumService;
 
     @PostMapping
@@ -28,8 +28,8 @@ public class ForumController {
     }
 
     @GetMapping("/category")
-    public ResponseEntity<List<ForumCategoryDto>> getForumCategories() {
-        return ResponseEntity.ok(forumCategoryService.findAll());
+    public ResponseEntity<List<TagsDto>> getForumCategories() {
+        return ResponseEntity.ok(categoryService.findAll());
     }
 
     @GetMapping
@@ -43,8 +43,8 @@ public class ForumController {
     }
 
     @GetMapping("/by-forum-category")
-    public ResponseEntity<PageableDto<GetForums>> getForumCategory(@RequestParam Integer page, @RequestParam Integer size, @RequestParam Long topicId) {
-        return ResponseEntity.ok(forumService.getForumByCategory(page, size, topicId));
+    public ResponseEntity<PageableDto<GetForums>> getForumCategory(@RequestParam Integer page, @RequestParam Integer size, @RequestParam Long tagId) {
+        return ResponseEntity.ok(forumService.getForumByCategory(page, size, tagId));
     }
 
     @PostMapping("/like/{id}") //question id

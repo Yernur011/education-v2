@@ -4,11 +4,14 @@ import com.rdlab.education.domain.dto.course.CourseDetailsDto;
 import com.rdlab.education.domain.dto.course.CoursesResponseDto;
 import com.rdlab.education.domain.dto.page.PageableDto;
 import com.rdlab.education.domain.dto.test.TestDto;
+import com.rdlab.education.domain.entity.edu.Category;
 import com.rdlab.education.service.business.logic.TestService;
+import com.rdlab.education.service.crud.CategoryService;
 import com.rdlab.education.service.crud.CourseCrudService;
 import com.rdlab.education.service.crud.TestCrudService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,6 +28,7 @@ public class MainInfoController {
     private final CourseCrudService courseCrudService;
     private final TestCrudService testCrudService;
     private final TestService testService;
+    private final CategoryService categoryService;
 
     @GetMapping(POPULAR_URI + COURSE_URI)
     private ResponseEntity<PageableDto<CoursesResponseDto>> popularCourse(@RequestParam Long page, @RequestParam Long size) {
@@ -54,5 +58,10 @@ public class MainInfoController {
     @GetMapping(POPULAR_URI + QUESTIONS_URI)
     private ResponseEntity<List<Object>> popularQuestions() {
         return ResponseEntity.ok(List.of());
+    }
+
+    @GetMapping(POPULAR_URI + "/category")
+    private ResponseEntity<Page<Category>> popularUsers(@RequestParam int page, @RequestParam int size) {
+        return ResponseEntity.ok(categoryService.findAll(page, size));
     }
 }

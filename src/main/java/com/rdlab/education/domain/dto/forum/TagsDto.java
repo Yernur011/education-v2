@@ -7,8 +7,8 @@ import lombok.Setter;
 @Builder
 @Getter
 @Setter
-public class ForumCategoryDto {
+public class TagsDto {
     Long id;
-    String categoryName;
-    Long forumsCount;
+    String tagName;
+    Long tagCount;
 }

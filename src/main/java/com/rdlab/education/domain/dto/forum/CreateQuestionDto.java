@@ -1,7 +1,7 @@
 package com.rdlab.education.domain.dto.forum;
 
 public record CreateQuestionDto(String title,
-                                Long category,
+                                Long tagId,
                                 String text,
                                 String base64Image) {
 }

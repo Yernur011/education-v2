@@ -1,7 +1,6 @@
 package com.rdlab.education.service.business.logic.impl;
 
 import com.rdlab.education.domain.dto.course.CourseDetailsDto;
-import com.rdlab.education.domain.dto.course.CoursesResponseDto;
 import com.rdlab.education.domain.dto.lesson.LessonDto;
 import com.rdlab.education.domain.dto.test.TestDto;
 import com.rdlab.education.domain.entity.edu.*;
@@ -14,7 +13,6 @@ import com.rdlab.education.domain.exceptions.NotFoundException;
 import com.rdlab.education.domain.repository.edu.*;
 import com.rdlab.education.service.auth.UserService;
 import com.rdlab.education.service.business.logic.CourseService;
-import com.rdlab.education.service.crud.CourseCrudService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -27,7 +25,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.rdlab.education.utils.codes.ErrorCode.COURSE_NOT_FOUND;
-import static com.rdlab.education.utils.codes.ErrorCode.TEST_NOT_FOUND;
 
 @Service
 @RequiredArgsConstructor
@@ -40,6 +37,7 @@ public class CourseServiceImpl implements CourseService {
     private final TestRepository testRepository;
     private final UserService userService;
     private final TagsRepository tagsRepository;
+    private final CategoryRepository categoryRepository;
 
     @Override
     public void testFinished(Long id) {
@@ -61,9 +59,10 @@ public class CourseServiceImpl implements CourseService {
 
         course.getTags().addAll(courseDetailsDto.getTags()
                 .stream()
-                .map(tagsRepository::findByName)
-                .map(tags -> tags.orElse(null))
-                .toList());
+                .map(tagsRepository::findById)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .collect(Collectors.toSet()));
 
         course.getLessons().addAll(courseDetailsDto.getLessons()
                 .stream()
@@ -79,6 +78,14 @@ public class CourseServiceImpl implements CourseService {
                     return lesson;
                 })
                 .toList());
+        course.getCategories().addAll(
+                courseDetailsDto.getCategories()
+                        .stream()
+                        .map(categoryRepository::findById)
+                        .filter(Optional::isPresent)
+                        .map(Optional::get)
+                        .collect(Collectors.toSet())
+        );
 
         Course save = courseRepository.save(course);
         CourseDetailsDto courseDetailsDto1 = new CourseDetailsDto();
@@ -86,7 +93,8 @@ public class CourseServiceImpl implements CourseService {
         courseDetailsDto1.setDescription(save.getDescription());
         courseDetailsDto1.setId(save.getId());
         courseDetailsDto1.setStatus(save.getStatus());
-        courseDetailsDto1.setTags(save.getTags().stream().map(Tags::getName).toList());
+        courseDetailsDto1.setCategories(save.getCategories().stream().map(Category::getId).collect(Collectors.toSet()));
+        courseDetailsDto1.setTags(save.getTags().stream().map(Tags::getId).collect(Collectors.toSet()));
         courseDetailsDto1.setImage(course.getBase64Images().getBase64Image());
         courseDetailsDto1.setLessons(
                 save.getLessons()
@@ -128,31 +136,50 @@ public class CourseServiceImpl implements CourseService {
             course.setStatus(courseDetailsDto.getStatus());
             course.getTags().addAll(courseDetailsDto.getTags()
                     .stream()
-                    .map(tagsRepository::findByName)
+                    .map(tagsRepository::findById)
                     .map(tags -> tags.orElse(null))
                     .toList());
             course.getLessons().addAll(courseDetailsDto.getLessons()
                     .stream()
-                    .map(lessonDto -> {
-                        Lesson lesson = new Lesson();
-                        lesson.setTitle(lessonDto.getTitle());
-                        lesson.setStatus(UserCourseLessonStatusEnum.ACTIVE.getStatus());
-                        lesson.setLessonNumber(lessonDto.getLessonNumber());
-                        lesson.setVideoUrl(lessonDto.getVideoUrl());
-                        lesson.setBodyText(lessonDto.getBodyText());
-                        lesson.setIsCompleted(false);
-                        lesson.setCourse(course);
-                        return lesson;
-                    })
+                    .map(lessonDto -> lessonRepository.findById(lessonDto.getId())
+                                .map(lesson -> {
+                                    lesson.setTitle(lessonDto.getTitle());
+                                    lesson.setStatus(UserCourseLessonStatusEnum.ACTIVE.getStatus());
+                                    lesson.setLessonNumber(lessonDto.getLessonNumber());
+                                    lesson.setVideoUrl(lessonDto.getVideoUrl());
+                                    lesson.setBodyText(lessonDto.getBodyText());
+                                    lesson.setIsCompleted(false);
+                                    lesson.setCourse(course);
+                                    return lesson;
+                                }).orElseGet(()->{
+                                    Lesson lesson = new Lesson();
+                                    lesson.setTitle(lessonDto.getTitle());
+                                    lesson.setStatus(UserCourseLessonStatusEnum.ACTIVE.getStatus());
+                                    lesson.setLessonNumber(lessonDto.getLessonNumber());
+                                    lesson.setVideoUrl(lessonDto.getVideoUrl());
+                                    lesson.setBodyText(lessonDto.getBodyText());
+                                    lesson.setIsCompleted(false);
+                                    lesson.setCourse(course);
+                                    return lesson;
+                                }))
                     .toList());
+            course.getCategories().addAll(
+                    courseDetailsDto.getCategories()
+                            .stream()
+                            .map(categoryRepository::findById)
+                            .filter(Optional::isPresent)
+                            .map(Optional::get)
+                            .collect(Collectors.toSet())
+            );
 
             Course save = courseRepository.save(course);
             CourseDetailsDto courseDetailsDto1 = new CourseDetailsDto();
             courseDetailsDto1.setTitle(save.getTitle());
             courseDetailsDto1.setDescription(save.getDescription());
             courseDetailsDto1.setId(save.getId());
+            courseDetailsDto1.setCategories(save.getCategories().stream().map(Category::getId).collect(Collectors.toSet()));
             courseDetailsDto1.setStatus(save.getStatus());
-            courseDetailsDto1.setTags(save.getTags().stream().map(Tags::getName).toList());
+            courseDetailsDto1.setTags(save.getTags().stream().map(Tags::getId).collect(Collectors.toSet()));
             courseDetailsDto1.setImage(course.getBase64Images().getBase64Image());
             courseDetailsDto1.setLessons(
                     save.getLessons()
@@ -289,7 +316,8 @@ public class CourseServiceImpl implements CourseService {
                                 course.getTitle(),
                                 course.getDescription(),
                                 course.getBase64Images().getBase64Image(),
-                                course.getTags().stream().map(Tags::getName).toList(),
+                                course.getTags().stream().map(Tags::getId).collect(Collectors.toSet()),
+                                course.getCategories().stream().map(Category::getId).collect(Collectors.toSet()),
                                 course.getLessons().stream()
                                         .map(lesson -> new LessonDto(
                                                 lesson.getId(), lesson.getLessonNumber(), lesson.getTitle(), lesson.getVideoUrl(),
@@ -322,7 +350,8 @@ public class CourseServiceImpl implements CourseService {
                                     course.getTitle(),
                                     course.getDescription(),
                                     course.getBase64Images().getBase64Image(),
-                                    course.getTags().stream().map(Tags::getName).toList(),
+                                    course.getTags().stream().map(Tags::getId).collect(Collectors.toSet()),
+                                    course.getCategories().stream().map(Category::getId).collect(Collectors.toSet()),
                                     getCurrentLessonsList(userCourseLessons),
                                     getCurrentTest(userCourseLessons),
                                     getCurrentCourseStatus(course)
@@ -392,7 +421,7 @@ public class CourseServiceImpl implements CourseService {
     }
 
     private List<LessonDto> getCurrentLessonsList(List<UserCourseLesson> userCourseLesson) {
-        List<Lesson> lessonsWithActiveState = userCourseLesson.getFirst().getUserCourse().getCourse().getLessons();
+        List<Lesson> lessonsWithActiveState = userCourseLesson.getFirst().getUserCourse().getCourse().getLessons().stream().toList();
         List<Lesson> lessonsWithStartedState = userCourseLesson.stream()
                 .map(l -> {
                     l.getLesson().setStatus(l.getStatus());

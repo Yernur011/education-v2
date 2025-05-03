@@ -25,8 +25,10 @@ public class ForumQuestion {
     LocalDateTime createdAt = LocalDateTime.now();
     String status;
     String title;
+
     @ManyToOne
-    ForumCategory category;
+    Tags tag;
+
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     Base64Images images;
     String questionText;
