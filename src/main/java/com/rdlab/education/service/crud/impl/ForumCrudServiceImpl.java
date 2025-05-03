@@ -39,7 +39,7 @@ public class ForumCrudServiceImpl implements ForumCrudService {
     public void createForumQuestion(CreateQuestionDto questionDto) {
         Optional<Tags> byId = tagsRepository.findById(questionDto.tagId());
         ForumQuestion forumQuestion = new ForumQuestion();
-        forumQuestion.setTag(byId.orElseThrow(() -> new ApiException("Нет такой категоии!")));
+        forumQuestion.setTag(byId.orElseThrow(() -> new ApiException("Нет такой тега!")));
         forumQuestion.setAuthor(userService.getCurrentUser());
         forumQuestion.setQuestionText(questionDto.text());
         forumQuestion.setTitle(questionDto.title());
