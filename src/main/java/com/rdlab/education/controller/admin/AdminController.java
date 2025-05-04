@@ -5,6 +5,7 @@ import com.rdlab.education.domain.dto.course.AdminCourseResponse;
 import com.rdlab.education.domain.dto.course.CourseDetailsDto;
 import com.rdlab.education.domain.dto.forum.AdminForum;
 import com.rdlab.education.domain.dto.integration.zoom.MeetingReqDto;
+import com.rdlab.education.domain.dto.integration.zoom.ZoomMeetingCreatedResponseDto;
 import com.rdlab.education.domain.dto.lesson.LessonDto;
 import com.rdlab.education.domain.dto.page.PageableDto;
 import com.rdlab.education.domain.dto.test.TestCreateDto;
@@ -200,8 +201,8 @@ public class AdminController {
     }
 
     @PostMapping(MEETINGS + "/create")
-    public ResponseEntity<String> createMeeting(@RequestBody MeetingReqDto dto) {
-        return ResponseEntity.ok(zoomService.createMeeting(dto).getJoinUrl());
+    public ResponseEntity<ZoomMeetingCreatedResponseDto> createMeeting(@RequestBody MeetingReqDto dto) {
+        return ResponseEntity.ok(zoomService.createMeeting(dto));
     }
 
     @GetMapping(MEETINGS)

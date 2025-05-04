@@ -16,4 +16,6 @@ public interface AccountService {
     GetProfile getProfile();
 
     Page<Users> getAllUsers(int page, int size);
+
+    void notifyALlUsers(String topicId, String url);
 }

@@ -8,6 +8,7 @@ import com.rdlab.education.domain.dto.integration.zoom.ZoomMeetingRequestDto;
 import com.rdlab.education.domain.entity.edu.Zoom;
 import com.rdlab.education.domain.exceptions.NotFoundException;
 import com.rdlab.education.domain.repository.edu.ZoomRepository;
+import com.rdlab.education.service.crud.AccountService;
 import com.rdlab.education.service.crud.ZoomService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -21,6 +22,7 @@ public class ZoomServiceImpl implements ZoomService {
     private final ZoomRepository zoomRepository;
     private final ZoomTokenClient zoomTokenClient;
     private final ZoomMeetingClient zoomMeetingClient;
+    private final AccountService accountService;
 
 
     public Page<Zoom> getAll(int page, int size) {
@@ -57,6 +59,7 @@ public class ZoomServiceImpl implements ZoomService {
         var response = zoomMeetingClient.createMeeting(token, request);
         var zoom = new Zoom(null, response.getId(), dto.getTopic(), "CREATED", dto.getStartTime().toLocalDateTime(), response);
         zoomRepository.save(zoom);
+        accountService.notifyALlUsers(dto.getTopic(), response.getJoinUrl());
         return response;
     }
 }

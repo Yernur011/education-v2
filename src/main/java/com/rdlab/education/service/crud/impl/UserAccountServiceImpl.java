@@ -6,7 +6,10 @@ import com.rdlab.education.domain.dto.user.info.UserInfoOutputDto;
 import com.rdlab.education.domain.entity.auth.Users;
 import com.rdlab.education.domain.entity.image.Base64Images;
 import com.rdlab.education.domain.exceptions.ApiException;
+import com.rdlab.education.domain.mail.RequestToSendEmailDto;
 import com.rdlab.education.domain.repository.UserRepository;
+import com.rdlab.education.domain.repository.edu.CategoryRepository;
+import com.rdlab.education.service.auth.RegistrationService;
 import com.rdlab.education.service.crud.AccountService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +27,8 @@ import java.util.Base64;
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class UserAccountServiceImpl implements AccountService {
     private final UserRepository userRepository;
+    private final CategoryRepository categoryRepository;
+    private final RegistrationService registrationService;
 
     @Override
     public UserInfoOutputDto updateUserData(UserInfoDto userInfoDto) {
@@ -85,5 +90,22 @@ public class UserAccountServiceImpl implements AccountService {
     @Override
     public Page<Users> getAllUsers(int page, int size) {
         return userRepository.findAll(PageRequest.of(page, size));
+    }
+
+    @Override
+    public void notifyALlUsers(String topicId, String url) {
+        userRepository.findByCategoryIdContains(Long.valueOf(topicId))
+                .forEach(users -> {
+                    String message = "Ваша ссылка: " + url;
+                    var requestToSendEmailDto = new RequestToSendEmailDto(
+                            users.getUsername(),
+                            null,
+                            "PC_CLUB",
+                            "ZOOM Конференция по вашему интересу",
+                            message
+                    );
+
+                    registrationService.sendOtpEmailAsync(requestToSendEmailDto);
+                });
     }
 }
