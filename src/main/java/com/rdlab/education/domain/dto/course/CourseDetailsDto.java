@@ -28,4 +28,5 @@ public class CourseDetailsDto {
     List<LessonDto> lessons = new ArrayList<>();
     TestDto test;
     String status;
+    String demoUrl;
 }

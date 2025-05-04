@@ -3,14 +3,25 @@ package com.rdlab.education.service.business.logic.impl;
 import com.rdlab.education.domain.dto.course.CourseDetailsDto;
 import com.rdlab.education.domain.dto.lesson.LessonDto;
 import com.rdlab.education.domain.dto.test.TestDto;
-import com.rdlab.education.domain.entity.edu.*;
+import com.rdlab.education.domain.entity.edu.Category;
+import com.rdlab.education.domain.entity.edu.Course;
+import com.rdlab.education.domain.entity.edu.Lesson;
+import com.rdlab.education.domain.entity.edu.Tags;
+import com.rdlab.education.domain.entity.edu.UserCourse;
+import com.rdlab.education.domain.entity.edu.UserCourseLesson;
 import com.rdlab.education.domain.entity.image.Base64Images;
 import com.rdlab.education.domain.enums.CourseStatus;
 import com.rdlab.education.domain.enums.UserCourseLessonStatusEnum;
 import com.rdlab.education.domain.enums.UserTestStatusEnum;
 import com.rdlab.education.domain.exceptions.ApiException;
 import com.rdlab.education.domain.exceptions.NotFoundException;
-import com.rdlab.education.domain.repository.edu.*;
+import com.rdlab.education.domain.repository.edu.CategoryRepository;
+import com.rdlab.education.domain.repository.edu.CourseRepository;
+import com.rdlab.education.domain.repository.edu.LessonRepository;
+import com.rdlab.education.domain.repository.edu.TagsRepository;
+import com.rdlab.education.domain.repository.edu.TestRepository;
+import com.rdlab.education.domain.repository.edu.UserCourseLessonRepository;
+import com.rdlab.education.domain.repository.edu.UserCourseRepository;
 import com.rdlab.education.service.auth.UserService;
 import com.rdlab.education.service.business.logic.CourseService;
 import lombok.RequiredArgsConstructor;
@@ -56,6 +67,7 @@ public class CourseServiceImpl implements CourseService {
         course.setDescription(courseDetailsDto.getDescription());
         course.setBase64Images(new Base64Images(courseDetailsDto.getImage()));
         course.setStatus(CourseStatus.CREATED.name());
+        course.setDemoUrl(courseDetailsDto.getDemoUrl());
 
         course.setTags(courseDetailsDto.getTags()
                 .stream()
@@ -129,8 +141,9 @@ public class CourseServiceImpl implements CourseService {
         if (byId.isPresent()) {
             Course course = byId.get();
             course.setTitle(courseDetailsDto.getTitle());
+            course.setDemoUrl(courseDetailsDto.getDemoUrl());
             course.setDescription(courseDetailsDto.getDescription());
-            if (!course.getBase64Images().getBase64Image().equals(courseDetailsDto.getImage())){
+            if (!course.getBase64Images().getBase64Image().equals(courseDetailsDto.getImage())) {
                 course.setBase64Images(new Base64Images(courseDetailsDto.getImage()));
             }
             course.setStatus(courseDetailsDto.getStatus());
@@ -142,26 +155,26 @@ public class CourseServiceImpl implements CourseService {
             course.getLessons().addAll(courseDetailsDto.getLessons()
                     .stream()
                     .map(lessonDto -> lessonRepository.findById(lessonDto.getId())
-                                .map(lesson -> {
-                                    lesson.setTitle(lessonDto.getTitle());
-                                    lesson.setStatus(UserCourseLessonStatusEnum.ACTIVE.getStatus());
-                                    lesson.setLessonNumber(lessonDto.getLessonNumber());
-                                    lesson.setVideoUrl(lessonDto.getVideoUrl());
-                                    lesson.setBodyText(lessonDto.getBodyText());
-                                    lesson.setIsCompleted(false);
-                                    lesson.setCourse(course);
-                                    return lesson;
-                                }).orElseGet(()->{
-                                    Lesson lesson = new Lesson();
-                                    lesson.setTitle(lessonDto.getTitle());
-                                    lesson.setStatus(UserCourseLessonStatusEnum.ACTIVE.getStatus());
-                                    lesson.setLessonNumber(lessonDto.getLessonNumber());
-                                    lesson.setVideoUrl(lessonDto.getVideoUrl());
-                                    lesson.setBodyText(lessonDto.getBodyText());
-                                    lesson.setIsCompleted(false);
-                                    lesson.setCourse(course);
-                                    return lesson;
-                                }))
+                            .map(lesson -> {
+                                lesson.setTitle(lessonDto.getTitle());
+                                lesson.setStatus(UserCourseLessonStatusEnum.ACTIVE.getStatus());
+                                lesson.setLessonNumber(lessonDto.getLessonNumber());
+                                lesson.setVideoUrl(lessonDto.getVideoUrl());
+                                lesson.setBodyText(lessonDto.getBodyText());
+                                lesson.setIsCompleted(false);
+                                lesson.setCourse(course);
+                                return lesson;
+                            }).orElseGet(() -> {
+                                Lesson lesson = new Lesson();
+                                lesson.setTitle(lessonDto.getTitle());
+                                lesson.setStatus(UserCourseLessonStatusEnum.ACTIVE.getStatus());
+                                lesson.setLessonNumber(lessonDto.getLessonNumber());
+                                lesson.setVideoUrl(lessonDto.getVideoUrl());
+                                lesson.setBodyText(lessonDto.getBodyText());
+                                lesson.setIsCompleted(false);
+                                lesson.setCourse(course);
+                                return lesson;
+                            }))
                     .toList());
             course.setCategories(
                     courseDetailsDto.getCategories()
@@ -324,7 +337,8 @@ public class CourseServiceImpl implements CourseService {
                                                 lesson.getBodyText(), lesson.getStatus(), lesson.getIsCompleted())
                                         ).collect(Collectors.toList()),
                                 getDefaultTestDtoForNonProgresses(course),
-                                course.getStatus()
+                                course.getStatus(),
+                                course.getDemoUrl()
                         )
                 )
                 .orElseThrow(() -> new NoSuchElementException(COURSE_NOT_FOUND));
@@ -354,7 +368,8 @@ public class CourseServiceImpl implements CourseService {
                                     course.getCategories().stream().map(Category::getId).collect(Collectors.toSet()),
                                     getCurrentLessonsList(userCourseLessons),
                                     getCurrentTest(userCourseLessons),
-                                    getCurrentCourseStatus(course)
+                                    getCurrentCourseStatus(course),
+                                    course.getDemoUrl()
                             );
 
                         }
@@ -384,7 +399,7 @@ public class CourseServiceImpl implements CourseService {
                                 test.getTitle(),
                                 UserTestStatusEnum.NOT_ACTIVE.getStatus(),
                                 test.getType(),
-                                course.getId(), null,null,null
+                                course.getId(), null, null, null
                         )
                 ).orElse(null);
     }
@@ -414,7 +429,7 @@ public class CourseServiceImpl implements CourseService {
                                 test.getTitle(),
                                 finalState,
                                 test.getType(),
-                                first.getUserCourse().getCourse().getId(), null,null, null
+                                first.getUserCourse().getCourse().getId(), null, null, null
                         )
                 )
                 .orElse(null);
