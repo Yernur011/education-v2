@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.Optional;
 
 import static com.rdlab.education.domain.enums.NotificationEntityType.ARTICLE;
-import static com.rdlab.education.utils.codes.ProductCode.ARTICLE_URI;
 
 
 @Service
@@ -74,7 +73,7 @@ public class ArticleServiceImpl implements ArticleService {
             && CourseStatus.PUBLISHED.equals(dto.status())) {
             notificationService.createNotification(Notification.builder()
                     .title("Добавлена новая статья")
-                    .description("Статья о " + dto.title() + " по ссылке: " + getCurrentUrl(ARTICLE_URI) + id)
+                    .description("Статья о " + dto.title() + " по ссылке: " + getCurrentUrl("knowledge/article" + id))
                     .entityId(id)
                     .entity(ARTICLE)
                     .build());
@@ -87,7 +86,7 @@ public class ArticleServiceImpl implements ArticleService {
     }
 
     public static String getCurrentUrl(String uri) {
-        return "rd-lab.com/api/v1" + uri + "/";
+        return "https://rd-lab.com/" + uri + "/";
     }
 
     @Override

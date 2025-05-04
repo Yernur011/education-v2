@@ -23,6 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.Base64;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
@@ -94,8 +95,9 @@ public class UserAccountServiceImpl implements AccountService {
     }
 
     @Override
-    public void notifyAllUsersWithTopics(Long topicId, Notification notification) {
-        userRepository.findByCategoryIdContains(topicId).forEach(users -> {
+    public List<Notification> notifyAllUsersWithTopics(Long topicId, Notification notification) {
+        List<Users> usersByTopics = userRepository.findByCategoryIdContains(topicId);
+        usersByTopics.forEach(users -> {
             var requestToSendEmailDto = new RequestToSendEmailDto(
                     users.getUsername(),
                     null,
@@ -106,11 +108,24 @@ public class UserAccountServiceImpl implements AccountService {
 
             registrationService.sendOtpEmailAsync(requestToSendEmailDto);
         });
+
+        return usersByTopics.stream()
+                .map(user -> Notification.builder()
+                        .username(user.getUsername())
+                        .title(notification.getTitle())
+                        .description(notification.getDescription())
+                        .entity(notification.getEntity())
+                        .entityId(notification.getEntityId())
+                        .startTime(notification.getStartTime())
+                        .isRead(false) // новые уведомления обычно не прочитаны
+                        .build()
+                ).toList();
     }
 
     @Override
-    public void notifyAllUsers(Notification notification) {
-        userRepository.findAll().forEach(users -> {
+    public List<Notification> notifyAllUsers(Notification notification) {
+        List<Users> all = userRepository.findAll();
+        all.forEach(users -> {
             var requestToSendEmailDto = new RequestToSendEmailDto(
                     users.getUsername(),
                     null,
@@ -121,5 +136,17 @@ public class UserAccountServiceImpl implements AccountService {
 
             registrationService.sendOtpEmailAsync(requestToSendEmailDto);
         });
+        return all.stream()
+                .map(user -> Notification.builder()
+                        .username(user.getUsername())
+                        .title(notification.getTitle())
+                        .description(notification.getDescription())
+                        .entity(notification.getEntity())
+                        .entityId(notification.getEntityId())
+                        .startTime(notification.getStartTime())
+                        .isRead(false) // новые уведомления обычно не прочитаны
+                        .build()
+                ).toList();
     }
+
 }

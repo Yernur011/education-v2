@@ -11,7 +11,6 @@ import com.rdlab.education.domain.entity.edu.Course;
 import com.rdlab.education.domain.entity.edu.Tags;
 import com.rdlab.education.domain.entity.edu.UserCourse;
 import com.rdlab.education.domain.enums.UserCourseLessonStatusEnum;
-import com.rdlab.education.domain.exceptions.InvalidValueException;
 import com.rdlab.education.domain.repository.edu.CourseRepository;
 import com.rdlab.education.domain.repository.edu.UserCourseRepository;
 import com.rdlab.education.service.auth.UserService;
@@ -25,12 +24,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.NoSuchElementException;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.rdlab.education.utils.codes.ErrorCode.COURSE_NOT_FOUND;
-import static com.rdlab.education.utils.codes.ErrorCode.UPDATE_COURSE_EXCEPTION;
 
 
 @Service
@@ -168,18 +165,6 @@ public class CourseCrudServiceImpl implements CourseCrudService {
                 .orElseThrow(() -> new NoSuchElementException(COURSE_NOT_FOUND));
     }
 
-
-    @Override
-    public Course save(Course course) {
-        return courseRepository.save(course);
-    }
-
-    @Override
-    public Course update(Course course) {
-        return Optional.of(course.getId())
-                .map(id -> save(course))
-                .orElseThrow(() -> new InvalidValueException(UPDATE_COURSE_EXCEPTION));
-    }
 
     @Override
     public void deleteById(Long id) {

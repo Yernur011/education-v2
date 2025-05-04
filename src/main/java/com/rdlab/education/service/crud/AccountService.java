@@ -9,6 +9,8 @@ import com.rdlab.education.domain.entity.image.Base64Images;
 import org.springframework.data.domain.Page;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 public interface AccountService {
     UserInfoOutputDto updateUserData(UserInfoDto userInfoDto);
 
@@ -18,8 +20,8 @@ public interface AccountService {
 
     Page<Users> getAllUsers(int page, int size);
 
-    void notifyAllUsersWithTopics(Long topicId, Notification notification);
+    List<Notification> notifyAllUsersWithTopics(Long topicId, Notification notification);
 
-    void notifyAllUsers(Notification notification);
+    List<Notification> notifyAllUsers(Notification notification);
 
 }

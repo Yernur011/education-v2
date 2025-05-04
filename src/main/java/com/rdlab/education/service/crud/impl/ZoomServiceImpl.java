@@ -64,13 +64,15 @@ public class ZoomServiceImpl implements ZoomService {
         var zoom = new Zoom(null, response.getId(), dto.getTopic(), "CREATED",
                 ZonedDateTime.parse(dto.getStartTime()).toLocalDateTime(), response);
         zoomRepository.save(zoom);
+
         notificationService.createNotification(
                 dto.getCategory(),
                 Notification.builder()
-                        .description("Ваша ссылка: " + response.getJoinUrl())
                         .title("ZOOM Конференция по вашему интересу")
+                        .description("Тема: " + dto.getTopic() + "\nВремя: " + dto.getStartTime())
                         .entityId(response.getId())
                         .entity(NotificationEntityType.ZOOM)
+                        .startTime(response.getStartTime())
                         .build());
         return response;
     }

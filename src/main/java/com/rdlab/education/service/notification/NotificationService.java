@@ -3,6 +3,7 @@ package com.rdlab.education.service.notification;
 import com.rdlab.education.domain.entity.edu.Notification;
 import com.rdlab.education.domain.exceptions.NotFoundException;
 import com.rdlab.education.domain.repository.NotificationRepository;
+import com.rdlab.education.service.auth.UserService;
 import com.rdlab.education.service.crud.AccountService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -15,9 +16,10 @@ public class NotificationService {
 
     private final NotificationRepository repository;
     private final AccountService accountService;
+    private final UserService userService;
 
     public Page<Notification> getNotifications(int page, int size) {
-        return repository.findAll(PageRequest.of(page, size));
+        return repository.findByUsername(userService.getCurrentUser().getName(), PageRequest.of(page, size));
     }
 
     public Notification getNotification(Long id) {
@@ -25,13 +27,14 @@ public class NotificationService {
     }
 
     public void createNotification(Notification notification) {
-//        var saved = repository.save(notification);
-        accountService.notifyAllUsers(notification);
+        repository.saveAll(
+                accountService.notifyAllUsers(notification));
+
     }
 
     public void createNotification(Long topicId, Notification notification) {
-//        var saved = repository.save(notification);
-        accountService.notifyAllUsersWithTopics(topicId, notification);
+        repository.saveAll(
+                accountService.notifyAllUsersWithTopics(topicId, notification));
     }
 
     public void readNotification(Long id) {

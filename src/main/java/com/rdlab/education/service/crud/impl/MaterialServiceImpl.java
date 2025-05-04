@@ -19,7 +19,6 @@ import java.util.Optional;
 
 import static com.rdlab.education.domain.enums.NotificationEntityType.MATERIAL;
 import static com.rdlab.education.service.crud.impl.ArticleServiceImpl.getCurrentUrl;
-import static com.rdlab.education.utils.codes.ProductCode.MAIN_INFO_URI;
 
 @Service
 @RequiredArgsConstructor
@@ -61,11 +60,12 @@ public class MaterialServiceImpl implements MaterialService {
     public Material update(Long id, Material material) {
         var materialOld = materialRepository.findById(id).orElseThrow(() -> new NotFoundException("Not found"));
         var saved = materialRepository.save(material);
+
         if (CourseStatus.CREATED.equals(materialOld.getStatus())
             && CourseStatus.PUBLISHED.equals(material.getStatus())) {
             notificationService.createNotification(Notification.builder()
                     .title("Добавлен новый материал")
-                    .description("Материал о " + material.getStatus() + " по ссылке: " + getCurrentUrl(MAIN_INFO_URI) + id)
+                    .description("Материал о " + material.getStatus() + " по ссылке: " + getCurrentUrl("knowlegde/material" + id))
                     .entityId(id)
                     .entity(MATERIAL)
                     .build());

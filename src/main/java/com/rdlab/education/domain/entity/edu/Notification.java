@@ -8,6 +8,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -22,6 +23,7 @@ import java.time.ZonedDateTime;
 @Getter
 @Setter
 @Builder
+@Table(name = "notifications")
 public class Notification {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,7 +34,7 @@ public class Notification {
     private String description;
 
     @Column(name = "user_id", nullable = false)
-    private Long userId;
+    private String username;
 
     @Column(name = "start_time")
     private ZonedDateTime startTime;

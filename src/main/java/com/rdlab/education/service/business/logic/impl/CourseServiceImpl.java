@@ -6,11 +6,11 @@ import com.rdlab.education.domain.dto.test.TestDto;
 import com.rdlab.education.domain.entity.edu.Category;
 import com.rdlab.education.domain.entity.edu.Course;
 import com.rdlab.education.domain.entity.edu.Lesson;
+import com.rdlab.education.domain.entity.edu.Notification;
 import com.rdlab.education.domain.entity.edu.Tags;
 import com.rdlab.education.domain.entity.edu.UserCourse;
 import com.rdlab.education.domain.entity.edu.UserCourseLesson;
 import com.rdlab.education.domain.entity.image.Base64Images;
-import com.rdlab.education.domain.enums.CourseStatus;
 import com.rdlab.education.domain.enums.UserCourseLessonStatusEnum;
 import com.rdlab.education.domain.enums.UserTestStatusEnum;
 import com.rdlab.education.domain.exceptions.ApiException;
@@ -24,6 +24,7 @@ import com.rdlab.education.domain.repository.edu.UserCourseLessonRepository;
 import com.rdlab.education.domain.repository.edu.UserCourseRepository;
 import com.rdlab.education.service.auth.UserService;
 import com.rdlab.education.service.business.logic.CourseService;
+import com.rdlab.education.service.notification.NotificationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -35,7 +36,11 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static com.rdlab.education.domain.enums.CourseStatus.CREATED;
+import static com.rdlab.education.domain.enums.NotificationEntityType.COURSE;
+import static com.rdlab.education.service.crud.impl.ArticleServiceImpl.getCurrentUrl;
 import static com.rdlab.education.utils.codes.ErrorCode.COURSE_NOT_FOUND;
+import static com.rdlab.education.utils.codes.ProductCode.COURSE_URI;
 
 @Service
 @RequiredArgsConstructor
@@ -49,6 +54,7 @@ public class CourseServiceImpl implements CourseService {
     private final UserService userService;
     private final TagsRepository tagsRepository;
     private final CategoryRepository categoryRepository;
+    private final NotificationService notificationService;
 
     @Override
     public void testFinished(Long id) {
@@ -66,7 +72,7 @@ public class CourseServiceImpl implements CourseService {
         course.setTitle(courseDetailsDto.getTitle());
         course.setDescription(courseDetailsDto.getDescription());
         course.setBase64Images(new Base64Images(courseDetailsDto.getImage()));
-        course.setStatus(CourseStatus.CREATED.name());
+        course.setStatus(CREATED.name());
         course.setDemoUrl(courseDetailsDto.getDemoUrl());
 
         course.setTags(courseDetailsDto.getTags()
@@ -146,7 +152,18 @@ public class CourseServiceImpl implements CourseService {
             if (!course.getBase64Images().getBase64Image().equals(courseDetailsDto.getImage())) {
                 course.setBase64Images(new Base64Images(courseDetailsDto.getImage()));
             }
+
+            if ("CREATED".equals(course.getStatus())
+                || "ACTIVE".equals(courseDetailsDto.getStatus())) {
+                notificationService.createNotification(Notification.builder()
+                        .title("Добавлен новый курс")
+                        .description("Курс о " + course.getTitle() + " по ссылке: " + getCurrentUrl(COURSE_URI) + course.getId())
+                        .entityId(course.getId())
+                        .entity(COURSE)
+                        .build());
+            }
             course.setStatus(courseDetailsDto.getStatus());
+
             course.setTags(courseDetailsDto.getTags()
                     .stream()
                     .map(tagsRepository::findById)
