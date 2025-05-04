@@ -5,6 +5,7 @@ import com.rdlab.education.domain.dto.course.CourseDetailsDto;
 import com.rdlab.education.domain.dto.course.CoursesResponseDto;
 import com.rdlab.education.domain.dto.lesson.LessonDto;
 import com.rdlab.education.domain.dto.page.PageableDto;
+import com.rdlab.education.domain.entity.auth.Users;
 import com.rdlab.education.domain.entity.edu.Category;
 import com.rdlab.education.domain.entity.edu.Course;
 import com.rdlab.education.domain.entity.edu.Tags;
@@ -20,10 +21,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.rdlab.education.utils.codes.ErrorCode.COURSE_NOT_FOUND;
@@ -40,22 +43,49 @@ public class CourseCrudServiceImpl implements CourseCrudService {
 
     @Override
     public PageableDto<CoursesResponseDto> findAllPageable(Long page, Long size) {
-        Page<Course> all = courseRepository.findAllByStatus(UserCourseLessonStatusEnum.ACTIVE.getStatus(), PageRequest.of(page.intValue(), size.intValue()));
-        PageableDto<CoursesResponseDto> coursesResponseDtoPageableDto = new PageableDto<>();
-        coursesResponseDtoPageableDto.setTotalPages(all.getTotalPages());
-        coursesResponseDtoPageableDto.setContent(all.getContent().stream()
-                .map(course ->
-                        new CoursesResponseDto(
-                                course.getId(),
-                                course.getBase64Images().getBase64Image(),
-                                course.getTags().stream().map(Tags::getName).toList(),
-                                course.getTitle(),
-                                course.getDescription(),
-                                course.getStatus()
-                        )
-                ).toList());
 
-        return coursesResponseDtoPageableDto;
+        if (!SecurityContextHolder.getContext().getAuthentication().getPrincipal().equals("anonymousUser")) {
+            Users currentUser = userService.getCurrentUser();
+            Set<Long> categoryIdList = currentUser.getCategoryIdList();
+            Page<Course> all = courseRepository.findAllByStatus(UserCourseLessonStatusEnum.ACTIVE.getStatus(), PageRequest.of(page.intValue(), size.intValue()));
+            PageableDto<CoursesResponseDto> coursesResponseDtoPageableDto = new PageableDto<>();
+            coursesResponseDtoPageableDto.setTotalPages(all.getTotalPages());
+            coursesResponseDtoPageableDto.setContent(
+                    all.getContent()
+                            .stream()
+                            .filter(course -> course.getCategories()
+                                    .stream()
+                                    .anyMatch(category -> categoryIdList.contains(category.getId())))
+                            .map(course ->
+                                    new CoursesResponseDto(
+                                            course.getId(),
+                                            course.getBase64Images().getBase64Image(),
+                                            course.getTags().stream().map(Tags::getName).toList(),
+                                            course.getTitle(),
+                                            course.getDescription(),
+                                            course.getStatus()
+                                    )
+                            ).toList());
+            return coursesResponseDtoPageableDto;
+        } else {
+            Page<Course> all = courseRepository.findAllByStatus(UserCourseLessonStatusEnum.ACTIVE.getStatus(), PageRequest.of(page.intValue(), size.intValue()));
+            PageableDto<CoursesResponseDto> coursesResponseDtoPageableDto = new PageableDto<>();
+            coursesResponseDtoPageableDto.setTotalPages(all.getTotalPages());
+            coursesResponseDtoPageableDto.setContent(
+                    all.getContent()
+                            .stream()
+                            .map(course ->
+                                    new CoursesResponseDto(
+                                            course.getId(),
+                                            course.getBase64Images().getBase64Image(),
+                                            course.getTags().stream().map(Tags::getName).toList(),
+                                            course.getTitle(),
+                                            course.getDescription(),
+                                            course.getStatus()
+                                    )
+                            ).toList());
+            return coursesResponseDtoPageableDto;
+        }
     }
 
     @Override
