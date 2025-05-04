@@ -12,7 +12,7 @@ import com.rdlab.education.domain.mail.RequestToSendEmailDto;
 import com.rdlab.education.domain.repository.Base64ImagesRepository;
 import com.rdlab.education.domain.repository.RegisterUserRepository;
 import com.rdlab.education.domain.repository.UserRepository;
-import com.rdlab.education.service.email.MailSenderService;
+import com.rdlab.education.service.notification.email.MailSenderService;
 import com.rdlab.education.service.otp.OtpService;
 import io.vavr.control.Try;
 import lombok.RequiredArgsConstructor;

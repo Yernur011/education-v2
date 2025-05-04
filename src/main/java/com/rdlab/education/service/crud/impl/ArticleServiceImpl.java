@@ -3,10 +3,13 @@ package com.rdlab.education.service.crud.impl;
 import com.rdlab.education.domain.dto.article.ArticleDto;
 import com.rdlab.education.domain.dto.page.PageableDto;
 import com.rdlab.education.domain.entity.edu.Articles;
+import com.rdlab.education.domain.entity.edu.Notification;
 import com.rdlab.education.domain.entity.image.Base64Images;
+import com.rdlab.education.domain.enums.CourseStatus;
 import com.rdlab.education.domain.mapper.ArticleMapper;
 import com.rdlab.education.domain.repository.edu.ArticlesRepository;
 import com.rdlab.education.service.crud.ArticleService;
+import com.rdlab.education.service.notification.NotificationService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -17,6 +20,9 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
+import static com.rdlab.education.domain.enums.NotificationEntityType.ARTICLE;
+import static com.rdlab.education.utils.codes.ProductCode.ARTICLE_URI;
+
 
 @Service
 @RequiredArgsConstructor
@@ -26,6 +32,7 @@ public class ArticleServiceImpl implements ArticleService {
 
     @Qualifier("articleMapper")
     private final ArticleMapper mapper;
+    private final NotificationService notificationService;
 
     @Override
     public ArticleDto create(ArticleDto dto) {
@@ -61,13 +68,26 @@ public class ArticleServiceImpl implements ArticleService {
 
     @Override
     public ArticleDto update(Long id, ArticleDto dto) {
-        repository.findById(id).orElseThrow(() -> new EntityNotFoundException("Article not found: " + id));
-
+        Articles article = repository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Article not found: " + id));
+        if (CourseStatus.CREATED.equals(article.getStatus())
+            && CourseStatus.PUBLISHED.equals(dto.status())) {
+            notificationService.createNotification(Notification.builder()
+                    .title("Добавлена новая статья")
+                    .description("Статья о " + dto.title() + " по ссылке: " + getCurrentUrl(ARTICLE_URI) + id)
+                    .entityId(id)
+                    .entity(ARTICLE)
+                    .build());
+        }
         Articles entity = mapper.toEntity(dto);
         entity.setId(id);
 
         Articles updated = repository.save(entity);
         return mapper.toDto(updated);
+    }
+
+    public static String getCurrentUrl(String uri) {
+        return "rd-lab.com/api/v1" + uri + "/";
     }
 
     @Override

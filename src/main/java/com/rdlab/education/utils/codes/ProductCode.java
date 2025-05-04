@@ -22,4 +22,5 @@ public interface ProductCode {
     String LAWS_URI = "/laws";
     String DATABASE_URI = "/databases";
     String MEETINGS = "/meetings";
+    String MATERIALS_URI = "/materials";
 }

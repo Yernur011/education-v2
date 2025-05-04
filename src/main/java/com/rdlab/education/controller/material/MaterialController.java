@@ -7,12 +7,23 @@ import com.rdlab.education.domain.mapper.MaterialMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+import static com.rdlab.education.utils.codes.ProductCode.MATERIALS_URI;
+import static com.rdlab.education.utils.codes.ProductCode.V1_URI;
+
 @RestController
-@RequestMapping("/api/materials")
+@RequestMapping(V1_URI + MATERIALS_URI)
 @RequiredArgsConstructor
 public class MaterialController {
 
@@ -39,15 +50,13 @@ public class MaterialController {
 
     @PostMapping
     public ResponseEntity<MaterialDto> create(@RequestBody MaterialDto dto) {
-        return ResponseEntity.ok(
-                mapper.toDto(
-                        materialService.save(mapper.toEntity(dto))));
+        return ResponseEntity.ok(mapper.toDto(materialService.save(mapper.toEntity(dto))));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<MaterialDto> update(@PathVariable Long id, @RequestBody MaterialDto dto) {
         var entity = mapper.toEntity(dto.toBuilder().id(id).build());
-        return ResponseEntity.ok(mapper.toDto(materialService.save(entity)));
+        return ResponseEntity.ok(mapper.toDto(materialService.update(id, entity)));
     }
 
     @DeleteMapping("/{id}")

@@ -1,4 +1,4 @@
-package com.rdlab.education.service.email;
+package com.rdlab.education.service.notification.email;
 
 import com.rdlab.education.domain.mail.RequestToSendEmailDto;
 import io.micrometer.common.util.StringUtils;

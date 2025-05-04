@@ -4,6 +4,7 @@ import com.rdlab.education.domain.dto.profile.GetProfile;
 import com.rdlab.education.domain.dto.user.info.UserInfoDto;
 import com.rdlab.education.domain.dto.user.info.UserInfoOutputDto;
 import com.rdlab.education.domain.entity.auth.Users;
+import com.rdlab.education.domain.entity.edu.Notification;
 import com.rdlab.education.domain.entity.image.Base64Images;
 import com.rdlab.education.domain.exceptions.ApiException;
 import com.rdlab.education.domain.mail.RequestToSendEmailDto;
@@ -93,19 +94,32 @@ public class UserAccountServiceImpl implements AccountService {
     }
 
     @Override
-    public void notifyALlUsers(Long topicId, String url) {
-        userRepository.findByCategoryIdContains(topicId)
-                .forEach(users -> {
-                    String message = "Ваша ссылка: " + url;
-                    var requestToSendEmailDto = new RequestToSendEmailDto(
-                            users.getUsername(),
-                            null,
-                            "PC_CLUB",
-                            "ZOOM Конференция по вашему интересу",
-                            message
-                    );
+    public void notifyAllUsersWithTopics(Long topicId, Notification notification) {
+        userRepository.findByCategoryIdContains(topicId).forEach(users -> {
+            var requestToSendEmailDto = new RequestToSendEmailDto(
+                    users.getUsername(),
+                    null,
+                    "PC_CLUB",
+                    notification.getTitle(),
+                    notification.getDescription()
+            );
 
-                    registrationService.sendOtpEmailAsync(requestToSendEmailDto);
-                });
+            registrationService.sendOtpEmailAsync(requestToSendEmailDto);
+        });
+    }
+
+    @Override
+    public void notifyAllUsers(Notification notification) {
+        userRepository.findAll().forEach(users -> {
+            var requestToSendEmailDto = new RequestToSendEmailDto(
+                    users.getUsername(),
+                    null,
+                    "PC_CLUB",
+                    notification.getTitle(),
+                    notification.getDescription()
+            );
+
+            registrationService.sendOtpEmailAsync(requestToSendEmailDto);
+        });
     }
 }

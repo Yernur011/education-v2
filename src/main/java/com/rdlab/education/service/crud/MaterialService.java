@@ -7,8 +7,14 @@ import java.util.List;
 
 public interface MaterialService {
     List<Material> getAll();
+
     PageableDto<Material> findAll(int page, int size);
+
     Material getById(Long id);
+
     Material save(Material material);
+
+    Material update(Long id, Material material);
+
     void delete(Long id);
 }
