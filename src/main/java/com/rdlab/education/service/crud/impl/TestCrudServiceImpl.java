@@ -5,6 +5,7 @@ import com.rdlab.education.domain.dto.question.QuestionCreateDto;
 import com.rdlab.education.domain.dto.test.AnswerCreateDto;
 import com.rdlab.education.domain.dto.test.TestCreateDto;
 import com.rdlab.education.domain.dto.test.TestDto;
+import com.rdlab.education.domain.entity.auth.Users;
 import com.rdlab.education.domain.entity.edu.*;
 import com.rdlab.education.domain.enums.UserCourseLessonStatusEnum;
 import com.rdlab.education.domain.exceptions.ApiException;
@@ -13,17 +14,16 @@ import com.rdlab.education.service.auth.UserService;
 import com.rdlab.education.service.business.logic.CourseService;
 import com.rdlab.education.service.crud.TestCrudService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.repository.query.FluentQuery;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.Set;
 
 import static com.rdlab.education.utils.codes.ErrorCode.COURSE_NOT_FOUND;
 import static com.rdlab.education.utils.codes.ErrorCode.TEST_NOT_FOUND;
@@ -69,17 +69,36 @@ public class TestCrudServiceImpl implements TestCrudService {
 
     @Override
     public PageableDto<TestDto> findAllTestDto(Long page, Long size) {
-        PageableDto<TestDto> pageableDto = new PageableDto<>();
-        Page<Test> all = testRepository.findAll(PageRequest.of(page.intValue(), size.intValue()));
+        if (!SecurityContextHolder.getContext().getAuthentication().getPrincipal().equals("anonymousUser")) {
+            Users currentUser = userService.getCurrentUser();
+            Set<Long> categoryIdList = currentUser.getCategoryIdList();
+            PageableDto<TestDto> pageableDto = new PageableDto<>();
+            Page<Test> all = testRepository.findAll(PageRequest.of(page.intValue(), size.intValue()));
 
-        pageableDto.setTotalPages(all.getTotalPages());
-        pageableDto.setContent(all.getContent()
-                .stream()
-                .filter(test -> test.getCourse() != null)
-                .map(test -> courseService.getCurrentTestByCourse(test.getCourse().getId()))
-                .toList());
+            pageableDto.setTotalPages(all.getTotalPages());
+            pageableDto.setContent(all.getContent()
+                    .stream()
+                    .filter(test -> test.getCourse() != null)
+                    .filter(test -> test.getCourse()
+                            .getCategories()
+                            .stream()
+                            .anyMatch(category -> categoryIdList.contains(category.getId())))
+                    .map(test -> courseService.getCurrentTestByCourse(test.getCourse().getId()))
+                    .toList());
 
-        return pageableDto;
+            return pageableDto;
+        } else{
+            PageableDto<TestDto> pageableDto = new PageableDto<>();
+            Page<Test> all = testRepository.findAll(PageRequest.of(page.intValue(), size.intValue()));
+
+            pageableDto.setTotalPages(all.getTotalPages());
+            pageableDto.setContent(all.getContent()
+                    .stream()
+                    .filter(test -> test.getCourse() != null)
+                    .map(test -> courseService.getCurrentTestByCourse(test.getCourse().getId()))
+                    .toList());
+            return pageableDto;
+        }
     }
 
     @Override
