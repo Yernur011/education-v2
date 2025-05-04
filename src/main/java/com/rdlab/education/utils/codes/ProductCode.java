@@ -21,4 +21,5 @@ public interface ProductCode {
     String TAGS_URI = "/tags";
     String LAWS_URI = "/laws";
     String DATABASE_URI = "/databases";
+    String MEETINGS = "/meetings";
 }

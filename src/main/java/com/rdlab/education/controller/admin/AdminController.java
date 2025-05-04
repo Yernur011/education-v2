@@ -4,18 +4,21 @@ import com.rdlab.education.domain.dto.article.ArticleDto;
 import com.rdlab.education.domain.dto.course.AdminCourseResponse;
 import com.rdlab.education.domain.dto.course.CourseDetailsDto;
 import com.rdlab.education.domain.dto.forum.AdminForum;
+import com.rdlab.education.domain.dto.integration.zoom.MeetingReqDto;
 import com.rdlab.education.domain.dto.lesson.LessonDto;
 import com.rdlab.education.domain.dto.page.PageableDto;
 import com.rdlab.education.domain.dto.test.TestCreateDto;
 import com.rdlab.education.domain.dto.test.TestDto;
 import com.rdlab.education.domain.entity.auth.Users;
 import com.rdlab.education.domain.entity.edu.Tags;
+import com.rdlab.education.domain.entity.edu.Zoom;
 import com.rdlab.education.service.business.logic.CourseService;
 import com.rdlab.education.service.crud.AccountService;
 import com.rdlab.education.service.crud.ArticleService;
 import com.rdlab.education.service.crud.CourseCrudService;
 import com.rdlab.education.service.crud.ForumCrudService;
 import com.rdlab.education.service.crud.TestCrudService;
+import com.rdlab.education.service.crud.ZoomService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +41,7 @@ import static com.rdlab.education.utils.codes.ProductCode.ARTICLE_URI;
 import static com.rdlab.education.utils.codes.ProductCode.COURSE_URI;
 import static com.rdlab.education.utils.codes.ProductCode.FORUMS_URI;
 import static com.rdlab.education.utils.codes.ProductCode.LESSON_URI;
+import static com.rdlab.education.utils.codes.ProductCode.MEETINGS;
 import static com.rdlab.education.utils.codes.ProductCode.QUESTIONS_URI;
 import static com.rdlab.education.utils.codes.ProductCode.TAGS_URI;
 import static com.rdlab.education.utils.codes.ProductCode.TESTS_URI;
@@ -55,6 +59,7 @@ public class AdminController {
     private final TestCrudService testCrudService;
     private final ArticleService articleService;
     private final AccountService accountService;
+    private final ZoomService zoomService;
 
     //    Courses
     @GetMapping(COURSE_URI)
@@ -193,4 +198,17 @@ public class AdminController {
                                                    @RequestParam(defaultValue = "10") int size) {
         return ResponseEntity.ok(accountService.getAllUsers(page, size));
     }
+
+    @PostMapping(MEETINGS + "/create")
+    public ResponseEntity<String> createMeeting(@RequestBody MeetingReqDto dto) {
+        return ResponseEntity.ok(zoomService.createMeeting(dto).getJoinUrl());
+    }
+
+    @GetMapping(MEETINGS)
+    public ResponseEntity<Page<Zoom>> findAll(@RequestParam(defaultValue = "0") int page,
+                                              @RequestParam(defaultValue = "10") int size) {
+        return ResponseEntity.ok(zoomService.getAll(page, size));
+    }
+
+
 }
