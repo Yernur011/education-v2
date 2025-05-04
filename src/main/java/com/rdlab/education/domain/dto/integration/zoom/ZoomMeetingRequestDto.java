@@ -4,8 +4,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Data;
 
-import java.time.ZonedDateTime;
-
 @Data
 @Builder
 public class ZoomMeetingRequestDto {
@@ -14,7 +12,7 @@ public class ZoomMeetingRequestDto {
     private int type = 2;
 
     @JsonProperty("start_time")
-    private ZonedDateTime startTime;
+    private String startTime;
 
     private int duration;
     private String timezone;

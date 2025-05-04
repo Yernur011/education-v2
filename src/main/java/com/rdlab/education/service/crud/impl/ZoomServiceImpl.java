@@ -49,7 +49,7 @@ public class ZoomServiceImpl implements ZoomService {
     public ZoomMeetingCreatedResponseDto createMeeting(MeetingReqDto dto) {
         var token = zoomTokenClient.getToken("account_credentials", "g5LrouiASraTs9HJqgCKZQ");
         ZoomMeetingRequestDto request = ZoomMeetingRequestDto.builder()
-                .startTime(ZonedDateTime.parse(dto.getStartTime()))
+                .startTime(dto.getStartTime())
                 .topic(dto.getTopic())
                 .duration(dto.getDuration())
                 .type(2)
