@@ -93,8 +93,8 @@ public class UserAccountServiceImpl implements AccountService {
     }
 
     @Override
-    public void notifyALlUsers(String topicId, String url) {
-        userRepository.findByCategoryIdContains(Long.valueOf(topicId))
+    public void notifyALlUsers(Long topicId, String url) {
+        userRepository.findByCategoryIdContains(topicId)
                 .forEach(users -> {
                     String message = "Ваша ссылка: " + url;
                     var requestToSendEmailDto = new RequestToSendEmailDto(
