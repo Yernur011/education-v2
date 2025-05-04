@@ -3,13 +3,15 @@ package com.rdlab.education.service.crud.impl;
 import com.rdlab.education.domain.dto.profile.GetProfile;
 import com.rdlab.education.domain.dto.user.info.UserInfoDto;
 import com.rdlab.education.domain.dto.user.info.UserInfoOutputDto;
+import com.rdlab.education.domain.entity.auth.Users;
 import com.rdlab.education.domain.entity.image.Base64Images;
 import com.rdlab.education.domain.exceptions.ApiException;
-import com.rdlab.education.domain.repository.UserDetailsRepository;
 import com.rdlab.education.domain.repository.UserRepository;
 import com.rdlab.education.service.crud.AccountService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -21,7 +23,6 @@ import java.util.Base64;
 @Service
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class UserAccountServiceImpl implements AccountService {
-    private final UserDetailsRepository userDetailsRepository;
     private final UserRepository userRepository;
 
     @Override
@@ -79,5 +80,10 @@ public class UserAccountServiceImpl implements AccountService {
                         ))
                 .orElseThrow(() -> new ApiException("Похоже нет такого пользователя!"));
 
+    }
+
+    @Override
+    public Page<Users> getAllUsers(int page, int size) {
+        return userRepository.findAll(PageRequest.of(page, size));
     }
 }

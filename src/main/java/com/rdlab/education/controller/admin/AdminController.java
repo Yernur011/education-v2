@@ -8,8 +8,10 @@ import com.rdlab.education.domain.dto.lesson.LessonDto;
 import com.rdlab.education.domain.dto.page.PageableDto;
 import com.rdlab.education.domain.dto.test.TestCreateDto;
 import com.rdlab.education.domain.dto.test.TestDto;
+import com.rdlab.education.domain.entity.auth.Users;
 import com.rdlab.education.domain.entity.edu.Tags;
 import com.rdlab.education.service.business.logic.CourseService;
+import com.rdlab.education.service.crud.AccountService;
 import com.rdlab.education.service.crud.ArticleService;
 import com.rdlab.education.service.crud.CourseCrudService;
 import com.rdlab.education.service.crud.ForumCrudService;
@@ -17,6 +19,7 @@ import com.rdlab.education.service.crud.TestCrudService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -38,6 +41,7 @@ import static com.rdlab.education.utils.codes.ProductCode.LESSON_URI;
 import static com.rdlab.education.utils.codes.ProductCode.QUESTIONS_URI;
 import static com.rdlab.education.utils.codes.ProductCode.TAGS_URI;
 import static com.rdlab.education.utils.codes.ProductCode.TESTS_URI;
+import static com.rdlab.education.utils.codes.ProductCode.USERS_URI;
 import static com.rdlab.education.utils.codes.ProductCode.V1_URI;
 
 @RestController
@@ -50,6 +54,7 @@ public class AdminController {
     private final ForumCrudService forumCrudService;
     private final TestCrudService testCrudService;
     private final ArticleService articleService;
+    private final AccountService accountService;
 
     //    Courses
     @GetMapping(COURSE_URI)
@@ -181,5 +186,11 @@ public class AdminController {
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         articleService.delete(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping(USERS_URI)
+    public ResponseEntity<Page<Users>> getAllUsers(@RequestParam(defaultValue = "0") int page,
+                                                   @RequestParam(defaultValue = "10") int size) {
+        return ResponseEntity.ok(accountService.getAllUsers(page, size));
     }
 }

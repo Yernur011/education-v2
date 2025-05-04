@@ -5,7 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
 public record VerifyOtpRequest(@NotBlank(message = "Имя пользователя не может быть пустыми")
-                               @Email(message = "Укажте корректную почту")
+                               @Email(message = "Укажите корректную почту")
                                String username,
 
                                @NotBlank(message = "Код подтверждения не должен быть пустым")
