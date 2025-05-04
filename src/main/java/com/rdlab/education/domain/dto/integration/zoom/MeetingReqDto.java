@@ -9,6 +9,7 @@ import java.time.ZonedDateTime;
 public class MeetingReqDto {
 
     private String topic;
+    private Long category;
     @JsonProperty("start_time")
     private ZonedDateTime startTime; // 2025-04-22T10:17:00Z
     private int duration;

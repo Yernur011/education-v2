@@ -59,7 +59,7 @@ public class ZoomServiceImpl implements ZoomService {
         var response = zoomMeetingClient.createMeeting(token, request);
         var zoom = new Zoom(null, response.getId(), dto.getTopic(), "CREATED", dto.getStartTime().toLocalDateTime(), response);
         zoomRepository.save(zoom);
-        accountService.notifyALlUsers(dto.getTopic(), response.getJoinUrl());
+        accountService.notifyALlUsers(dto.getCategory(), response.getJoinUrl());
         return response;
     }
 }
