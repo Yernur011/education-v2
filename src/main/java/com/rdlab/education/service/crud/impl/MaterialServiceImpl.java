@@ -3,6 +3,7 @@ package com.rdlab.education.service.crud.impl;
 import com.rdlab.education.domain.dto.page.PageableDto;
 import com.rdlab.education.domain.entity.edu.Material;
 import com.rdlab.education.domain.repository.edu.MaterialRepository;
+import com.rdlab.education.domain.repository.edu.TagsRepository;
 import com.rdlab.education.service.crud.MaterialService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -10,11 +11,13 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class MaterialServiceImpl implements MaterialService {
     private final MaterialRepository materialRepository;
+    private final TagsRepository tagsRepository;
 
 
     public List<Material> getAll() {
@@ -32,6 +35,17 @@ public class MaterialServiceImpl implements MaterialService {
     }
 
     public Material save(Material material) {
+
+        if (!material.getTagIdList().isEmpty()) {
+            material.setTags(material.getTagIdList()
+                    .stream()
+                    .distinct()
+                    .map(tagsRepository::findById)
+                    .filter(Optional::isPresent)
+                    .map(Optional::get)
+                    .toList());
+        }
+
         return materialRepository.save(material);
     }
 

@@ -2,23 +2,16 @@ package com.rdlab.education.domain.entity.edu;
 
 import com.rdlab.education.domain.entity.image.Base64Images;
 import com.rdlab.education.domain.enums.CourseStatus;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @AllArgsConstructor
@@ -39,6 +32,9 @@ public class Material {
 
     @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH}, fetch = FetchType.LAZY)
     private List<Tags> tags = new ArrayList<>();
+
+    @Transient
+    private Set<Long> tagIdList = new HashSet<>();
 
     @Enumerated(EnumType.STRING)
     private CourseStatus status;

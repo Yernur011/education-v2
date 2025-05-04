@@ -11,7 +11,7 @@ public record MaterialDto(
         String title,
         String description,
         String image,
-        List<String> tags,
+        List<Long> tags,
         CourseStatus status,
         ZoomDto zoom
 ) {

@@ -6,11 +6,11 @@ import com.rdlab.education.domain.entity.edu.Tags;
 import com.rdlab.education.domain.entity.image.Base64Images;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.Mappings;
 import org.mapstruct.Named;
 import org.mapstruct.factory.Mappers;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Mapper(componentModel = "spring")
@@ -18,16 +18,13 @@ public interface MaterialMapper {
 
     MaterialMapper INSTANCE = Mappers.getMapper(MaterialMapper.class);
 
-    @Mappings({
-            @Mapping(source = "image", target = "image", qualifiedByName = "base64ToString"),
-            @Mapping(source = "tags", target = "tags", qualifiedByName = "tagsToStrings")
-    })
+    @Mapping(source = "image", target = "image", qualifiedByName = "base64ToString")
+    @Mapping(source = "tags", target = "tags", qualifiedByName = "tagsToIds") // <-- используем метод ниже
     MaterialDto toDto(Material entity);
 
-    @Mappings({
-            @Mapping(source = "image", target = "image", qualifiedByName = "stringToBase64"),
-            @Mapping(source = "tags", target = "tags", qualifiedByName = "stringsToTags")
-    })
+    @Mapping(source = "image", target = "image", qualifiedByName = "stringToBase64")
+    @Mapping(source = "tags", target = "tagIdList", qualifiedByName = "idsToSet")
+    @Mapping(target = "tags", ignore = true)
     Material toEntity(MaterialDto dto);
 
     @Named("base64ToString")
@@ -40,13 +37,15 @@ public interface MaterialMapper {
         return base64 != null ? new Base64Images(base64) : null;
     }
 
-    @Named("tagsToStrings")
-    default List<String> tagsToStrings(List<Tags> tags) {
-        return tags != null ? tags.stream().map(Tags::getName).collect(Collectors.toList()) : null;
+    @Named("tagsToIds")
+    default List<Long> tagsToIds(List<Tags> tags) {
+        return tags != null ? tags.stream()
+                .map(Tags::getId)
+                .collect(Collectors.toList()) : null;
     }
 
-    @Named("stringsToTags")
-    default List<Tags> stringsToTags(List<String> names) {
-        return names != null ? names.stream().map(Tags::new).collect(Collectors.toList()) : null;
+    @Named("idsToSet")
+    default Set<Long> idsToSet(List<Long> list) {
+        return list != null ? Set.copyOf(list) : null;
     }
 }

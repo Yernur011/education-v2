@@ -2,6 +2,7 @@ package com.rdlab.education.config.core;
 
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
+import org.modelmapper.ModelMapper;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -31,6 +32,10 @@ public class ApplicationConfiguration {
         return mailSender;
     }
 
+    @Bean
+    public ModelMapper modelMapper() {
+        return new ModelMapper();
+    }
 //    @Bean
 //    public ObjectMapper objectMapper() {
 //        ObjectMapper mapper = new ObjectMapper();
