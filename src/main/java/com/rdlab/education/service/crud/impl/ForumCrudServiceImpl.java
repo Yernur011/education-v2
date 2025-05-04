@@ -91,7 +91,8 @@ public class ForumCrudServiceImpl implements ForumCrudService {
                                 forumQuestion.getTitle(),
                                 forumQuestion.getCreatedAt(),
                                 forumQuestion.getAnswers().size(),
-                                likesRepository.countByForumId(forumQuestion.getId())))
+                                likesRepository.countByForumId(forumQuestion.getId()),
+                                forumQuestion.getTag()))
                 .toList();
 
         PageableDto<GetForums> getForumsPageableDto = new PageableDto<>();
@@ -117,7 +118,8 @@ public class ForumCrudServiceImpl implements ForumCrudService {
                                 forumQuestion.getTitle(),
                                 forumQuestion.getCreatedAt(),
                                 forumQuestion.getAnswers().size(),
-                                likesRepository.countByForumId(forumQuestion.getId())
+                                likesRepository.countByForumId(forumQuestion.getId()),
+                                forumQuestion.getTag()
                         ))
                 .toList();
 
