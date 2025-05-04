@@ -5,15 +5,19 @@ import com.rdlab.education.domain.clients.ZoomTokenClient;
 import com.rdlab.education.domain.dto.integration.zoom.MeetingReqDto;
 import com.rdlab.education.domain.dto.integration.zoom.ZoomMeetingCreatedResponseDto;
 import com.rdlab.education.domain.dto.integration.zoom.ZoomMeetingRequestDto;
+import com.rdlab.education.domain.entity.edu.Notification;
 import com.rdlab.education.domain.entity.edu.Zoom;
+import com.rdlab.education.domain.enums.NotificationEntityType;
 import com.rdlab.education.domain.exceptions.NotFoundException;
 import com.rdlab.education.domain.repository.edu.ZoomRepository;
-import com.rdlab.education.service.crud.AccountService;
 import com.rdlab.education.service.crud.ZoomService;
+import com.rdlab.education.service.notification.NotificationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+
+import java.time.ZonedDateTime;
 
 @Service
 @RequiredArgsConstructor
@@ -22,7 +26,7 @@ public class ZoomServiceImpl implements ZoomService {
     private final ZoomRepository zoomRepository;
     private final ZoomTokenClient zoomTokenClient;
     private final ZoomMeetingClient zoomMeetingClient;
-    private final AccountService accountService;
+    private final NotificationService notificationService;
 
 
     public Page<Zoom> getAll(int page, int size) {
@@ -45,7 +49,7 @@ public class ZoomServiceImpl implements ZoomService {
     public ZoomMeetingCreatedResponseDto createMeeting(MeetingReqDto dto) {
         var token = zoomTokenClient.getToken("account_credentials", "g5LrouiASraTs9HJqgCKZQ");
         ZoomMeetingRequestDto request = ZoomMeetingRequestDto.builder()
-                .startTime(dto.getStartTime())
+                .startTime(ZonedDateTime.parse(dto.getStartTime()))
                 .topic(dto.getTopic())
                 .duration(dto.getDuration())
                 .type(2)
@@ -57,9 +61,17 @@ public class ZoomServiceImpl implements ZoomService {
                         .build())
                 .build();
         var response = zoomMeetingClient.createMeeting(token, request);
-        var zoom = new Zoom(null, response.getId(), dto.getTopic(), "CREATED", dto.getStartTime().toLocalDateTime(), response);
+        var zoom = new Zoom(null, response.getId(), dto.getTopic(), "CREATED",
+                ZonedDateTime.parse(dto.getStartTime()).toLocalDateTime(), response);
         zoomRepository.save(zoom);
-        accountService.notifyALlUsers(dto.getCategory(), response.getJoinUrl());
+        notificationService.createNotification(
+                dto.getCategory(),
+                Notification.builder()
+                        .description("Ваша ссылка: " + response.getJoinUrl())
+                        .title("ZOOM Конференция по вашему интересу")
+                        .entityId(response.getId())
+                        .entity(NotificationEntityType.ZOOM)
+                        .build());
         return response;
     }
 }
