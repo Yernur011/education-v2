@@ -57,7 +57,7 @@ public class CourseServiceImpl implements CourseService {
         course.setBase64Images(new Base64Images(courseDetailsDto.getImage()));
         course.setStatus(CourseStatus.CREATED.name());
 
-        course.getTags().addAll(courseDetailsDto.getTags()
+        course.setTags(courseDetailsDto.getTags()
                 .stream()
                 .map(tagsRepository::findById)
                 .filter(Optional::isPresent)
@@ -78,7 +78,7 @@ public class CourseServiceImpl implements CourseService {
                     return lesson;
                 })
                 .toList());
-        course.getCategories().addAll(
+        course.setCategories(
                 courseDetailsDto.getCategories()
                         .stream()
                         .map(categoryRepository::findById)
@@ -134,11 +134,11 @@ public class CourseServiceImpl implements CourseService {
                 course.setBase64Images(new Base64Images(courseDetailsDto.getImage()));
             }
             course.setStatus(courseDetailsDto.getStatus());
-            course.getTags().addAll(courseDetailsDto.getTags()
+            course.setTags(courseDetailsDto.getTags()
                     .stream()
                     .map(tagsRepository::findById)
                     .map(tags -> tags.orElse(null))
-                    .toList());
+                    .collect(Collectors.toSet()));
             course.getLessons().addAll(courseDetailsDto.getLessons()
                     .stream()
                     .map(lessonDto -> lessonRepository.findById(lessonDto.getId())
@@ -163,7 +163,7 @@ public class CourseServiceImpl implements CourseService {
                                     return lesson;
                                 }))
                     .toList());
-            course.getCategories().addAll(
+            course.setCategories(
                     courseDetailsDto.getCategories()
                             .stream()
                             .map(categoryRepository::findById)
