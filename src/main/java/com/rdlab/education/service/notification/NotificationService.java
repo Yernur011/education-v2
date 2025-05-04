@@ -25,13 +25,13 @@ public class NotificationService {
     }
 
     public void createNotification(Notification notification) {
-        var saved = repository.save(notification);
-        accountService.notifyAllUsers(saved);
+//        var saved = repository.save(notification);
+        accountService.notifyAllUsers(notification);
     }
 
     public void createNotification(Long topicId, Notification notification) {
-        var saved = repository.save(notification);
-        accountService.notifyAllUsersWithTopics(topicId, saved);
+//        var saved = repository.save(notification);
+        accountService.notifyAllUsersWithTopics(topicId, notification);
     }
 
     public void readNotification(Long id) {
