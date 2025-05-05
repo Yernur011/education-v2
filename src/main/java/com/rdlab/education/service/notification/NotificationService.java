@@ -33,14 +33,14 @@ public class NotificationService {
     }
 
     public void createNotification(Notification notification) {
-        log.debug("Creating notification {}", notification);
+        log.info("Creating notification {}", notification);
         repository.saveAll(
                 accountService.notifyAllUsers(notification));
 
     }
 
     public void createNotification(Long topicId, Notification notification) {
-        log.debug("Creating notification {}, {}", topicId, notification);
+        log.info("Creating notification {}, {}", topicId, notification);
         repository.saveAll(
                 accountService.notifyAllUsersWithTopics(topicId, notification));
     }
