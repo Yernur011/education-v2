@@ -17,6 +17,8 @@ services:
     ports:
       - "8080:8080"
       - "5005:5005"
+    mem_limit: 4g      # ограничение по памяти
+    cpus: 2.0          # ограничение по CPU
 
 
   db:
@@ -40,6 +42,8 @@ services:
       - postgres_data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
+    mem_limit: 2g
+    cpus: 1.0
 
 volumes:
   postgres_data:
