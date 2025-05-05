@@ -21,11 +21,11 @@ public class NotificationService {
     private final UserService userService;
 
     public Page<Notification> getNotifications(int page, int size) {
-        return repository.findByUsername(userService.getCurrentUser().getName(), PageRequest.of(page, size));
+        return repository.findByUsername(userService.getCurrentUser().getUsername(), PageRequest.of(page, size));
     }
 
     public Page<Notification> getNotificationsByIsRead(boolean isRead, int page, int size) {
-        return repository.findByUsernameAndRead(userService.getCurrentUser().getName(), isRead, PageRequest.of(page, size));
+        return repository.findByUsernameAndRead(userService.getCurrentUser().getUsername(), isRead, PageRequest.of(page, size));
     }
 
     public Notification getNotification(Long id) {
