@@ -23,4 +23,5 @@ public interface ProductCode {
     String DATABASE_URI = "/databases";
     String MEETINGS = "/meetings";
     String MATERIALS_URI = "/materials";
+    String NOTIFICATION_URI = "/notifications";
 }

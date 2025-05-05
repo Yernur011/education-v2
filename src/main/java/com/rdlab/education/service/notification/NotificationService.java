@@ -22,6 +22,10 @@ public class NotificationService {
         return repository.findByUsername(userService.getCurrentUser().getName(), PageRequest.of(page, size));
     }
 
+    public Page<Notification> getNotificationsByIsRead(boolean isRead, int page, int size) {
+        return repository.findByUsernameAndRead(userService.getCurrentUser().getName(), isRead, PageRequest.of(page, size));
+    }
+
     public Notification getNotification(Long id) {
         return repository.findById(id).orElseThrow(() -> new NotFoundException("Notification not found"));
     }
