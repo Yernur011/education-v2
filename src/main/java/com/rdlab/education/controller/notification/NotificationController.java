@@ -5,12 +5,7 @@ import com.rdlab.education.domain.entity.edu.Notification;
 import com.rdlab.education.service.notification.NotificationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import static com.rdlab.education.utils.codes.ProductCode.NOTIFICATION_URI;
 import static com.rdlab.education.utils.codes.ProductCode.V1_URI;
@@ -23,7 +18,7 @@ public class NotificationController {
 
     @GetMapping
     public Page<Notification> getNotifications(
-            @RequestParam(name = "is_read") Boolean isRead,
+            @RequestParam(name = "is_read", required = false) Boolean isRead,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
