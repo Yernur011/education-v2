@@ -70,7 +70,7 @@ public class SecurityConfiguration {
                             .requestMatchers(publicRouts)
                             .permitAll()
                             .requestMatchers(V1_URI + ADMIN_URI + "/**")
-                            .hasAuthority(UserRole.ADMIN.getRole())
+                            .hasAnyAuthority(UserRole.ADMIN.getRole(), UserRole.MODERATOR.getRole())
                             .anyRequest()
                             .authenticated();
                 })
