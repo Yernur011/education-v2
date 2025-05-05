@@ -6,11 +6,13 @@ import com.rdlab.education.domain.repository.NotificationRepository;
 import com.rdlab.education.service.auth.UserService;
 import com.rdlab.education.service.crud.AccountService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 @Service
+@Log4j2
 @RequiredArgsConstructor
 public class NotificationService {
 
@@ -31,12 +33,14 @@ public class NotificationService {
     }
 
     public void createNotification(Notification notification) {
+        log.debug("Creating notification {}", notification);
         repository.saveAll(
                 accountService.notifyAllUsers(notification));
 
     }
 
     public void createNotification(Long topicId, Notification notification) {
+        log.debug("Creating notification {}, {}", topicId, notification);
         repository.saveAll(
                 accountService.notifyAllUsersWithTopics(topicId, notification));
     }

@@ -13,12 +13,14 @@ import com.rdlab.education.domain.repository.edu.ZoomRepository;
 import com.rdlab.education.service.crud.ZoomService;
 import com.rdlab.education.service.notification.NotificationService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.time.ZonedDateTime;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ZoomServiceImpl implements ZoomService {
@@ -63,7 +65,9 @@ public class ZoomServiceImpl implements ZoomService {
         var response = zoomMeetingClient.createMeeting(token, request);
         var zoom = new Zoom(null, response.getId(), dto.getTopic(), "CREATED",
                 ZonedDateTime.parse(dto.getStartTime()).toLocalDateTime(), response);
-        zoomRepository.save(zoom);
+        var saved = zoomRepository.save(zoom);
+
+        log.debug("Created meeting with id {}", saved);
 
         notificationService.createNotification(
                 dto.getCategory(),
