@@ -1,0 +1,28 @@
+package com.legalDigital.education.domain.dto.course;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.legalDigital.education.domain.dto.lesson.LessonDto;
+import com.legalDigital.education.domain.dto.test.TestDto;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import java.util.ArrayList;
+import java.util.List;
+
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class CourseDetailsDto {
+    Long id;
+    String title;
+    String description;
+    String image;
+    List<String> tags = new ArrayList<>();
+    List<LessonDto> lessons = new ArrayList<>();
+    TestDto test;
+    String status;
+}

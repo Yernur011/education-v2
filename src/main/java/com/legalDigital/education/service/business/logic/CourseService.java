@@ -1,0 +1,25 @@
+package com.legalDigital.education.service.business.logic;
+
+import com.legalDigital.education.domain.dto.course.CourseDetailsDto;
+import com.legalDigital.education.domain.dto.lesson.LessonDto;
+import com.legalDigital.education.domain.dto.test.TestDto;
+import com.legalDigital.education.domain.entity.edu.Tags;
+
+import java.util.List;
+
+public interface CourseService {
+    List<Tags> findAllTags();
+    CourseDetailsDto findByIdWithoutProgress(Long id);
+    CourseDetailsDto findByIdAndProgress(Long courseId);
+    CourseDetailsDto startCourse(Long courseId);
+    List<LessonDto> startLesson(Long lessonId);
+    List<LessonDto> doneLesson(Long lessonId);
+    TestDto getCurrentTestByCourse(Long courseId);
+    void testFinished(Long id);
+    CourseDetailsDto createCourse(CourseDetailsDto courseDetailsDto);
+    Tags saveTags(Tags tags);
+    void deleteTags(Long id);
+    CourseDetailsDto updateCourse(CourseDetailsDto courseDetailsDto);
+    LessonDto updateLesson(Long courseId,LessonDto lessonDto);
+    void deleteLesson(Long lessonId);
+}
