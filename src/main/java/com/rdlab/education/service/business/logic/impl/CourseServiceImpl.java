@@ -260,13 +260,13 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    public CourseDetailsDto startCourse(Long courseId) {
+    public CourseDetailsDto startCourse(Long courseId, boolean isPaid) {
         var course = courseRepository.findById(courseId)
                 .orElseThrow(() -> new NotFoundException("Course Not Found"));
         userCourseRepository.save(new UserCourse(null,
                 userService.getCurrentUser(),
                 course,
-                UserCourseLessonStatusEnum.STARTED.getStatus()));
+                UserCourseLessonStatusEnum.STARTED.getStatus(), isPaid));
 
         startLesson(course.getLessons()
                 .stream()
@@ -355,7 +355,7 @@ public class CourseServiceImpl implements CourseService {
                                         ).collect(Collectors.toList()),
                                 getDefaultTestDtoForNonProgresses(course),
                                 course.getStatus(),
-                                course.getDemoUrl()
+                                course.getDemoUrl(), false
                         )
                 )
                 .orElseThrow(() -> new NoSuchElementException(COURSE_NOT_FOUND));
@@ -386,7 +386,8 @@ public class CourseServiceImpl implements CourseService {
                                     getCurrentLessonsList(userCourseLessons),
                                     getCurrentTest(userCourseLessons),
                                     getCurrentCourseStatus(course),
-                                    course.getDemoUrl()
+                                    course.getDemoUrl(),
+                                    courseAndUser.getIsPaid()
                             );
 
                         }
@@ -477,5 +478,15 @@ public class CourseServiceImpl implements CourseService {
         return combinedLessons;
     }
 
-
+    @Override
+    public void payment(Long id) {
+        var courseAndUser = getByCourseAndUser(courseRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException(COURSE_NOT_FOUND)));
+        if (null == courseAndUser) {
+            startCourse(id, true);
+            return;
+        }
+        courseAndUser.setIsPaid(true);
+        userCourseRepository.save(courseAndUser);
+    }
 }

@@ -2,6 +2,7 @@ package com.rdlab.education.domain.entity.edu;
 
 import com.rdlab.education.domain.entity.auth.Users;
 import com.rdlab.education.domain.entity.core.BusinessEntity;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -32,5 +33,8 @@ public class UserCourse extends BusinessEntity<Long> {
     Course course;
 
     String status;
+
+    @Column(name = "is_paid", nullable = false)
+    Boolean isPaid = false;
 
 }

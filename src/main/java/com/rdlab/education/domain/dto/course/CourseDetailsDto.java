@@ -29,4 +29,5 @@ public class CourseDetailsDto {
     TestDto test;
     String status;
     String demoUrl;
+    Boolean isPaid;
 }

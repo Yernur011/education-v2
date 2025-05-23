@@ -8,7 +8,6 @@ import com.rdlab.education.service.business.logic.CourseService;
 import com.rdlab.education.service.crud.CourseCrudService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -58,9 +57,15 @@ public class CourseController {
         return ResponseEntity.ok(List.of());
     }
 
+    @PutMapping("/{id}/payment")
+    public ResponseEntity<Void> getUsers(@PathVariable Long id) {
+        courseService.payment(id);
+        return ResponseEntity.ok().build();
+    }
+
     @PostMapping("{id}/start")
     public ResponseEntity<Object> startCourse(@PathVariable Long id) {
-        return ResponseEntity.ok(courseService.startCourse(id));
+        return ResponseEntity.ok(courseService.startCourse(id, false));
     }
 
     //    @PreAuthorize("moderator, admin") // todo

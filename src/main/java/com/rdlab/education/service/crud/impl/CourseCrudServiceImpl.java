@@ -159,7 +159,8 @@ public class CourseCrudServiceImpl implements CourseCrudService {
                                                 lesson.getBodyText(), lesson.getStatus(), lesson.getIsCompleted())
                                         ).collect(Collectors.toList()),
                                 null,
-                                course.getStatus(), course.getDemoUrl()
+                                course.getStatus(), course.getDemoUrl(),
+                                false
                         )
                 )
                 .orElseThrow(() -> new NoSuchElementException(COURSE_NOT_FOUND));
